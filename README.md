@@ -17,6 +17,26 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 
 ---
 
+## Screenshots
+
+| Today | Anytime |
+|-------|---------|
+| ![Today](screenshots/Today.png) | ![Anytime](screenshots/Anytime.png) |
+
+| Upcoming | Waiting |
+|----------|---------|
+| ![Upcoming](screenshots/Upcoming%207%20days.png) | ![Waiting](screenshots/Waiting.png) |
+
+| Someday | Logbook |
+|---------|---------|
+| ![Someday](screenshots/Someday.png) | ![Logbook](screenshots/Logbook.png) |
+
+| Context view | Edit view |
+|-------------|-----------|
+| ![Context view](screenshots/Context%20view.png) | ![Edit view](screenshots/Edit%20view.png) |
+
+---
+
 ## File Structure
 
 | File | Purpose | Load when |
