@@ -10,10 +10,11 @@
     (global-set-key (kbd "s-1") (lambda () (interactive) (org-agenda nil "1")))      ;; Today
     (global-set-key (kbd "s-2") (lambda () (interactive) (org-agenda nil "2")))      ;; Upcoming
     (global-set-key (kbd "s-3") (lambda () (interactive) (org-agenda nil "3")))      ;; Anytime
-    (global-set-key (kbd "s-4") (lambda () (interactive) (org-agenda nil "4")))      ;; Someday
-    (global-set-key (kbd "s-5") (lambda () (interactive) (org-agenda nil "5")))      ;; Logbook
-    (global-set-key (kbd "s-6") (lambda () (interactive) (my/org-pick-context)))     ;; Context NEXT
-    (global-set-key (kbd "s-7") (lambda () (interactive) (my/org-pick-context-all))) ;; Context All
+    (global-set-key (kbd "s-4") (lambda () (interactive) (org-agenda nil "4")))      ;; Waiting
+    (global-set-key (kbd "s-5") (lambda () (interactive) (org-agenda nil "5")))      ;; Someday
+    (global-set-key (kbd "s-6") (lambda () (interactive) (org-agenda nil "6")))      ;; Logbook
+    (global-set-key (kbd "s-7") (lambda () (interactive) (my/org-pick-context)))     ;; Context NEXT
+    (global-set-key (kbd "s-8") (lambda () (interactive) (my/org-pick-context-all))) ;; Context All
     (global-set-key (kbd "s-i") #'my/org-open-inbox)                                 ;; Open Inbox
 
     ;; ─── Create ───────────────────────────────────────────────────────────

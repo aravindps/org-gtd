@@ -11,10 +11,11 @@
   (define-key map (kbd "1") (lambda () (interactive) (org-agenda nil "1")))       ;; Today
   (define-key map (kbd "2") (lambda () (interactive) (org-agenda nil "2")))       ;; Upcoming
   (define-key map (kbd "3") (lambda () (interactive) (org-agenda nil "3")))       ;; Anytime
-  (define-key map (kbd "4") (lambda () (interactive) (org-agenda nil "4")))       ;; Someday
-  (define-key map (kbd "5") (lambda () (interactive) (org-agenda nil "5")))       ;; Logbook
-  (define-key map (kbd "6") (lambda () (interactive) (my/org-pick-context)))      ;; Context NEXT
-  (define-key map (kbd "7") (lambda () (interactive) (my/org-pick-context-all)))  ;; Context All
+  (define-key map (kbd "4") (lambda () (interactive) (org-agenda nil "4")))       ;; Waiting
+  (define-key map (kbd "5") (lambda () (interactive) (org-agenda nil "5")))       ;; Someday
+  (define-key map (kbd "6") (lambda () (interactive) (org-agenda nil "6")))       ;; Logbook
+  (define-key map (kbd "7") (lambda () (interactive) (my/org-pick-context)))      ;; Context NEXT
+  (define-key map (kbd "8") (lambda () (interactive) (my/org-pick-context-all)))  ;; Context All
 
   ;; ─── Create ───────────────────────────────────────────────────────────────
   (define-key map (kbd "n") #'org-insert-heading-respect-content)   ;; New to-do

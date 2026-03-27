@@ -11,10 +11,11 @@
       "1"   (lambda () (interactive) (org-agenda nil "1"))      ;; Today
       "2"   (lambda () (interactive) (org-agenda nil "2"))      ;; Upcoming
       "3"   (lambda () (interactive) (org-agenda nil "3"))      ;; Anytime
-      "4"   (lambda () (interactive) (org-agenda nil "4"))      ;; Someday
-      "5"   (lambda () (interactive) (org-agenda nil "5"))      ;; Logbook
-      "6"   (lambda () (interactive) (my/org-pick-context))     ;; Context NEXT
-      "7"   (lambda () (interactive) (my/org-pick-context-all)) ;; Context All
+      "4"   (lambda () (interactive) (org-agenda nil "4"))      ;; Waiting
+      "5"   (lambda () (interactive) (org-agenda nil "5"))      ;; Someday
+      "6"   (lambda () (interactive) (org-agenda nil "6"))      ;; Logbook
+      "7"   (lambda () (interactive) (my/org-pick-context))     ;; Context NEXT
+      "8"   (lambda () (interactive) (my/org-pick-context-all)) ;; Context All
 
       ;; ─── Create ─────────────────────────────────────────────────────────
       "n"   #'org-insert-heading-respect-content   ;; New to-do

@@ -55,12 +55,16 @@
           (org-agenda-skip-function
            '(org-agenda-skip-entry-if 'scheduled 'deadline))))
 
-        ;; 4 — Someday
-        ("4" "Someday" todo "SOMEDAY"
+        ;; 4 — Waiting
+        ("4" "Waiting" todo "WAIT"
+         ((org-agenda-overriding-header "Waiting — Blocked")))
+
+        ;; 5 — Someday
+        ("5" "Someday" todo "SOMEDAY"
          ((org-agenda-overriding-header "Someday")))
 
-        ;; 5 — Logbook
-        ("5" "Logbook" todo "DONE|CANCELLED"
+        ;; 6 — Logbook
+        ("6" "Logbook" todo "DONE|CANCELLED"
          ((org-agenda-overriding-header "Logbook — Completed")
           (org-agenda-sorting-strategy '(timestamp-down))))))
 

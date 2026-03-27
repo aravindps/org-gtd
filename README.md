@@ -9,7 +9,7 @@ A [Things 3](https://culturedcode.com/things/) style GTD setup for Emacs using o
 ## Features
 
 - **Things 3 keybindings** — `⌘K` complete, `⌘N` add, `⌘W` move, and more
-- **Agenda views** — Inbox / Today / Upcoming / Anytime / Someday / Logbook
+- **Agenda views** — Inbox / Today / Upcoming / Anytime / Waiting / Someday / Logbook
 - **Dynamic context views** — auto-detects all `@tags`, no code changes when you add new ones
 - **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the bottom automatically
 - **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
@@ -133,7 +133,7 @@ The context picker auto-detects them — no code changes needed when you add new
 ### Morning — what to work on
 
 1. **Today** (`SPC 1` / `C-c g 1`) — scheduled + overdue
-2. **Context view** (`SPC 6` / `C-c g 6`) → pick `@office` or `@home` → all NEXT tasks for that context
+2. **Context view** (`SPC 7` / `C-c g 7`) → pick `@office` or `@home` → all NEXT tasks for that context
 
 ### During the day — adding tasks
 
@@ -150,9 +150,10 @@ Blocked? `S-Right` to cycle to `WAIT`.
 ### Weekly review
 
 1. **Inbox** (`SPC 0`) — refile everything with `⌘ W`, set state and tags
-2. **Someday** (`SPC 4`) — promote anything ready to NEXT with `S-Right`
-3. **Upcoming** (`SPC 2`) — adjust dates if needed
-4. **Logbook** (`SPC 5`) — see what you completed
+2. **Waiting** (`SPC 4`) — follow up on anything blocked
+3. **Someday** (`SPC 5`) — promote anything ready to NEXT with `S-Right`
+4. **Upcoming** (`SPC 2`) — adjust dates if needed
+5. **Logbook** (`SPC 6`) — see what you completed
 
 ---
 
@@ -169,10 +170,11 @@ All actions are available across all binding systems simultaneously.
 | Today | `⌘ 1` | `… 1` | `SPC 1` |
 | Upcoming (7 days) | `⌘ 2` | `… 2` | `SPC 2` |
 | Anytime (NEXT, no date) | `⌘ 3` | `… 3` | `SPC 3` |
-| Someday | `⌘ 4` | `… 4` | `SPC 4` |
-| Logbook | `⌘ 5` | `… 5` | `SPC 5` |
-| Context → NEXT tasks | `⌘ 6` | `… 6` | `SPC 6` |
-| Context → all tasks | `⌘ 7` | `… 7` | `SPC 7` |
+| Waiting (blocked) | `⌘ 4` | `… 4` | `SPC 4` |
+| Someday | `⌘ 5` | `… 5` | `SPC 5` |
+| Logbook | `⌘ 6` | `… 6` | `SPC 6` |
+| Context → NEXT tasks | `⌘ 7` | `… 7` | `SPC 7` |
+| Context → all tasks | `⌘ 8` | `… 8` | `SPC 8` |
 
 ### Create
 
