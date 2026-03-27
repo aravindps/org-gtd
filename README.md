@@ -1,14 +1,14 @@
 # org-gtd
 
-> **Keywords:** org-mode gtd, emacs gtd, getting things done emacs, things3 emacs, org-mode productivity, doom emacs gtd, emacs task manager
+> **Keywords:** org-mode gtd, emacs gtd, getting things done emacs, org-mode productivity, doom emacs gtd, emacs task manager
 
-A [Things 3](https://culturedcode.com/things/) style GTD setup for Emacs using org-mode. Works with **Doom Emacs** and **vanilla Emacs** (GUI + terminal).
+A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Things 3. Works with **Doom Emacs** and **vanilla Emacs** (GUI + terminal).
 
 ---
 
 ## Features
 
-- **Things 3 keybindings** — `⌘K` complete, `⌘N` add, `⌘W` move, and more
+- **Intuitive keybindings** — `⌘K` complete, `⌘N` add, `⇧⌘M` move, and more
 - **Agenda views** — Inbox / Today / Upcoming / Anytime / Waiting / Someday / Logbook
 - **Dynamic context views** — auto-detects all `@tags`, no code changes when you add new ones
 - **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the bottom automatically
@@ -32,46 +32,13 @@ A [Things 3](https://culturedcode.com/things/) style GTD setup for Emacs using o
 
 ## Installation
 
-### 1. Clone
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/<you>/org-gtd ~/code/org-gtd
 ```
 
-### 2. Load from your Emacs config
-
-**Doom Emacs** (`~/.config/doom/config.el`):
-```elisp
-(setq my/gtd-file "~/path/to/your/gtd.org")  ;; set this first
-
-(load "~/code/org-gtd/org-gtd.el")       ;; always first
-(load "~/code/org-gtd/bindings-cmd.el")  ;; ⌘ keys (GUI)
-(load "~/code/org-gtd/bindings-ccg.el")  ;; C-c g (terminal)
-(load "~/code/org-gtd/bindings-f5.el")   ;; F5 (terminal)
-(load "~/code/org-gtd/doom-extras.el")   ;; SPC leader (Doom only)
-```
-
-**Vanilla Emacs GUI** (`~/.emacs` or `~/.emacs.d/init.el`):
-```elisp
-(setq my/gtd-file "~/path/to/your/gtd.org")
-
-(load "~/code/org-gtd/org-gtd.el")
-(load "~/code/org-gtd/bindings-cmd.el")
-(load "~/code/org-gtd/bindings-ccg.el")
-```
-
-**Vanilla Emacs terminal**:
-```elisp
-(setq my/gtd-file "~/path/to/your/gtd.org")
-
-(load "~/code/org-gtd/org-gtd.el")
-(load "~/code/org-gtd/bindings-ccg.el")
-(load "~/code/org-gtd/bindings-f5.el")
-```
-
-> If you don't set `my/gtd-file`, Emacs will prompt you to pick the file on first load.
-
-### 3. Create your `gtd.org`
+### 2. Create your `gtd.org`
 
 ```org
 #+TITLE: GTD
@@ -87,14 +54,42 @@ git clone https://github.com/<you>/org-gtd ~/code/org-gtd
 * Standalone Task :@home:
 ```
 
-Update the path in `org-gtd.el`:
+### 3. Load from your Emacs config
+
+Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on first load.
+
+**Doom Emacs** (`~/.config/doom/config.el`):
 ```elisp
-(setq org-agenda-files '("~/path/to/your/gtd.org"))
+(setq my/gtd-file "~/path/to/your/gtd.org")
+
+(load "~/code/org-gtd/org-gtd.el")       ;; always load first
+(load "~/code/org-gtd/bindings-cmd.el")  ;; ⌘ keys (GUI/macOS)
+(load "~/code/org-gtd/bindings-ccg.el")  ;; C-c g prefix
+(load "~/code/org-gtd/bindings-f5.el")   ;; F5 prefix
+(load "~/code/org-gtd/doom-extras.el")   ;; SPC leader (Doom only)
 ```
 
-### 5. Restart Emacs
+**Vanilla Emacs — GUI** (`~/.emacs` or `~/.emacs.d/init.el`):
+```elisp
+(setq my/gtd-file "~/path/to/your/gtd.org")
 
-Doom users: run `doom sync` first.
+(load "~/code/org-gtd/org-gtd.el")
+(load "~/code/org-gtd/bindings-cmd.el")
+(load "~/code/org-gtd/bindings-ccg.el")
+```
+
+**Vanilla Emacs — terminal**:
+```elisp
+(setq my/gtd-file "~/path/to/your/gtd.org")
+
+(load "~/code/org-gtd/org-gtd.el")
+(load "~/code/org-gtd/bindings-ccg.el")
+(load "~/code/org-gtd/bindings-f5.el")
+```
+
+### 4. Restart Emacs
+
+Doom users: run `doom sync` before restarting.
 
 ---
 
@@ -147,14 +142,6 @@ The context picker auto-detects them — no code changes needed when you add new
 
 Blocked? `S-Right` to cycle to `WAIT`.
 
-### Weekly review
-
-1. **Inbox** (`SPC 0`) — refile everything with `⌘ W`, set state and tags
-2. **Waiting** (`SPC 4`) — follow up on anything blocked
-3. **Someday** (`SPC 5`) — promote anything ready to NEXT with `S-Right`
-4. **Upcoming** (`SPC 2`) — adjust dates if needed
-5. **Logbook** (`SPC 6`) — see what you completed
-
 ---
 
 ## Keybinding Reference
@@ -178,62 +165,62 @@ All actions are available across all binding systems simultaneously.
 
 ### Create
 
-| Things 3 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
-|-----------|---------|------------|------------|--------|
-| `⌘ N` | `⌘ N` | `… n` | `SPC n` | New to-do |
-| `⇧ ⌘ N` | `⇧ ⌘ N` | `… N` | `SPC N` | New heading |
-| `⇧ ⌘ C` | `⇧ ⌘ C` | `… c` | — | New checklist item |
-| `⌥ ⌘ N` | `⌥ ⌘ N` | — | — | New project (top-level) |
+| ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
+|---------|------------|------------|--------|
+| `⌘ N` | `… n` | `SPC n` | New to-do |
+| `⇧ ⌘ N` | `… N` | `SPC N` | New heading |
+| `⇧ ⌘ C` | `… c` | — | New checklist item |
+| `⌥ ⌘ N` | — | — | New project (top-level) |
 
 ### Edit
 
-| Things 3 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
-|-----------|---------|------------|------------|--------|
-| `⌘ K` | `⌘ K` | `… k` | `SPC k` | Complete → auto-sinks |
-| `⌥ ⌘ K` | `⌥ ⌘ K` | `… K` | `SPC K` | Cancel → auto-sinks |
-| `⌘ D` | `⌘ D` | `… d` | — | Duplicate subtree |
-| `⇧ ⌘ Y` | `⇧ ⌘ Y` | `… y` | `SPC y` | Archive subtree |
+| ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
+|---------|------------|------------|--------|
+| `⌘ K` | `… k` | `SPC k` | Complete → auto-sinks |
+| `⌥ ⌘ K` | `… K` | `SPC K` | Cancel → auto-sinks |
+| `⌘ D` | `… d` | — | Duplicate subtree |
+| `⇧ ⌘ Y` | `… y` | `SPC y` | Archive subtree |
 
 ### Move
 
-| Things 3 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
-|-----------|---------|------------|------------|--------|
-| `⇧ ⌘ M` | `⌘ W` | `… w` | `SPC w` | Refile to project |
-| `⌘ ↑` | `⌘ ↑` | `… p` | — | Move item up |
-| `⌘ ↓` | `⌘ ↓` | `… P` | — | Move item down |
-| `⌥ ⌘ ↑` | `⌥ ⌘ ↑` | — | — | Move to top |
-| `⌥ ⌘ ↓` | `⌥ ⌘ ↓` | — | — | Move to bottom |
+| ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
+|---------|------------|------------|--------|
+| `⇧ ⌘ M` | `… m` | `SPC m` | Refile to project |
+| `⌘ ↑` | `… p` | — | Move item up |
+| `⌘ ↓` | `… P` | — | Move item down |
+| `⌥ ⌘ ↑` | — | — | Move to top |
+| `⌥ ⌘ ↓` | — | — | Move to bottom |
 
 ### Dates
 
-| Things 3 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
-|-----------|---------|------------|------------|--------|
-| `⌘ S` | `⌘ S` | `… s` | `SPC s` | Schedule (date picker) |
-| `⌘ T` | `⌘ T` | `… t` | `SPC t` | Start Today |
-| `⌘ R` | `⌘ R` | `… r` | `SPC r` | Anytime (remove schedule) |
-| `⌘ O` | `⌘ O` | `… o` | `SPC o` | Someday |
-| `⇧ ⌘ D` | `⇧ ⌘ D` | `… D` | `SPC D` | Deadline |
-| `^ ]` | `^ ]` | — | — | Schedule +1 day |
-| `^ [` | `^ [` | — | — | Schedule −1 day |
-| `^ }` | `^ }` | — | — | Schedule +1 week |
-| `^ {` | `^ {` | — | — | Schedule −1 week |
-| `^ .` | `^ .` | — | — | Deadline +1 day |
-| `^ ,` | `^ ,` | — | — | Deadline −1 day |
+| ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
+|---------|------------|------------|--------|
+| `⌘ S` | `… s` | `SPC s` | Schedule (date picker) |
+| `⌘ T` | `… t` | `SPC t` | Start Today |
+| `⌘ R` | `… r` | `SPC r` | Anytime (remove schedule) |
+| `⌘ O` | `… o` | `SPC o` | Someday |
+| `⇧ ⌘ D` | `… D` | `SPC D` | Deadline |
+| `^ ]` | — | — | Schedule +1 day |
+| `^ [` | — | — | Schedule −1 day |
+| `^ }` | — | — | Schedule +1 week |
+| `^ {` | — | — | Schedule −1 week |
+| `^ .` | — | — | Deadline +1 day |
+| `^ ,` | — | — | Deadline −1 day |
 
 ### Navigate
 
-| Things 3 | ⌘ (GUI) | C-c g / F5 | Action |
-|-----------|---------|------------|--------|
-| `⌘ →` | `⌘ →` | `… ]` | Zoom into subtree |
-| `⌘ ←` | `⌘ [` | `… [` | Zoom out *(⌘← grabbed by macOS)* |
-| `⌘ F` | `⌘ F` | `… f` | Search headings |
+| ⌘ (GUI) | C-c g / F5 | Action |
+|---------|------------|--------|
+| `⌘ →` | `… ]` | Zoom into subtree |
+| `⌘ [` | `… [` | Zoom out *(⌘← grabbed by macOS)* |
+| `⌘ F` | `… f` | Search headings |
 
 ### Tags & Filter
 
-| Things 3 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
-|-----------|---------|------------|------------|--------|
-| `⇧ ⌘ T` | `⇧ ⌘ T` | `… T` | `SPC T` | Tag picker |
-| `^ ⌥ T` | `^ ⌘ F` | `… /` | `SPC /` | Filter by tag (flat list) |
+| ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
+|---------|------------|------------|--------|
+| `⇧ ⌘ T` | `… T` | `SPC T` | Tag picker |
+| `^ ⌘ F` | `… /` | `SPC /` | Filter by tag (flat list) |
 
 **Tag match syntax:**
 
