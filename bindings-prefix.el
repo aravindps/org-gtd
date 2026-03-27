@@ -33,7 +33,7 @@
   ;; ─── Move ─────────────────────────────────────────────────────────────────
   (define-key map (kbd "p") #'org-move-subtree-up)                  ;; Move up
   (define-key map (kbd "P") #'org-move-subtree-down)                ;; Move down
-  (define-key map (kbd "w") #'org-refile)                           ;; Move to project
+  (define-key map (kbd "m") #'org-refile)                           ;; Move to project
 
   ;; ─── Dates ────────────────────────────────────────────────────────────────
   (define-key map (kbd "s") #'org-schedule)                                          ;; Schedule

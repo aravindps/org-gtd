@@ -45,8 +45,7 @@
                                          (condition-case nil
                                              (while t (org-move-subtree-down))
                                            (error nil))))
-    (define-key map (kbd "s-M") #'org-refile)                           ;; ⇧⌘M Refile
-    (define-key map (kbd "s-w") #'org-refile)                           ;; ⌘W Refile
+    (define-key map (kbd "s-M") #'org-refile)                           ;; ⇧⌘M Refile / Move to project
 
     ;; ─── Dates ────────────────────────────────────────────────────────────
     (define-key map (kbd "s-s") #'org-schedule)                                           ;; ⌘S Schedule

@@ -24,7 +24,7 @@
       ;; ─── Edit ───────────────────────────────────────────────────────────
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete
       "K"   (lambda () (interactive) (org-todo "CANCELLED"))  ;; Cancel
-      "w"   #'org-refile                                       ;; Move to project
+      "m"   #'org-refile                                       ;; Move to project
       "y"   #'org-archive-subtree                              ;; Archive
 
       ;; ─── Dates ──────────────────────────────────────────────────────────
