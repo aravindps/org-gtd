@@ -37,6 +37,7 @@
         ;; 1 — Today
         ("1" "Today" agenda ""
          ((org-agenda-span 1)
+          (org-agenda-start-day nil)
           (org-agenda-overriding-header "Today")
           (org-agenda-skip-function
            '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED" "SOMEDAY")))))
@@ -44,7 +45,7 @@
         ;; 2 — Upcoming
         ("2" "Upcoming" agenda ""
          ((org-agenda-span 7)
-          (org-agenda-start-on-weekday nil)
+          (org-agenda-start-on-weekday 1)
           (org-agenda-overriding-header "Upcoming — Next 7 Days")
           (org-agenda-skip-function
            '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED" "SOMEDAY")))))
