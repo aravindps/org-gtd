@@ -6,12 +6,8 @@
 ;; Set my/gtd-file before loading this file, or you will be prompted.
 ;; Example: (setq my/gtd-file "~/org/gtd.org")
 
-(defvar my/gtd-file
-  (let ((default "~/gtd.org"))
-    (if (file-exists-p (expand-file-name default))
-        default
-      (read-file-name "GTD file not found. Select your gtd.org: " "~/" nil t)))
-  "Path to your GTD org file.")
+(defvar my/gtd-file nil
+  "Path to your GTD org file. Set before loading: (setq my/gtd-file \"~/path/to/gtd.org\")")
 
 (setq org-agenda-files (list my/gtd-file))
 
@@ -275,6 +271,9 @@
       (forward-line 1))))
 
 (add-hook 'org-agenda-finalize-hook #'my/org-agenda-apply-logbook-faces)
+(add-hook 'org-agenda-mode-hook (lambda ()
+                                  (setq-local mode-line-format nil)
+                                  (setq-local cursor-type nil)))
 
 (with-eval-after-load 'org-agenda
   (define-key org-agenda-mode-map (kbd "q") #'ignore)
@@ -303,7 +302,8 @@
 ;; ─── Dashboard ───────────────────────────────────────────────────────────────
 
 (define-derived-mode my/gtd-dashboard-mode special-mode "GTD"
-  "Live count dashboard for org-gtd. RET opens the view at point.")
+  "Live count dashboard for org-gtd. RET opens the view at point."
+  (setq-local mode-line-format nil))
 (define-key my/gtd-dashboard-mode-map (kbd "RET")   #'my/gtd-dashboard-activate)
 (define-key my/gtd-dashboard-mode-map (kbd "g")     #'my/org-dashboard)
 (define-key my/gtd-dashboard-mode-map (kbd "q")     #'ignore)
@@ -558,18 +558,30 @@
           (my/org--dash-row "Logbook"  0        (lambda () (my/org-open-view "6")))
           (when proj-names
             (insert "\n")
+            (my/org--dash-section-label "Projects")
             (dolist (name (nreverse proj-names))
-              (let* ((v      (gethash name proj-data))
-                     (active (aref v 0))
-                     (total  (aref v 1))
-                     (mark   (aref v 2)))
-                (let ((indicator (cond ((= total 0)    "? ")
-                                      ((> active 0)   "  ")
-                                      (t              "● "))))
-                  (my/org--dash-row (concat indicator name) ""
-                                    (let ((m mark)) (lambda () (my/org-open-project m))))))))
+              (let* ((v         (gethash name proj-data))
+                     (active    (aref v 0))
+                     (total     (aref v 1))
+                     (mark      (aref v 2))
+                     (indicator (cond ((= total 0)  "?")
+                                     ((> active 0) "")
+                                     (t            "●")))
+                     (max-len   18)
+                     (display   (if (> (length name) max-len)
+                                   (concat (substring name 0 (1- max-len)) "…")
+                                 name))
+                     (label     (if (string= indicator "")
+                                   display
+                                 (concat indicator " " display)))
+                     (start     (point))
+                     (action    (let ((m mark)) (lambda () (my/org-open-project m)))))
+                (insert (format "  %s\n" label))
+                (add-text-properties start (- (point) 1)
+                                     (list 'gtd-action action 'mouse-face 'highlight)))))
           (when context-tags
             (insert "\n")
+            (my/org--dash-section-label "Contexts")
             (dolist (pair ctx-counts)
               (let ((tag (car pair)) (n (cdr pair)))
                 (my/org--dash-row tag n
@@ -597,7 +609,17 @@
         (delete-other-windows)
         (switch-to-buffer buf)
         (let ((right (split-window-right (floor (* 0.3 (frame-width))))))
-          (set-window-buffer right (find-file-noselect my/gtd-file)))))))
+          (let ((rbuf (find-file-noselect my/gtd-file)))
+            (set-window-buffer right rbuf)
+            (with-current-buffer rbuf
+              (setq-local mode-line-format nil))))))))
+
+(defun my/org--dash-section-label (text)
+  "Insert a non-clickable grey section label TEXT in the dashboard."
+  (let ((start (point)))
+    (insert (format "  %s\n" text))
+    (add-text-properties start (point)
+                         '(face (:inherit shadow :height 1.0)))))
 
 (defun my/org--dash-row (label count action)
   "Insert one dashboard row with LABEL, COUNT, and ACTION on RET."
