@@ -7,7 +7,7 @@
 
   ;; ─── Views ────────────────────────────────────────────────────────────────
   (define-key map (kbd "i") #'my/org-open-inbox)                                  ;; Open Inbox to edit
-  (define-key map (kbd "0") (lambda () (interactive) (org-agenda nil "0")))       ;; Inbox view
+  (define-key map (kbd "0") #'my/org-dashboard)                                   ;; Dashboard
   (define-key map (kbd "1") (lambda () (interactive) (org-agenda nil "1")))       ;; Today
   (define-key map (kbd "2") (lambda () (interactive) (org-agenda nil "2")))       ;; Upcoming
   (define-key map (kbd "3") (lambda () (interactive) (org-agenda nil "3")))       ;; Anytime

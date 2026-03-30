@@ -6,7 +6,7 @@
   (let ((map org-mode-map))
 
     ;; ─── Views (global — accessible outside org buffers) ──────────────────
-    (global-set-key (kbd "s-0") (lambda () (interactive) (org-agenda nil "0")))      ;; Inbox view
+    (global-set-key (kbd "s-0") #'my/org-dashboard)                                 ;; Dashboard
     (global-set-key (kbd "s-1") (lambda () (interactive) (org-agenda nil "1")))      ;; Today
     (global-set-key (kbd "s-2") (lambda () (interactive) (org-agenda nil "2")))      ;; Upcoming
     (global-set-key (kbd "s-3") (lambda () (interactive) (org-agenda nil "3")))      ;; Anytime

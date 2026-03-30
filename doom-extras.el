@@ -7,13 +7,13 @@
       "i"   #'my/org-open-inbox           ;; SPC i — Open Inbox to edit
 
       ;; ─── Views ──────────────────────────────────────────────────────────
-      "0"   (lambda () (interactive) (org-agenda nil "0"))      ;; Inbox view
-      "1"   (lambda () (interactive) (org-agenda nil "1"))      ;; Today
-      "2"   (lambda () (interactive) (org-agenda nil "2"))      ;; Upcoming
-      "3"   (lambda () (interactive) (org-agenda nil "3"))      ;; Anytime
-      "4"   (lambda () (interactive) (org-agenda nil "4"))      ;; Waiting
-      "5"   (lambda () (interactive) (org-agenda nil "5"))      ;; Someday
-      "6"   (lambda () (interactive) (org-agenda nil "6"))      ;; Logbook
+      "0"   #'my/org-dashboard                                   ;; Dashboard
+      "1"   (lambda () (interactive) (my/org-open-view "1"))    ;; Today
+      "2"   (lambda () (interactive) (my/org-open-view "2"))    ;; Upcoming
+      "3"   (lambda () (interactive) (my/org-open-view "3"))    ;; Anytime
+      "4"   (lambda () (interactive) (my/org-open-view "4"))    ;; Waiting
+      "5"   (lambda () (interactive) (my/org-open-view "5"))    ;; Someday
+      "6"   (lambda () (interactive) (my/org-open-view "6"))    ;; Logbook
       "7"   (lambda () (interactive) (my/org-pick-context))     ;; Context NEXT
       "8"   (lambda () (interactive) (my/org-pick-context-all)) ;; Context All
 
@@ -30,7 +30,7 @@
       ;; ─── Dates ──────────────────────────────────────────────────────────
       "s"   #'org-schedule                                              ;; Schedule
       "t"   (lambda () (interactive) (org-schedule nil "."))           ;; Today
-      "r"   (lambda () (interactive) (org-schedule '(4)))              ;; Anytime
+      "r"   (lambda () (interactive) (org-schedule '(4)))              ;; Remove schedule
       "o"   (lambda () (interactive) (org-todo "SOMEDAY"))             ;; Someday
       "D"   #'org-deadline                                              ;; Deadline
 
