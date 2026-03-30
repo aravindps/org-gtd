@@ -53,7 +53,111 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 ### GTD data model
 
-- **Project** = any heading with subtasks (no special marker)
-- **Task** = subtask with a TODO state (`NEXT`, `WAIT`, `SOMEDAY`, `DONE`, `CANCELLED`)
-- **Inbox** = a top-level heading named "Inbox"; tasks there have no state
+- **Area** = level-1 heading with no TODO state — a container, never shown in dashboard
+- **Project** = level-1 heading with `PROJECT` state (or no state if not yet classified) — shown in dashboard left pane
+- **Task** = any heading with a TODO state (`NEXT`, `WAIT`, `SOMEDAY`, `DONE`, `CANCELLED`) inside a project
+- **Inbox** = a top-level heading named "Inbox"; items there have no state and are excluded from projects
 - Single org file pointed to by `my/gtd-file` (user must set before loading)
+
+**Critical distinction**: A level-1 heading with `NEXT`, `WAIT`, or `SOMEDAY` state is a **task**, not a project — it is never shown in the dashboard project list. Only `nil` state or `PROJECT` state at level-1 qualifies as a project. This prevents lone top-level tasks from masquerading as projects.
+
+### GTD workflow nuances
+
+**Inbox usage**: `SPC i` opens the Inbox heading for free-form capture. Items there should be plain headings with no TODO state. They get triaged later into projects/tasks. Do not assign state in Inbox — that would make them look like tasks.
+
+**Project lifecycle**:
+1. Create project: level-1 heading, no state (or set `PROJECT` state explicitly)
+2. Add tasks: child headings with `NEXT`, `WAIT`, or `SOMEDAY` state
+3. Project appears in dashboard left pane while active
+4. Project disappears automatically when future-scheduled, deferred (`WAIT`/`SOMEDAY` with no/future date), or completed/cancelled
+
+**Task states**:
+- `NEXT` — actionable, will show in Today/Anytime/Context views
+- `WAIT` — blocked on something external
+- `SOMEDAY` — deferred, not committed
+- `DONE` / `CANCELLED` — finished; auto-sunk to bottom of parent on state change
+
+**View membership**:
+- **Today**: tasks with `NEXT`/`WAIT` scheduled for today or overdue
+- **Upcoming**: all future-scheduled tasks grouped by day (within 7 days) then by month; excludes `SOMEDAY`; custom buffer not org-agenda
+- **Anytime**: all `NEXT` tasks without a schedule date
+- **Waiting**: all `WAIT` tasks
+- **Someday**: all `SOMEDAY` tasks
+- **Logbook**: all `DONE`/`CANCELLED` tasks
+- **Context**: `NEXT` tasks filtered by a chosen `@tag`
+
+**State labels in views**: Only the Today view shows state labels. All other views suppress state labels via `org-agenda-todo-keyword-format ""`. Logbook uses visual decorations instead: ✓ for DONE, strikethrough on task text for CANCELLED.
+
+**Deferred projects**: A project with `WAIT` or `SOMEDAY` state is hidden from the dashboard unless it has a scheduled date that is today or in the past. This keeps the left pane free of parked items while surfacing them when their scheduled date arrives.
+
+### Project visibility rules (left pane)
+
+| State | Scheduled | Shown |
+|-------|-----------|-------|
+| No state / `PROJECT` | none or past/today | ✓ |
+| No state / `PROJECT` | future | ✗ |
+| `WAIT` / `SOMEDAY` | today or past | ✓ |
+| `WAIT` / `SOMEDAY` | none or future | ✗ |
+| `DONE` / `CANCELLED` | any | ✗ |
+
+### Project indicators (left pane)
+
+- `  Name` — has active tasks (`NEXT`/`WAIT`/`SOMEDAY`)
+- `● Name` — stale (tasks exist but all `DONE`/`CANCELLED`)
+- `? Name` — empty (no child tasks yet)
+
+### Navigation model
+
+- Clicking any view row opens content in the **right pane**
+- Clicking a task in any view opens it **narrowed to its subtree** in the right pane
+- To return to a list view: click it again from the left dashboard
+- `⌘[` / `winner-undo` goes back to the previous window configuration (`winner-mode` must be enabled)
+- `SPC -` / `<p> -` toggles narrow/widen (zoom in and out of current subtree)
+- `⌘→` narrows to subtree; `⌘←` widens (GUI only)
+
+### Known Doom Emacs conflicts and workarounds
+
+- **`SPC z`** — conflicts with Doom's zoom/font-size prefix. Use `SPC -` for zoom toggle instead.
+- **`RET` in normal mode** — Doom binds `RET` to `+org/dwim-at-point` which toggles TODO states. Override with `(map! :after evil-org :map evil-org-mode-map :n "RET" #'org-return)` in `config.el`. Using `evil-define-key` alone is not sufficient because Doom's `evil-org` overrides it.
+- **Theme faces** — Doom's `def-doom-theme` macro does not reliably apply custom faces to org-mode buffers at load time. Buffer-local `face-remap-add-relative` can override individual faces but is fragile. Prefer sticking with a standard Doom theme.
+
+### Implementation notes
+
+- **Project scan** in dashboard uses `org-map-entries` at level 1, checking `org-get-todo-state` for the heading state and `org-get-scheduled-time` for the date. The `show-p` cond must explicitly enumerate valid project states (`nil`, `"PROJECT"`) and return `nil` as the default — a catch-all `(t t)` will incorrectly show level-1 `NEXT` tasks as projects.
+- **Upcoming view** is a custom `*GTD Upcoming*` buffer, not an org-agenda buffer. It scans `gtd.org` directly, groups entries by date, and uses text properties (`mouse-face`, `action`) for click navigation. State labels are stripped during rendering.
+- **Dashboard counts** are computed by a full scan of `gtd.org` on every refresh. Counts refresh on: `org-after-todo-state-change-hook`, `org-schedule`, `org-deadline`, `after-save-hook`, and `evil-insert-state-exit-hook`.
+- **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, the subtree is cut and re-inserted at the end of the parent. This keeps active tasks at the top.
+
+### Keybindings reference
+
+| Action | SPC | Prefix | ⌘ |
+|--------|-----|--------|---|
+| Dashboard | `SPC d` | `<p> d` | `⌘d` |
+| Inbox view | `SPC 0` | `<p> 0` | `⌘0` |
+| Today | `SPC 1` | `<p> 1` | `⌘1` |
+| Upcoming | `SPC 2` | `<p> 2` | `⌘2` |
+| Anytime | `SPC 3` | `<p> 3` | `⌘3` |
+| Waiting | `SPC 4` | `<p> 4` | `⌘4` |
+| Someday | `SPC 5` | `<p> 5` | `⌘5` |
+| Logbook | `SPC 6` | `<p> 6` | `⌘6` |
+| Context (NEXT) | `SPC 7` | `<p> 7` | `⌘7` |
+| Context (all) | `SPC 8` | `<p> 8` | `⌘8` |
+| Open Inbox | `SPC i` | `<p> i` | `⌘i` |
+| New task | `SPC n` | `<p> n` | `⌘n` |
+| New heading | `SPC N` | `<p> N` | `⇧⌘N` |
+| Complete | `SPC k` | `<p> k` | `⌘k` |
+| Cancel | `SPC K` | `<p> K` | `⌥⌘K` |
+| Refile | `SPC m` | `<p> m` | `⇧⌘M` |
+| Archive | `SPC y` | `<p> y` | `⇧⌘Y` |
+| Schedule | `SPC s` | `<p> s` | `⌘s` |
+| Schedule today | `SPC t` | `<p> t` | `⌘t` |
+| Remove schedule | `SPC r` | `<p> r` | `⌘r` |
+| Someday | `SPC o` | `<p> o` | `⌘o` |
+| Deadline | `SPC D` | `<p> D` | `⇧⌘D` |
+| Zoom toggle | `SPC -` | `<p> -` | — |
+| Zoom in (narrow) | — | — | `⌘→` |
+| Zoom out (widen) | — | — | `⌘←` |
+| Go back (winner) | — | — | `⌘[` |
+| Tags | `SPC T` | `<p> T` | `⇧⌘T` |
+| Filter by tag | `SPC /` | `<p> /` | `^⌘F` |
+| Search headings | — | `<p> f` | `⌘f` |

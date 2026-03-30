@@ -7,7 +7,8 @@
 
   ;; ─── Views ────────────────────────────────────────────────────────────────
   (define-key map (kbd "i") #'my/org-open-inbox)                                  ;; Open Inbox to edit
-  (define-key map (kbd "0") #'my/org-dashboard)                                   ;; Dashboard
+  (define-key map (kbd "d") #'my/org-dashboard)                                   ;; Dashboard
+  (define-key map (kbd "0") (lambda () (interactive) (org-agenda nil "0")))       ;; Inbox
   (define-key map (kbd "1") (lambda () (interactive) (org-agenda nil "1")))       ;; Today
   (define-key map (kbd "2") (lambda () (interactive) (org-agenda nil "2")))       ;; Upcoming
   (define-key map (kbd "3") (lambda () (interactive) (org-agenda nil "3")))       ;; Anytime
@@ -18,8 +19,8 @@
   (define-key map (kbd "8") (lambda () (interactive) (my/org-pick-context-all)))  ;; Context All
 
   ;; ─── Create ───────────────────────────────────────────────────────────────
-  (define-key map (kbd "n") #'org-insert-heading-respect-content)   ;; New to-do
-  (define-key map (kbd "N") #'org-insert-heading)                    ;; New heading
+  (define-key map (kbd "n") #'my/org-new-task)                       ;; New NEXT task (child)
+  (define-key map (kbd "N") #'org-insert-heading-respect-content)   ;; New heading (same level)
   (define-key map (kbd "c") (lambda () (interactive)                 ;; New checklist
                                (end-of-line) (newline) (insert "- [ ] ")))
 
@@ -43,8 +44,7 @@
   (define-key map (kbd "D") #'org-deadline)                                          ;; Deadline
 
   ;; ─── Navigate ─────────────────────────────────────────────────────────────
-  (define-key map (kbd "]") #'org-narrow-to-subtree)   ;; Zoom in
-  (define-key map (kbd "[") #'widen)                    ;; Zoom out
+  (define-key map (kbd "-") #'my/org-zoom-toggle)       ;; Toggle zoom (narrow/widen)
 
   ;; ─── Search & Filter ──────────────────────────────────────────────────────
   (define-key map (kbd "f") (lambda () (interactive)    ;; Search headings

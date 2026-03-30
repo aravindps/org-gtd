@@ -7,7 +7,8 @@
       "i"   #'my/org-open-inbox           ;; SPC i — Open Inbox to edit
 
       ;; ─── Views ──────────────────────────────────────────────────────────
-      "0"   #'my/org-dashboard                                   ;; Dashboard
+      "d"   #'my/org-dashboard                                   ;; Dashboard
+      "0"   (lambda () (interactive) (my/org-open-view "0"))    ;; Inbox
       "1"   (lambda () (interactive) (my/org-open-view "1"))    ;; Today
       "2"   (lambda () (interactive) (my/org-open-view "2"))    ;; Upcoming
       "3"   (lambda () (interactive) (my/org-open-view "3"))    ;; Anytime
@@ -18,8 +19,8 @@
       "8"   (lambda () (interactive) (my/org-pick-context-all)) ;; Context All
 
       ;; ─── Create ─────────────────────────────────────────────────────────
-      "n"   #'org-insert-heading-respect-content   ;; New to-do
-      "N"   #'org-insert-heading                    ;; New heading
+      "n"   #'my/org-new-task                        ;; New NEXT task (child)
+      "N"   #'org-insert-heading-respect-content     ;; New heading (same level)
 
       ;; ─── Edit ───────────────────────────────────────────────────────────
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete
@@ -38,7 +39,10 @@
       "T"   #'org-set-tags-command                 ;; Tag picker
       "/"   (lambda () (interactive)               ;; Filter by tag
               (let ((tag (completing-read "Tag: " (org-get-buffer-tags))))
-                (org-tags-view nil tag))))
+                (org-tags-view nil tag)))
+
+      ;; ─── Navigation ─────────────────────────────────────────────────────
+      "-"   #'my/org-zoom-toggle)                  ;; Toggle zoom (narrow/widen)
 
 (provide 'doom-extras)
 ;;; doom-extras.el ends here

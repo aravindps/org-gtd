@@ -6,7 +6,8 @@
   (let ((map org-mode-map))
 
     ;; ─── Views (global — accessible outside org buffers) ──────────────────
-    (global-set-key (kbd "s-0") #'my/org-dashboard)                                 ;; Dashboard
+    (global-set-key (kbd "s-d") #'my/org-dashboard)                                  ;; Dashboard
+    (global-set-key (kbd "s-0") (lambda () (interactive) (org-agenda nil "0")))      ;; Inbox
     (global-set-key (kbd "s-1") (lambda () (interactive) (org-agenda nil "1")))      ;; Today
     (global-set-key (kbd "s-2") (lambda () (interactive) (org-agenda nil "2")))      ;; Upcoming
     (global-set-key (kbd "s-3") (lambda () (interactive) (org-agenda nil "3")))      ;; Anytime
@@ -18,8 +19,8 @@
     (global-set-key (kbd "s-i") #'my/org-open-inbox)                                 ;; Open Inbox
 
     ;; ─── Create ───────────────────────────────────────────────────────────
-    (define-key map (kbd "s-n") #'org-insert-heading-respect-content)   ;; ⌘N New to-do
-    (define-key map (kbd "s-N") #'org-insert-heading)                    ;; ⇧⌘N New heading
+    (define-key map (kbd "s-n") #'my/org-new-task)                        ;; ⌘N New NEXT task (child)
+    (define-key map (kbd "s-N") #'org-insert-heading-respect-content)    ;; ⇧⌘N New heading (same level)
     (define-key map (kbd "M-s-n") (lambda () (interactive)               ;; ⌥⌘N New project
                                     (goto-char (point-max))
                                     (org-insert-heading)
@@ -62,7 +63,8 @@
 
     ;; ─── Navigate ─────────────────────────────────────────────────────────
     (define-key map (kbd "s-<right>") #'org-narrow-to-subtree)  ;; ⌘→ Zoom in
-    (define-key map (kbd "s-[") #'widen)                         ;; ⌘[ Zoom out
+    (define-key map (kbd "s-<left>")  #'widen)                   ;; ⌘← Zoom out
+    (global-set-key (kbd "s-[") #'winner-undo)                   ;; ⌘[ Go back
 
     ;; ─── Search & Filter ──────────────────────────────────────────────────
     (define-key map (kbd "s-f") (lambda () (interactive)         ;; ⌘F Search
