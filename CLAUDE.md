@@ -36,6 +36,21 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 `my/org-move-done-to-bottom` is hooked on `org-after-todo-state-change-hook`. When a task is marked DONE or CANCELLED, it automatically moves to the bottom of its parent.
 
+### Dashboard
+
+`my/org-dashboard` renders a `*GTD*` buffer with live counts for every view. It opens in a 30/70 left/right split — dashboard left, content right. Key behaviours:
+
+- Opens automatically when `gtd.org` is visited or on Emacs startup (`find-file-hook`)
+- `RET` / mouse-click on a row opens that view in the right pane
+- `q` closes the dashboard pane
+- `g` or the Refresh row at the bottom re-renders counts
+- Counts refresh automatically on: todo state change, `org-schedule`, `org-deadline`, file save, and evil insert exit
+- Context tag rows are derived from `#+TAGS:` in `gtd.org` — no code changes needed when tags are added
+
+### Auto-save
+
+`my/gtd-auto-save` runs on an idle timer (2 s) and on `evil-insert-state-exit-hook`. `my/gtd-after-save-refresh` is on `after-save-hook` and triggers `my/gtd-auto-refresh` whenever `gtd.org` is saved.
+
 ### GTD data model
 
 - **Project** = any heading with subtasks (no special marker)

@@ -30,7 +30,7 @@
       ;; ─── Dates ──────────────────────────────────────────────────────────
       "s"   #'org-schedule                                              ;; Schedule
       "t"   (lambda () (interactive) (org-schedule nil "."))           ;; Today
-      "r"   (lambda () (interactive) (org-schedule '(4)))              ;; Remove schedule
+      "r"   (lambda () (interactive) (org-schedule '(4)))              ;; Anytime
       "o"   (lambda () (interactive) (org-todo "SOMEDAY"))             ;; Someday
       "D"   #'org-deadline                                              ;; Deadline
 

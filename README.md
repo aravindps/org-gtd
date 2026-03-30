@@ -8,10 +8,12 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 
 ## Features
 
+- **Live dashboard** — counts for every view in a 30/70 split; click a row to open it
 - **Intuitive keybindings** — `⌘K` complete, `⌘N` add, `⇧⌘M` move, and more
 - **Agenda views** — Inbox / Today / Upcoming / Anytime / Waiting / Someday / Logbook
 - **Dynamic context views** — auto-detects all `@tags`, no code changes when you add new ones
 - **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the bottom automatically
+- **Auto-save** — saves on idle and on leaving insert mode; dashboard refreshes on every save
 - **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
 - **Flat structure** — a heading with subtasks is a project, no special marking needed
 
@@ -113,6 +115,20 @@ Doom users: run `doom sync` before restarting.
 
 ---
 
+## Dashboard
+
+Opening `gtd.org` (or pressing `SPC 0` / `⌘0`) shows a live count dashboard in the left pane. Click or press `RET` on any row to open that view on the right.
+
+| Key | Action |
+|-----|--------|
+| `RET` / click | Open view in right pane |
+| `g` or Refresh row | Re-render counts |
+| `q` | Close dashboard pane |
+
+Counts update automatically whenever you change a task state, reschedule, or save the file.
+
+---
+
 ## How It Works
 
 **Projects** = any heading that has subtasks. No state on the heading itself.
@@ -173,7 +189,7 @@ All actions are available across all binding systems simultaneously.
 | Action | ⌘ (GUI) | C-c g / F5 | SPC (Doom) |
 |--------|---------|------------|------------|
 | Open Inbox | `⌘ i` | `… i` | `SPC i` |
-| Inbox view | `⌘ 0` | `… 0` | `SPC 0` |
+| Dashboard | `⌘ 0` | `… 0` | `SPC 0` |
 | Today | `⌘ 1` | `… 1` | `SPC 1` |
 | Upcoming (7 days) | `⌘ 2` | `… 2` | `SPC 2` |
 | Anytime (NEXT, no date) | `⌘ 3` | `… 3` | `SPC 3` |
