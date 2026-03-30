@@ -270,7 +270,32 @@
               (insert "✓ "))))))
       (forward-line 1))))
 
+(defun my/org-agenda-empty-state ()
+  "Insert a placeholder message when the agenda buffer has no entries."
+  (save-excursion
+    (goto-char (point-min))
+    ;; Skip the header line(s); look for any task entry
+    (let ((header-end (or (re-search-forward "^-+$" nil t) (point-min))))
+      (goto-char header-end)
+      (forward-line 1)
+      (when (eobp)
+        (let ((inhibit-read-only t)
+              (msg (cond
+                    ((string-match-p "Today\\|agenda" (or org-agenda-overriding-header ""))
+                     "\n  Nothing due today.\n")
+                    ((string-match-p "Anytime" (or org-agenda-overriding-header ""))
+                     "\n  No actionable tasks.\n")
+                    ((string-match-p "Waiting" (or org-agenda-overriding-header ""))
+                     "\n  Nothing waiting.\n")
+                    ((string-match-p "Someday" (or org-agenda-overriding-header ""))
+                     "\n  No someday items.\n")
+                    ((string-match-p "Logbook" (or org-agenda-overriding-header ""))
+                     "\n  No completed tasks.\n")
+                    (t "\n  No tasks.\n"))))
+          (insert (propertize msg 'face 'shadow)))))))
+
 (add-hook 'org-agenda-finalize-hook #'my/org-agenda-apply-logbook-faces)
+(add-hook 'org-agenda-finalize-hook #'my/org-agenda-empty-state)
 (add-hook 'org-agenda-mode-hook (lambda ()
                                   (setq-local mode-line-format nil)
                                   (setq-local cursor-type nil)))
