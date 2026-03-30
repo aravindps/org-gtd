@@ -31,8 +31,17 @@
 
 (setq org-agenda-custom-commands
       '(;; 0 — Inbox
-        ("0" "Inbox" tags "LEVEL=2&Inbox"
-         ((org-agenda-overriding-header "Inbox")))
+        ("0" "Inbox" tags "LEVEL=2"
+         ((org-agenda-overriding-header "Inbox")
+          (org-agenda-files (list my/gtd-file))
+          (org-agenda-skip-function
+           '(lambda ()
+              (unless (and (string= (save-excursion
+                                      (org-up-heading-safe)
+                                      (org-get-heading t t t t))
+                                    "Inbox")
+                           (not (org-get-todo-state)))
+                (org-end-of-subtree t))))))
 
         ;; 1 — Today
         ("1" "Today" agenda ""
@@ -200,6 +209,7 @@ Reuses the bottom pane if one already exists."
           (evil-local-set-key 'normal (kbd "q") #'delete-window))))))
 
 (with-eval-after-load 'org-agenda
+  (define-key org-agenda-mode-map (kbd "q") #'ignore)
   (define-key org-agenda-mode-map [mouse-1]
     (lambda (event)
       (interactive "e")
@@ -209,7 +219,8 @@ Reuses the bottom pane if one already exists."
 (with-eval-after-load 'evil
   (with-eval-after-load 'org-agenda
     (evil-define-key '(normal motion) org-agenda-mode-map
-      (kbd "RET") #'my/org-agenda-goto-zoomed)))
+      (kbd "RET") #'my/org-agenda-goto-zoomed
+      (kbd "q")   #'ignore)))
 
 ;; ─── Smart view opener ───────────────────────────────────────────────────────
 
@@ -227,13 +238,13 @@ Reuses the bottom pane if one already exists."
   "Live count dashboard for org-gtd. RET opens the view at point.")
 (define-key my/gtd-dashboard-mode-map (kbd "RET")   #'my/gtd-dashboard-activate)
 (define-key my/gtd-dashboard-mode-map (kbd "g")     #'my/org-dashboard)
-(define-key my/gtd-dashboard-mode-map (kbd "q")     #'delete-window)
+(define-key my/gtd-dashboard-mode-map (kbd "q")     #'ignore)
 (define-key my/gtd-dashboard-mode-map [mouse-1]     #'my/gtd-dashboard-mouse-activate)
 ;; Evil-mode: bind RET in normal state so it isn't shadowed by evil-ret
 (with-eval-after-load 'evil
   (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "RET") #'my/gtd-dashboard-activate)
   (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "g")   #'my/org-dashboard)
-  (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "q")   #'delete-window))
+  (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "q")   #'ignore))
 
 (defvar my/gtd-dashboard--active-ov nil
   "Overlay marking the currently active dashboard row.")
