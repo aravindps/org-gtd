@@ -411,6 +411,7 @@
         (let ((inhibit-read-only t))
           (erase-buffer)
           (special-mode)
+          (setq-local mode-line-format nil)
           (use-local-map (copy-keymap special-mode-map))
           (local-set-key (kbd "q") #'delete-window)
           (local-set-key (kbd "RET") #'my/org-upcoming-goto)
@@ -599,8 +600,6 @@
                                     (let ((org-agenda-overriding-header "No context")
                                           (org-agenda-todo-keyword-format ""))
                                       (org-tags-view t m)))))))
-          (insert "\n")
-          (my/org--dash-row "Refresh" "" #'my/org-dashboard)
           (insert "\n")
           (goto-char (point-min))))
       ;; Setup windows only on first open; refresh just updates buffer content
