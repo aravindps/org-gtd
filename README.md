@@ -21,21 +21,25 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 
 ## Screenshots
 
-| Today | Anytime |
-|-------|---------|
-| ![Today](screenshots/Today.png) | ![Anytime](screenshots/Anytime.png) |
+| Navigation Pane | Today |
+|----------------|-------|
+| ![Navigation Pane](screenshots/Navigation%20Pane.png) | ![Today](screenshots/Today.png) |
 
-| Upcoming | Waiting |
-|----------|---------|
-| ![Upcoming](screenshots/Upcoming%207%20days.png) | ![Waiting](screenshots/Waiting.png) |
+| Anytime | Upcoming |
+|---------|----------|
+| ![Anytime](screenshots/Anytime.png) | ![Upcoming](screenshots/Upcoming%207%20days.png) |
 
-| Someday | Logbook |
+| Waiting | Someday |
 |---------|---------|
-| ![Someday](screenshots/Someday.png) | ![Logbook](screenshots/Logbook.png) |
+| ![Waiting](screenshots/Waiting.png) | ![Someday](screenshots/Someday.png) |
 
-| Context view | Edit view |
-|-------------|-----------|
-| ![Context view](screenshots/Context%20view.png) | ![Edit view](screenshots/Edit%20view.png) |
+| Logbook | Context view |
+|---------|-------------|
+| ![Logbook](screenshots/Logbook.png) | ![Context view](screenshots/Context%20view.png) |
+
+| Edit view | |
+|-----------|--|
+| ![Edit view](screenshots/Edit%20view.png) | |
 
 ---
 
