@@ -183,13 +183,19 @@ The context picker auto-detects them — no code changes needed when you add new
 
 ### During the day — adding tasks
 
-**Know the project?** Open `gtd.org`, navigate to the project, press `⌘ N` / `C-c g n`.
+**Know the project?** Open `gtd.org`, navigate to the project, press `⌘N` / `C-c g n`.
 
-**Quick thought?** Press `SPC i` / `C-c g i` → narrows to Inbox → type task → `⌘ [` to exit.
+**Quick thought?** Press `SPC i` / `C-c g i` → narrows to Inbox → type task → `⌘-` / `C-c g -` to zoom out when done.
+
+### Triaging Inbox
+
+Open Inbox view (`SPC 0` / `C-c g 0`), navigate to an item, then:
+- `⇧⌘M` / `C-c g m` — refile to an existing project
+- `⌘N` / `C-c g n` — convert to a NEXT task under a project
 
 ### Finishing a task
 
-`⌘ K` / `C-c g k` → marks DONE, auto-sinks to bottom of project.
+`⌘K` / `C-c g k` → marks DONE, auto-sinks to bottom of project.
 
 Blocked? `S-Right` to cycle to `WAIT`.
 
