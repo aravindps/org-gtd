@@ -91,20 +91,32 @@
 ;; ─── New task ────────────────────────────────────────────────────────────────
 
 (defun my/org-new-task ()
-  "Insert a new child heading with NEXT state under the current heading."
+  "Insert a new child heading with NEXT state after the parent heading's body text."
+  (interactive)
+  (org-back-to-heading t)
+  (when (org-get-todo-state)
+    (org-up-heading-safe))
+  (let ((level (org-outline-level)))
+    (forward-line 1)
+    (while (and (not (eobp))
+                (not (looking-at org-heading-regexp)))
+      (forward-line 1))
+    (insert (make-string (1+ level) ?*) " NEXT \n")
+    (forward-line -1)
+    (end-of-line)))
+
+(defun my/org-new-heading ()
+  "Insert a new child heading with NEXT state after the current heading's body text."
   (interactive)
   (org-back-to-heading t)
   (let ((level (org-outline-level)))
-    (end-of-line)
-    (newline)
-    (insert (make-string (1+ level) ?*) " ")
-    (org-todo "NEXT")))
-
-(defun my/org-new-heading ()
-  "Insert a new heading at the same level right after the current heading, with NEXT state."
-  (interactive)
-  (org-insert-heading)
-  (org-todo "NEXT"))
+    (forward-line 1)
+    (while (and (not (eobp))
+                (not (looking-at org-heading-regexp)))
+      (forward-line 1))
+    (insert (make-string (1+ level) ?*) " NEXT \n")
+    (forward-line -1)
+    (end-of-line)))
 
 ;; ─── Inbox ───────────────────────────────────────────────────────────────────
 
