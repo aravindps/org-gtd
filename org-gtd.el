@@ -111,6 +111,8 @@
   "Insert a new child heading with NEXT state after the current heading's body text."
   (interactive)
   (org-back-to-heading t)
+  (when (member (org-get-todo-state) '("DONE" "CANCELLED"))
+    (user-error "Heading is closed (%s). Re-open it first." (org-get-todo-state)))
   (let ((level (org-outline-level)))
     (forward-line 1)
     (while (and (not (eobp))
