@@ -54,12 +54,6 @@
     (define-key map (kbd "s-r") (lambda () (interactive) (org-schedule '(4))))           ;; ⌘R Anytime
     (define-key map (kbd "s-o") (lambda () (interactive) (org-todo "SOMEDAY")))          ;; ⌘O Someday
     (define-key map (kbd "s-D") #'org-deadline)                                          ;; ⇧⌘D Deadline
-    (define-key map (kbd "C-]") (lambda () (interactive) (org-timestamp-change 1 'day))) ;; ^] +1 day
-    (define-key map (kbd "C-[") (lambda () (interactive) (org-timestamp-change -1 'day)));; ^[ -1 day
-    (define-key map (kbd "C-}") (lambda () (interactive) (org-timestamp-change 7 'day))) ;; ^} +1 week
-    (define-key map (kbd "C-{") (lambda () (interactive) (org-timestamp-change -7 'day)));; ^{ -1 week
-    (define-key map (kbd "C-.") (lambda () (interactive) (org-timestamp-change 1 'day))) ;; ^. deadline +1
-    (define-key map (kbd "C-,") (lambda () (interactive) (org-timestamp-change -1 'day)));; ^, deadline -1
 
     ;; ─── Navigate ─────────────────────────────────────────────────────────
     (define-key map (kbd "s-<right>") #'org-narrow-to-subtree)  ;; ⌘→ Zoom in

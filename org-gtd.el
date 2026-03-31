@@ -9,79 +9,81 @@
 (defvar my/gtd-file nil
   "Path to your GTD org file. Set before loading: (setq my/gtd-file \"~/path/to/gtd.org\")")
 
-(setq org-agenda-files (list my/gtd-file))
+(with-eval-after-load 'org
 
-;; ─── Logging ─────────────────────────────────────────────────────────────────
+  ;; ─── Files ─────────────────────────────────────────────────────────────────
+  (setq org-agenda-files (list my/gtd-file))
 
-(setq org-log-done 'time)
+  ;; ─── Agenda window behaviour ───────────────────────────────────────────────
+  (setq org-agenda-window-setup 'current-window)
 
-;; ─── Todo keywords ───────────────────────────────────────────────────────────
+  ;; ─── Logging ───────────────────────────────────────────────────────────────
+  (setq org-log-done 'time)
 
-(setq org-todo-keywords
-      '((sequence "PROJECT" "NEXT" "WAIT" "SOMEDAY" "|" "DONE" "CANCELLED")))
+  ;; ─── Todo keywords ─────────────────────────────────────────────────────────
+  (setq org-todo-keywords
+        '((sequence "PROJECT" "NEXT" "WAIT" "SOMEDAY" "|" "DONE" "CANCELLED")))
 
-;; ─── Refile ──────────────────────────────────────────────────────────────────
+  ;; ─── Refile ────────────────────────────────────────────────────────────────
+  (setq org-refile-targets
+        (list (list my/gtd-file :maxlevel 2)))
+  (setq org-refile-use-outline-path t)
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
 
-(setq org-refile-targets
-      (list (list my/gtd-file :maxlevel 2)))
-(setq org-refile-use-outline-path t)
-(setq org-outline-path-complete-in-steps nil)
-(setq org-refile-allow-creating-parent-nodes 'confirm)
+  ;; ─── Agenda Views ──────────────────────────────────────────────────────────
+  (setq org-agenda-custom-commands
+        '(;; 0 — Inbox
+          ("0" "Inbox" tags "LEVEL=2"
+           ((org-agenda-overriding-header "Inbox")
+            (org-agenda-files (list my/gtd-file))
+            (org-agenda-skip-function
+             '(lambda ()
+                (unless (and (string= (save-excursion
+                                        (org-up-heading-safe)
+                                        (org-get-heading t t t t))
+                                      "Inbox")
+                             (not (org-get-todo-state)))
+                  (org-end-of-subtree t))))))
 
-;; ─── Agenda Views ────────────────────────────────────────────────────────────
+          ;; 1 — Today
+          ("1" "Today" agenda ""
+           ((org-agenda-span 1)
+            (org-agenda-start-day nil)
+            (org-agenda-overriding-header "Today")
+            (org-agenda-prefix-format '((agenda . "  %(my/org-agenda-state-prefix) ")))
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
 
-(setq org-agenda-custom-commands
-      '(;; 0 — Inbox
-        ("0" "Inbox" tags "LEVEL=2"
-         ((org-agenda-overriding-header "Inbox")
-          (org-agenda-files (list my/gtd-file))
-          (org-agenda-skip-function
-           '(lambda ()
-              (unless (and (string= (save-excursion
-                                      (org-up-heading-safe)
-                                      (org-get-heading t t t t))
-                                    "Inbox")
-                           (not (org-get-todo-state)))
-                (org-end-of-subtree t))))))
+          ;; 2 — Upcoming
+          ("2" "Upcoming" tags-todo "SCHEDULED>=\"<today>\""
+           ((org-agenda-overriding-header "Upcoming")
+            (org-agenda-sorting-strategy '(scheduled-up))
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
 
-        ;; 1 — Today
-        ("1" "Today" agenda ""
-         ((org-agenda-span 1)
-          (org-agenda-start-day nil)
-          (org-agenda-overriding-header "Today")
-          (org-agenda-prefix-format '((agenda . "  %(my/org-agenda-state-prefix) ")))
-          (org-agenda-skip-function
-           '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
+          ;; 3 — Anytime
+          ("3" "Anytime" tags-todo "TODO=\"NEXT\""
+           ((org-agenda-overriding-header "Anytime")
+            (org-agenda-todo-keyword-format "")
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'scheduled 'deadline))))
 
-        ;; 2 — Upcoming
-        ("2" "Upcoming" tags-todo "SCHEDULED>=\"<today>\""
-         ((org-agenda-overriding-header "Upcoming")
-          (org-agenda-sorting-strategy '(scheduled-up))
-          (org-agenda-skip-function
-           '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
+          ;; 4 — Waiting
+          ("4" "Waiting" todo "WAIT"
+           ((org-agenda-overriding-header "Waiting — Blocked")
+            (org-agenda-todo-keyword-format "")))
 
-        ;; 3 — Anytime
-        ("3" "Anytime" tags-todo "TODO=\"NEXT\""
-         ((org-agenda-overriding-header "Anytime")
-          (org-agenda-todo-keyword-format "")
-          (org-agenda-skip-function
-           '(org-agenda-skip-entry-if 'scheduled 'deadline))))
+          ;; 5 — Someday
+          ("5" "Someday" todo "SOMEDAY"
+           ((org-agenda-overriding-header "Someday")
+            (org-agenda-todo-keyword-format "")))
 
-        ;; 4 — Waiting
-        ("4" "Waiting" todo "WAIT"
-         ((org-agenda-overriding-header "Waiting — Blocked")
-          (org-agenda-todo-keyword-format "")))
-
-        ;; 5 — Someday
-        ("5" "Someday" todo "SOMEDAY"
-         ((org-agenda-overriding-header "Someday")
-          (org-agenda-todo-keyword-format "")))
-
-        ;; 6 — Logbook
-        ("6" "Logbook" todo "DONE|CANCELLED"
-         ((org-agenda-overriding-header "Logbook — Completed")
-          (org-agenda-todo-keyword-format "")
-          (org-agenda-sorting-strategy '(timestamp-down))))))
+          ;; 6 — Logbook
+          ("6" "Logbook" todo "DONE|CANCELLED"
+           ((org-agenda-overriding-header "Logbook — Completed")
+            (org-agenda-todo-keyword-format "")
+            (org-agenda-sorting-strategy '(timestamp-down)))))))
 
 ;; ─── New task ────────────────────────────────────────────────────────────────
 
@@ -167,7 +169,7 @@
              (string= (expand-file-name (buffer-file-name))
                       (expand-file-name my/gtd-file))
              (not (get-buffer-window "*GTD*")))
-    (my/org-dashboard)))
+    (my/org-dashboard--open)))
 
 (add-hook 'find-file-hook #'my/gtd-maybe-open-dashboard)
 
@@ -200,7 +202,7 @@
   "Refresh dashboard counts and agenda view after a task state change."
   ;; Refresh dashboard buffer in place (no window changes)
   (when (get-buffer-window "*GTD*")
-    (my/org-dashboard))
+    (my/org-dashboard--open))
   ;; Refresh agenda views in place without re-prompting
   (dolist (win (window-list))
     (with-current-buffer (window-buffer win)
@@ -330,13 +332,13 @@
   "Live count dashboard for org-gtd. RET opens the view at point."
   (setq-local mode-line-format nil))
 (define-key my/gtd-dashboard-mode-map (kbd "RET")   #'my/gtd-dashboard-activate)
-(define-key my/gtd-dashboard-mode-map (kbd "g")     #'my/org-dashboard)
+(define-key my/gtd-dashboard-mode-map (kbd "g")     #'my/org-dashboard--open)
 (define-key my/gtd-dashboard-mode-map (kbd "q")     #'ignore)
 (define-key my/gtd-dashboard-mode-map [mouse-1]     #'my/gtd-dashboard-mouse-activate)
 ;; Evil-mode: bind RET in normal state so it isn't shadowed by evil-ret
 (with-eval-after-load 'evil
   (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "RET") #'my/gtd-dashboard-activate)
-  (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "g")   #'my/org-dashboard)
+  (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "g")   #'my/org-dashboard--open)
   (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "q")   #'ignore))
 
 (defvar my/gtd-dashboard--active-ov nil
@@ -487,8 +489,15 @@
       (goto-char (point-min)))))
 
 (defun my/org-dashboard ()
-  "Show a live count dashboard for all GTD views. Press RET to open a view."
+  "Toggle the GTD dashboard. If visible, close it; otherwise open it."
   (interactive)
+  (let ((dash-win (get-buffer-window "*GTD*")))
+    (if dash-win
+        (delete-window dash-win)
+      (my/org-dashboard--open))))
+
+(defun my/org-dashboard--open ()
+  "Open and render the GTD dashboard."
   (let* ((context-tags (my/org-context-tags))
          (today-d (let ((d (decode-time))) (list (nth 4 d) (nth 3 d) (nth 5 d))))
          (now-f   (float-time))
