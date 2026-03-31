@@ -17,7 +17,7 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 - **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the bottom automatically
 - **Auto-save** — saves on idle and on leaving insert mode; dashboard refreshes on every save
 - **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
-- **Flat structure** — a heading with subtasks is a project, no special marking needed
+- **Clear project states** — `PROJECT` state marks active projects; indicators show active (`  `), stale (`●`), or empty (`?`)
 
 ---
 
@@ -74,7 +74,7 @@ git clone https://github.com/<you>/org-gtd ~/code/org-gtd
 
 ```org
 #+TITLE: GTD
-#+TODO: NEXT WAIT SOMEDAY | DONE CANCELLED
+#+TODO: PROJECT NEXT WAIT SOMEDAY | DONE CANCELLED
 #+TAGS: @home(h) @office(f) @standup(s) @ask(a)
 
 * Inbox
@@ -127,13 +127,14 @@ Doom users: run `doom sync` before restarting.
 
 ## Dashboard
 
-Opening `gtd.org` (or pressing `SPC /` / `⌘/`) shows a live count dashboard in the left pane. Click or press `RET` on any row to open that view on the right.
+Opening `gtd.org` (or pressing `SPC /` / `⌘/`) shows a live count dashboard in the left pane. Press the same key again to close it. Click or press `RET` on any row to open that view on the right.
 
 | Key | Action |
 |-----|--------|
 | `RET` / click | Open view in right pane |
 | `g` | Re-render counts |
 | `q` | Close dashboard pane |
+| `SPC /` / `⌘/` | Toggle dashboard open/closed |
 
 Counts update automatically whenever you change a task state, reschedule, or save the file.
 
@@ -141,9 +142,9 @@ Counts update automatically whenever you change a task state, reschedule, or sav
 
 ## How It Works
 
-**Projects** = any heading that has subtasks. No state on the heading itself.
+**Projects** = level-1 headings with `PROJECT` state (or no state). Has subtask children.
 **Tasks** = subtask headings with a state (`NEXT`, `WAIT`, `SOMEDAY`).
-**Inbox** = raw unprocessed items. No state needed.
+**Inbox** = raw unprocessed items under `* Inbox`. No state needed.
 
 ### Task States
 
@@ -246,12 +247,6 @@ All actions are available across all binding systems simultaneously.
 | `⌘ R` | `… r` | `SPC r` | Anytime (remove schedule) |
 | `⌘ O` | `… o` | `SPC o` | Someday |
 | `⇧ ⌘ D` | `… D` | `SPC D` | Deadline |
-| `^ ]` | — | — | Schedule +1 day |
-| `^ [` | — | — | Schedule −1 day |
-| `^ }` | — | — | Schedule +1 week |
-| `^ {` | — | — | Schedule −1 week |
-| `^ .` | — | — | Deadline +1 day |
-| `^ ,` | — | — | Deadline −1 day |
 
 ### Navigate
 
@@ -309,6 +304,29 @@ It covers the full GTD structure:
 | **Context tags** | `@home`, `@office`, `@email`, `@phone`, `@errands` |
 
 When you open `demo.org`, the dashboard opens automatically and counts are live. Switch back to your real file by updating `my/gtd-file` and reloading.
+
+### Try without any config (vanilla Emacs)
+
+Launch Emacs with no config:
+```sh
+emacs -Q
+# or for GUI on macOS:
+/Applications/Emacs.app/Contents/MacOS/Emacs -Q
+```
+
+Then paste this into `M-:` (`M-x eval-expression`):
+```elisp
+(progn
+  (require 'org)
+  (setq my/gtd-file "~/code/org-gtd/demo.org")
+  (load "~/code/org-gtd/org-gtd.el")
+  (load "~/code/org-gtd/bindings-cmd.el")
+  (load "~/code/org-gtd/bindings-ccg.el")
+  (load "~/code/org-gtd/bindings-f5.el")
+  (find-file my/gtd-file))
+```
+
+The dashboard opens automatically. No Doom, no init file needed.
 
 ---
 
