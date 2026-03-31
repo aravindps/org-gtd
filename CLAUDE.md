@@ -144,23 +144,23 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Context (all) | `SPC 8` | `<p> 8` | `⌘8` |
 | Open Inbox | `SPC i` | `<p> i` | `⌘i` |
 | New task | `SPC n` | `<p> n` | `⌘n` |
-| New heading | `SPC N` | `<p> N` | `⇧⌘N` |
-| Complete | `SPC k` | `<p> k` | `⌘k` |
-| Cancel | `SPC K` | `<p> K` | `⌥⌘K` |
-| Duplicate | `SPC d` | `<p> d` | `⌘d` |
-| Refile | `SPC m` | `<p> m` | `⇧⌘M` |
-| Archive | `SPC y` | `<p> y` | `⇧⌘Y` |
-| Schedule | `SPC s` | `<p> s` | `⌘s` |
-| Schedule today | `SPC t` | `<p> t` | `⌘t` |
-| Remove schedule | `SPC r` | `<p> r` | `⌘r` |
-| Someday | `SPC o` | `<p> o` | `⌘o` |
-| Deadline | `SPC D` | `<p> D` | `⇧⌘D` |
+| New heading | `SPC N` | `<p> N` | `⌘ N` |
+| Complete | `SPC k` | `<p> k` | `⌘ k` |
+| Cancel | `SPC K` | `<p> K` | `⌥ ⌘ k` |
+| Duplicate | `SPC d` | `<p> d` | `⌘ d` |
+| Refile | `SPC m` | `<p> m` | `⌘ M` |
+| Archive | `SPC y` | `<p> y` | `⌘ Y` |
+| Schedule | `SPC s` | `<p> s` | `⌘ s` |
+| Schedule today | `SPC t` | `<p> t` | `⌘ t` |
+| Remove schedule | `SPC r` | `<p> r` | `⌘ r` |
+| Someday | `SPC o` | `<p> o` | `⌘ o` |
+| Deadline | `SPC D` | `<p> D` | `⌘ D` |
 | Zoom toggle | `SPC -` | `<p> -` | — |
-| Zoom in (narrow) | — | — | `⌘→` |
-| Zoom out (widen) | — | — | `⌘←` |
-| Go back (winner) | — | — | `⌘[` |
-| Tags | `SPC T` | `<p> T` | `⇧⌘T` |
-| Search headings | — | `<p> f` | `⌘f` |
+| Zoom in (narrow) | — | — | `⌘ →` |
+| Zoom out (widen) | — | — | `⌘ ←` |
+| Go back (winner) | — | — | `⌘ [` |
+| Tags | `SPC T` | `<p> T` | `⌘ T` |
+| Search headings | — | `<p> f` | `⌘ f` |
 
 ---
 

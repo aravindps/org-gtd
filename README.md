@@ -11,7 +11,7 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 ## Features
 
 - **Live dashboard** — counts for every view in a 30/70 split; click a row to open it
-- **Intuitive keybindings** — `⌘K` complete, `⌘N` add, `⇧⌘M` move, and more
+- **Intuitive keybindings** — `⌘ k` complete, `⌘ n` add, `⌘ M` move, and more
 - **Agenda views** — Inbox / Today / Upcoming / Anytime / Waiting / Someday / Logbook
 - **Dynamic context views** — auto-detects all `@tags`, no code changes when you add new ones
 - **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the bottom automatically
@@ -183,19 +183,19 @@ The context picker auto-detects them — no code changes needed when you add new
 
 ### During the day — adding tasks
 
-**Know the project?** Open `gtd.org`, navigate to the project, press `⌘N` / `C-c g n`.
+**Know the project?** Open `gtd.org`, navigate to the project, press `⌘ n` / `C-c g n`.
 
-**Quick thought?** Press `SPC i` / `C-c g i` → narrows to Inbox → type task → `⌘-` / `C-c g -` to zoom out when done.
+**Quick thought?** Press `SPC i` / `C-c g i` → narrows to Inbox → type task → `⌘ -` / `C-c g -` to zoom out when done.
 
 ### Triaging Inbox
 
 Open Inbox view (`SPC 0` / `C-c g 0`), navigate to an item, then:
-- `⇧⌘M` / `C-c g m` — refile to an existing project
-- `⌘N` / `C-c g n` — convert to a NEXT task under a project
+- `⌘ M` / `C-c g m` — refile to an existing project
+- `⌘ n` / `C-c g n` — convert to a NEXT task under a project
 
 ### Finishing a task
 
-`⌘K` / `C-c g k` → marks DONE, auto-sinks to bottom of project.
+`⌘ k` / `C-c g k` → marks DONE, auto-sinks to bottom of project.
 
 Blocked? `S-Right` to cycle to `WAIT`.
 
@@ -225,25 +225,25 @@ All actions are available across all binding systems simultaneously.
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⌘ N` | `… n` | `SPC n` | New to-do |
-| `⇧ ⌘ N` | `… N` | `SPC N` | New heading |
-| `⇧ ⌘ C` | `… c` | — | New checklist item |
-| `⌥ ⌘ N` | — | — | New project (top-level) |
+| `⌘ n` | `… n` | `SPC n` | New to-do |
+| `⌘ N` | `… N` | `SPC N` | New heading |
+| `⌘ C` | `… c` | — | New checklist item |
+| `⌥ ⌘ n` | — | — | New project (top-level) |
 
 ### Edit
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⌘ K` | `… k` | `SPC k` | Complete → auto-sinks |
-| `⌥ ⌘ K` | `… K` | `SPC K` | Cancel → auto-sinks |
+| `⌘ k` | `… k` | `SPC k` | Complete → auto-sinks |
+| `⌥ ⌘ k` | `… K` | `SPC K` | Cancel → auto-sinks |
 | `⌘ d` | `… d` | `SPC d` | Duplicate subtree |
-| `⇧ ⌘ Y` | `… y` | `SPC y` | Archive subtree |
+| `⌘ Y` | `… y` | `SPC y` | Archive subtree |
 
 ### Move
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⇧ ⌘ M` | `… m` | `SPC m` | Refile to project |
+| `⌘ M` | `… m` | `SPC m` | Refile to project |
 | `⌘ ↑` | `… p` | — | Move item up |
 | `⌘ ↓` | `… P` | — | Move item down |
 | `⌥ ⌘ ↑` | — | — | Move to top |
@@ -253,11 +253,11 @@ All actions are available across all binding systems simultaneously.
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⌘ S` | `… s` | `SPC s` | Schedule (date picker) |
-| `⌘ T` | `… t` | `SPC t` | Start Today |
-| `⌘ R` | `… r` | `SPC r` | Anytime (remove schedule) |
-| `⌘ O` | `… o` | `SPC o` | Someday |
-| `⇧ ⌘ D` | `… D` | `SPC D` | Deadline |
+| `⌘ s` | `… s` | `SPC s` | Schedule (date picker) |
+| `⌘ t` | `… t` | `SPC t` | Start Today |
+| `⌘ r` | `… r` | `SPC r` | Anytime (remove schedule) |
+| `⌘ o` | `… o` | `SPC o` | Someday |
+| `⌘ D` | `… D` | `SPC D` | Deadline |
 
 ### Navigate
 
@@ -267,13 +267,13 @@ All actions are available across all binding systems simultaneously.
 | `⌘ ←` | — | — | Widen to full file |
 | — | `… -` | `SPC -` | Toggle narrow/widen |
 | `⌘ [` | — | — | Go back (winner-undo) |
-| `⌘ F` | `… f` | — | Search headings |
+| `⌘ f` | `… f` | — | Search headings |
 
 ### Tags
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⇧ ⌘ T` / `^ ⌘ T` | `… T` | `SPC T` | Tag picker |
+| `⌘ T` / `^ ⌘ T` | `… T` | `SPC T` | Tag picker |
 
 **Tag match syntax:**
 
@@ -288,9 +288,9 @@ All actions are available across all binding systems simultaneously.
 | Key | Action |
 |-----|--------|
 | `S-Right` / `S-Left` | Cycle state forward / back |
-| `⌘ K` / `… k` | → DONE |
-| `⌥ ⌘ K` / `… K` | → CANCELLED |
-| `⌘ O` / `… o` | → SOMEDAY |
+| `⌘ k` / `… k` | → DONE |
+| `⌥ ⌘ k` / `… K` | → CANCELLED |
+| `⌘ o` / `… o` | → SOMEDAY |
 
 ---
 
