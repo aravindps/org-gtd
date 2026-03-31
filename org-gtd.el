@@ -96,6 +96,8 @@
   (org-back-to-heading t)
   (when (org-get-todo-state)
     (org-up-heading-safe))
+  (when (member (org-get-todo-state) '("DONE" "CANCELLED"))
+    (user-error "Project is closed (%s). Re-open it first." (org-get-todo-state)))
   (let ((level (org-outline-level)))
     (forward-line 1)
     (while (and (not (eobp))
