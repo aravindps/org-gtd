@@ -9,6 +9,9 @@
 (defvar my/gtd-file nil
   "Path to your GTD org file. Set before loading: (setq my/gtd-file \"~/path/to/gtd.org\")")
 
+;; ─── Winner mode ─────────────────────────────────────────────────────────────
+(winner-mode 1)
+
 (with-eval-after-load 'org
 
   ;; ─── Files ─────────────────────────────────────────────────────────────────

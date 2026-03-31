@@ -98,7 +98,11 @@ Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on firs
 (load "~/code/org-gtd/bindings-cmd.el")  ;; ⌘ keys (GUI/macOS)
 (load "~/code/org-gtd/bindings-ccg.el")  ;; C-c g prefix
 (load "~/code/org-gtd/bindings-f5.el")   ;; F5 prefix
-(load "~/code/org-gtd/bindings-doom.el")   ;; SPC leader (Doom only)
+(load "~/code/org-gtd/bindings-doom.el") ;; SPC leader (Doom only)
+
+;; Doom overrides org-agenda-files — re-assert it after org loads
+(after! org
+  (setq org-agenda-files (list my/gtd-file)))
 ```
 
 **Vanilla Emacs — GUI** (`~/.emacs` or `~/.emacs.d/init.el`):
@@ -252,8 +256,9 @@ All actions are available across all binding systems simultaneously.
 
 | ⌘ (GUI) | C-c g / F5 | Action |
 |---------|------------|--------|
-| `⌘ →` | `… ]` | Zoom into subtree |
-| `⌘ [` | `… [` | Zoom out *(⌘← grabbed by macOS)* |
+| `⌘ →` | `… ]` | Narrow to subtree |
+| `⌘ [` | `… [` | Widen to full file |
+| `⌘ -` | `… -` | Toggle narrow/widen |
 | `⌘ F` | `… f` | Search headings |
 
 ### Tags
