@@ -205,6 +205,7 @@ All actions are available across all binding systems simultaneously.
 |--------|---------|------------|------------|
 | Open Inbox | `⌘ i` | `… i` | `SPC i` |
 | Dashboard | `⌘ /` | `… /` | `SPC /` |
+| Inbox view | `⌘ 0` | `… 0` | `SPC 0` |
 | Today | `⌘ 1` | `… 1` | `SPC 1` |
 | Upcoming (7 days) | `⌘ 2` | `… 2` | `SPC 2` |
 | Anytime (NEXT, no date) | `⌘ 3` | `… 3` | `SPC 3` |
@@ -254,18 +255,19 @@ All actions are available across all binding systems simultaneously.
 
 ### Navigate
 
-| ⌘ (GUI) | C-c g / F5 | Action |
-|---------|------------|--------|
-| `⌘ →` | `… ]` | Narrow to subtree |
-| `⌘ [` | `… [` | Widen to full file |
-| `⌘ -` | `… -` | Toggle narrow/widen |
-| `⌘ F` | `… f` | Search headings |
+| ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
+|---------|------------|------------|--------|
+| `⌘ →` | `… ]` | — | Narrow to subtree |
+| `⌘ ←` | — | — | Widen to full file |
+| — | `… -` | `SPC -` | Toggle narrow/widen |
+| `⌘ [` | — | — | Go back (winner-undo) |
+| `⌘ F` | `… f` | — | Search headings |
 
 ### Tags
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⇧ ⌘ T` | `… T` | `SPC T` | Tag picker |
+| `⇧ ⌘ T` / `^ ⌘ T` | `… T` | `SPC T` | Tag picker |
 
 **Tag match syntax:**
 
