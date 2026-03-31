@@ -290,38 +290,20 @@ All actions are available across all binding systems simultaneously.
 
 ## Try It With demo.org
 
-A `demo.org` file is included so you can try the setup without touching your real data.
+A `demo.org` file is included so you can try the setup without touching your real data. It covers the full GTD structure — inbox items, projects, tasks in every state, scheduled and deadline entries, and context tags.
 
+**With your existing config** — just point `my/gtd-file` at the demo file and reload:
 ```elisp
 (setq my/gtd-file "~/dotfiles/org-gtd/demo.org")
 ```
 
-It covers the full GTD structure:
-
-| What | Example in demo.org |
-|------|---------------------|
-| **Inbox** — unprocessed, no state | "Buy a new charger", "Reply to dentist email" |
-| **Project** — level-1 heading with subtasks | "Launch Personal Website", "Learn Rust" |
-| **NEXT** — ready to work on | "Write the about page", "Complete chapter 3" |
-| **WAIT** — blocked on someone | "Get logo from designer :@email:" |
-| **SOMEDAY** — not committed yet | "Contribute to open source Rust project" |
-| **DONE** — completed, auto-sunk | "Buy the domain", "Cancel old gym membership" |
-| **Scheduled** | "Set up domain and hosting" — appears in Today/Upcoming |
-| **Deadline** | "Get three quotes" — surfaces in Today when due |
-| **Context tags** | `@home`, `@office`, `@email`, `@phone`, `@errands` |
-
-When you open `demo.org`, the dashboard opens automatically and counts are live. Switch back to your real file by updating `my/gtd-file` and reloading.
-
-### Try without any config (vanilla Emacs)
-
-Launch Emacs with no config:
+**Without any config (vanilla Emacs)** — launch with no init file and load everything in one shot:
 ```sh
 emacs -Q
-# or for GUI on macOS:
+# GUI on macOS:
 /Applications/Emacs.app/Contents/MacOS/Emacs -Q
 ```
-
-Then paste this into `M-:` (`M-x eval-expression`):
+Then paste into `M-:` (`M-x eval-expression`):
 ```elisp
 (progn
   (require 'org)
@@ -333,7 +315,7 @@ Then paste this into `M-:` (`M-x eval-expression`):
   (find-file my/gtd-file))
 ```
 
-The dashboard opens automatically. No Doom, no init file needed.
+The dashboard opens automatically. Switch back to your real file by updating `my/gtd-file` and reloading.
 
 ---
 
