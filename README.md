@@ -67,7 +67,7 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<you>/org-gtd ~/dotfiles
+git clone https://github.com/<you>/org-gtd ~/dotfiles/org-gtd
 ```
 
 ### 2. Create your `gtd.org`
@@ -94,11 +94,11 @@ Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on firs
 ```elisp
 (setq my/gtd-file "~/path/to/your/gtd.org")
 
-(load "~/dotfiles/org-gtd.el")       ;; always load first
-(load "~/dotfiles/bindings-cmd.el")  ;; ⌘ keys (GUI/macOS)
-(load "~/dotfiles/bindings-ccg.el")  ;; C-c g prefix
-(load "~/dotfiles/bindings-f5.el")   ;; F5 prefix
-(load "~/dotfiles/bindings-doom.el") ;; SPC leader (Doom only)
+(load "~/dotfiles/org-gtd/org-gtd.el")       ;; always load first
+(load "~/dotfiles/org-gtd/bindings-cmd.el")  ;; ⌘ keys (GUI/macOS)
+(load "~/dotfiles/org-gtd/bindings-ccg.el")  ;; C-c g prefix
+(load "~/dotfiles/org-gtd/bindings-f5.el")   ;; F5 prefix
+(load "~/dotfiles/org-gtd/bindings-doom.el") ;; SPC leader (Doom only)
 
 ;; Doom overrides org-agenda-files — re-assert it after org loads
 (after! org
@@ -109,18 +109,18 @@ Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on firs
 ```elisp
 (setq my/gtd-file "~/path/to/your/gtd.org")
 
-(load "~/dotfiles/org-gtd.el")
-(load "~/dotfiles/bindings-cmd.el")
-(load "~/dotfiles/bindings-ccg.el")
+(load "~/dotfiles/org-gtd/org-gtd.el")
+(load "~/dotfiles/org-gtd/bindings-cmd.el")
+(load "~/dotfiles/org-gtd/bindings-ccg.el")
 ```
 
 **Vanilla Emacs — terminal**:
 ```elisp
 (setq my/gtd-file "~/path/to/your/gtd.org")
 
-(load "~/dotfiles/org-gtd.el")
-(load "~/dotfiles/bindings-ccg.el")
-(load "~/dotfiles/bindings-f5.el")
+(load "~/dotfiles/org-gtd/org-gtd.el")
+(load "~/dotfiles/org-gtd/bindings-ccg.el")
+(load "~/dotfiles/org-gtd/bindings-f5.el")
 ```
 
 ### 4. Restart Emacs
@@ -293,7 +293,7 @@ All actions are available across all binding systems simultaneously.
 A `demo.org` file is included so you can try the setup without touching your real data.
 
 ```elisp
-(setq my/gtd-file "~/dotfiles/demo.org")
+(setq my/gtd-file "~/dotfiles/org-gtd/demo.org")
 ```
 
 It covers the full GTD structure:
@@ -325,11 +325,11 @@ Then paste this into `M-:` (`M-x eval-expression`):
 ```elisp
 (progn
   (require 'org)
-  (setq my/gtd-file "~/dotfiles/demo.org")
-  (load "~/dotfiles/org-gtd.el")
-  (load "~/dotfiles/bindings-cmd.el")
-  (load "~/dotfiles/bindings-ccg.el")
-  (load "~/dotfiles/bindings-f5.el")
+  (setq my/gtd-file "~/dotfiles/org-gtd/demo.org")
+  (load "~/dotfiles/org-gtd/org-gtd.el")
+  (load "~/dotfiles/org-gtd/bindings-cmd.el")
+  (load "~/dotfiles/org-gtd/bindings-ccg.el")
+  (load "~/dotfiles/org-gtd/bindings-f5.el")
   (find-file my/gtd-file))
 ```
 
