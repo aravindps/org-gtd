@@ -161,3 +161,41 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Go back (winner) | — | — | `⌘[` |
 | Tags | `SPC T` | `<p> T` | `⇧⌘T` |
 | Search headings | — | `<p> f` | `⌘f` |
+
+---
+
+## Emacs features used
+
+### Core org-mode
+- **Todo keywords** — `org-todo-keywords`, `org-todo`, `org-get-todo-state`
+- **Agenda views** — `org-agenda-custom-commands`, `org-agenda`, `org-agenda-mode`
+- **Scheduling & deadlines** — `org-schedule`, `org-deadline`, `org-get-scheduled-time`
+- **Refile** — `org-refile`, `org-refile-targets`
+- **Tags** — `org-get-tags`, `org-tags-view`, `org-set-tags-command`
+- **Narrowing** — `org-narrow-to-subtree`, `widen`, `buffer-narrowed-p`
+- **Heading navigation** — `org-map-entries`, `org-outline-level`, `org-get-heading`, `org-up-heading-safe`
+- **Subtree ops** — `org-insert-subheading`, `org-move-subtree-up/down`, `org-copy-subtree`, `org-paste-subtree`, `org-archive-subtree`
+- **Logging** — `org-log-done`
+- **Hooks** — `org-after-todo-state-change-hook`, `org-agenda-finalize-hook`, `org-agenda-mode-hook`
+
+### Emacs UI / buffer management
+- **Custom major mode** — `define-derived-mode` (dashboard and upcoming view)
+- **Overlays** — active row highlight in dashboard and upcoming view
+- **Text properties** — clickable rows, mouse-face, markers for jump-to-task
+- **Window management** — `split-window-right`, `window-in-direction`, `delete-other-windows`, `winner-mode`
+- **Markers** — `point-marker`, `marker-buffer` for jump-to-task navigation
+- **Faces** — `add-face-text-property` for strikethrough (CANCELLED), shadow, highlight
+- **Mouse support** — `mouse-set-point`, `[mouse-1]` bindings throughout
+- **Idle timer** — `run-with-idle-timer` for auto-save (2 s)
+- **Advice** — `advice-add` to hook into `org-schedule` / `org-deadline`
+
+### Evil (optional, Doom only)
+- `evil-define-key`, `evil-local-set-key` for normal-mode bindings
+- `evil-insert-state-exit-hook` for auto-save and dashboard refresh trigger
+
+### Completion (optional)
+- `completing-read` for context tag picker (uses Vertico if available)
+- `consult-org-heading` for heading search (falls back to `occur`)
+
+### Data portability
+The GTD data (`gtd.org`) is plain text — readable by any editor or org-compatible app. All UI, views, dashboard, and automation are Emacs-only.
