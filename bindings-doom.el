@@ -20,7 +20,7 @@
 
       ;; ─── Create ─────────────────────────────────────────────────────────
       "n"   #'my/org-new-task                        ;; New NEXT task (child)
-      "N"   #'org-insert-heading-respect-content     ;; New heading (same level)
+      "N"   #'my/org-new-heading                     ;; New heading (same level, NEXT)
 
       ;; ─── Edit ───────────────────────────────────────────────────────────
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete

@@ -93,7 +93,17 @@
 (defun my/org-new-task ()
   "Insert a new child heading with NEXT state under the current heading."
   (interactive)
-  (org-insert-subheading nil)
+  (org-back-to-heading t)
+  (let ((level (org-outline-level)))
+    (end-of-line)
+    (newline)
+    (insert (make-string (1+ level) ?*) " ")
+    (org-todo "NEXT")))
+
+(defun my/org-new-heading ()
+  "Insert a new heading at the same level right after the current heading, with NEXT state."
+  (interactive)
+  (org-insert-heading)
   (org-todo "NEXT"))
 
 ;; ─── Inbox ───────────────────────────────────────────────────────────────────

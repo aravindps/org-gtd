@@ -20,7 +20,7 @@
 
     ;; ─── Create ───────────────────────────────────────────────────────────
     (define-key map (kbd "s-n") #'my/org-new-task)                        ;; ⌘N New NEXT task (child)
-    (define-key map (kbd "s-N") #'org-insert-heading-respect-content)    ;; ⇧⌘N New heading (same level)
+    (define-key map (kbd "s-N") #'my/org-new-heading)                    ;; ⇧⌘N New heading (same level, NEXT)
     (define-key map (kbd "M-s-n") (lambda () (interactive)               ;; ⌥⌘N New project
                                     (goto-char (point-max))
                                     (org-insert-heading)

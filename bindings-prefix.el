@@ -20,7 +20,7 @@
 
   ;; ─── Create ───────────────────────────────────────────────────────────────
   (define-key map (kbd "n") #'my/org-new-task)                       ;; New NEXT task (child)
-  (define-key map (kbd "N") #'org-insert-heading-respect-content)   ;; New heading (same level)
+  (define-key map (kbd "N") #'my/org-new-heading)                   ;; New heading (same level, NEXT)
   (define-key map (kbd "c") (lambda () (interactive)                 ;; New checklist
                                (end-of-line) (newline) (insert "- [ ] ")))
 
