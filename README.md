@@ -4,6 +4,8 @@
 
 A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Things 3. Works with **Doom Emacs** and **vanilla Emacs** (GUI + terminal).
 
+> **Not the `org-gtd` MELPA package.** This is an independent configuration — no package manager, no dependencies, just Emacs Lisp loaded directly from your config.
+
 ---
 
 ## Features
@@ -21,25 +23,29 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 
 ## Screenshots
 
-| Navigation Pane | Today |
-|----------------|-------|
-| ![Navigation Pane](screenshots/Navigation%20Pane.png) | ![Today](screenshots/Today.png) |
+### Navigation Pane
+![Navigation Pane](screenshots/Navigation%20Pane.png)
 
-| Anytime | Upcoming |
-|---------|----------|
-| ![Anytime](screenshots/Anytime.png) | ![Upcoming](screenshots/Upcoming%207%20days.png) |
+### Edit View
+![Edit View](screenshots/Edit%20View.png)
 
-| Waiting | Someday |
+### Views
+
+| Today | Anytime |
+|-------|---------|
+| ![Today](screenshots/Today.png) | ![Anytime](screenshots/Anytime.png) |
+
+| Upcoming | Waiting |
+|----------|---------|
+| ![Upcoming](screenshots/Upcoming%207%20days.png) | ![Waiting](screenshots/Waiting.png) |
+
+| Someday | Logbook |
 |---------|---------|
-| ![Waiting](screenshots/Waiting.png) | ![Someday](screenshots/Someday.png) |
+| ![Someday](screenshots/Someday.png) | ![Logbook](screenshots/Logbook.png) |
 
-| Logbook | Context view |
-|---------|-------------|
-| ![Logbook](screenshots/Logbook.png) | ![Context view](screenshots/Context%20view.png) |
-
-| Edit view | |
-|-----------|--|
-| ![Edit view](screenshots/Edit%20view.png) | |
+| Context view | |
+|-------------|--|
+| ![Context view](screenshots/Context%20view.png) | |
 
 ---
 
@@ -52,7 +58,7 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 | `bindings-ccg.el` | `C-c g` prefix bindings for terminal Emacs | Terminal |
 | `bindings-f5.el` | `F5` prefix bindings for terminal Emacs | Terminal (alternative) |
 | `bindings-prefix.el` | Shared helper used by `bindings-ccg.el` and `bindings-f5.el` | Auto-loaded |
-| `doom-extras.el` | `SPC` leader bindings — Doom Emacs only | Doom only |
+| `bindings-doom.el` | `SPC` leader bindings — Doom Emacs only | Doom only |
 
 ---
 
@@ -92,7 +98,7 @@ Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on firs
 (load "~/code/org-gtd/bindings-cmd.el")  ;; ⌘ keys (GUI/macOS)
 (load "~/code/org-gtd/bindings-ccg.el")  ;; C-c g prefix
 (load "~/code/org-gtd/bindings-f5.el")   ;; F5 prefix
-(load "~/code/org-gtd/doom-extras.el")   ;; SPC leader (Doom only)
+(load "~/code/org-gtd/bindings-doom.el")   ;; SPC leader (Doom only)
 ```
 
 **Vanilla Emacs — GUI** (`~/.emacs` or `~/.emacs.d/init.el`):
@@ -121,12 +127,12 @@ Doom users: run `doom sync` before restarting.
 
 ## Dashboard
 
-Opening `gtd.org` (or pressing `SPC 0` / `⌘0`) shows a live count dashboard in the left pane. Click or press `RET` on any row to open that view on the right.
+Opening `gtd.org` (or pressing `SPC /` / `⌘/`) shows a live count dashboard in the left pane. Click or press `RET` on any row to open that view on the right.
 
 | Key | Action |
 |-----|--------|
 | `RET` / click | Open view in right pane |
-| `g` or Refresh row | Re-render counts |
+| `g` | Re-render counts |
 | `q` | Close dashboard pane |
 
 Counts update automatically whenever you change a task state, reschedule, or save the file.
@@ -193,7 +199,7 @@ All actions are available across all binding systems simultaneously.
 | Action | ⌘ (GUI) | C-c g / F5 | SPC (Doom) |
 |--------|---------|------------|------------|
 | Open Inbox | `⌘ i` | `… i` | `SPC i` |
-| Dashboard | `⌘ 0` | `… 0` | `SPC 0` |
+| Dashboard | `⌘ /` | `… /` | `SPC /` |
 | Today | `⌘ 1` | `… 1` | `SPC 1` |
 | Upcoming (7 days) | `⌘ 2` | `… 2` | `SPC 2` |
 | Anytime (NEXT, no date) | `⌘ 3` | `… 3` | `SPC 3` |
@@ -218,7 +224,7 @@ All actions are available across all binding systems simultaneously.
 |---------|------------|------------|--------|
 | `⌘ K` | `… k` | `SPC k` | Complete → auto-sinks |
 | `⌥ ⌘ K` | `… K` | `SPC K` | Cancel → auto-sinks |
-| `⌘ D` | `… d` | — | Duplicate subtree |
+| `⌘ d` | `… d` | `SPC d` | Duplicate subtree |
 | `⇧ ⌘ Y` | `… y` | `SPC y` | Archive subtree |
 
 ### Move
@@ -255,12 +261,11 @@ All actions are available across all binding systems simultaneously.
 | `⌘ [` | `… [` | Zoom out *(⌘← grabbed by macOS)* |
 | `⌘ F` | `… f` | Search headings |
 
-### Tags & Filter
+### Tags
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
 | `⇧ ⌘ T` | `… T` | `SPC T` | Tag picker |
-| `^ ⌘ F` | `… /` | `SPC /` | Filter by tag (flat list) |
 
 **Tag match syntax:**
 
@@ -281,20 +286,56 @@ All actions are available across all binding systems simultaneously.
 
 ---
 
+## Try It With demo.org
+
+A `demo.org` file is included so you can try the setup without touching your real data.
+
+```elisp
+(setq my/gtd-file "~/code/org-gtd/demo.org")
+```
+
+It covers the full GTD structure:
+
+| What | Example in demo.org |
+|------|---------------------|
+| **Inbox** — unprocessed, no state | "Buy a new charger", "Reply to dentist email" |
+| **Project** — level-1 heading with subtasks | "Launch Personal Website", "Learn Rust" |
+| **NEXT** — ready to work on | "Write the about page", "Complete chapter 3" |
+| **WAIT** — blocked on someone | "Get logo from designer :@email:" |
+| **SOMEDAY** — not committed yet | "Contribute to open source Rust project" |
+| **DONE** — completed, auto-sunk | "Buy the domain", "Cancel old gym membership" |
+| **Scheduled** | "Set up domain and hosting" — appears in Today/Upcoming |
+| **Deadline** | "Get three quotes" — surfaces in Today when due |
+| **Context tags** | `@home`, `@office`, `@email`, `@phone`, `@errands` |
+
+When you open `demo.org`, the dashboard opens automatically and counts are live. Switch back to your real file by updating `my/gtd-file` and reloading.
+
+---
+
+## Scope
+
+This setup covers the **ground level of GTD** — capturing, clarifying, and doing. It is not a full GTD implementation. Areas of focus, horizons of focus, and higher-altitude reviews are out of scope. The goal is a clean, fast task system in Emacs that gets out of your way.
+
+A few other things are explicitly out of scope:
+
+**External references** — Projects can link out to other apps (Obsidian, Notion, Bear, a browser URL) using plain org links. Those links open in the right pane when clicked. Notes and project details can live in an external system, or stay inside `gtd.org` — either works. This setup does not try to be a note-taking system.
+
+**Calendar** — Scheduling (`⌘S`, `⌘T`) sets dates on tasks for ordering and surfacing in Today/Upcoming views. There is no calendar view. A separate calendar app (macOS Calendar, Fantastical, etc.) handles time-blocked events. Tasks and calendar stay separate by design.
+
+---
+
 ## Contributing
 
 ### Areas that could use help
 
 - Support for multiple org files
 - Linux/Windows keybinding alternatives
-- Energy level filtering (`energy_high`, `energy_medium`, `energy_low`)
-- org-roam integration for linked notes
 
 ### How to contribute
 
 1. Fork and create a branch: `git checkout -b feature/your-idea`
 2. Keep `org-gtd.el` and `bindings-*.el` free of Doom macros — they must work in vanilla Emacs
-3. `doom-extras.el` is Doom-only — Doom macros are fine there
+3. `bindings-doom.el` is Doom-only — Doom macros are fine there
 4. Update this README if you add or change keybindings
 5. Open a PR with a clear description
 

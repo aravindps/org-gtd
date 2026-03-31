@@ -17,12 +17,12 @@ A GTD configuration for Emacs org-mode, inspired by the workflow and feel of Thi
 | `bindings-ccg.el` | Applies prefix bindings under `C-c g`. Load for terminal Emacs. |
 | `bindings-f5.el` | Applies prefix bindings under `F5`. Alternative for terminal. |
 | `bindings-cmd.el` | `s-` (⌘) bindings for GUI/macOS Emacs. |
-| `doom-extras.el` | `SPC` leader bindings via `map!`. **Doom Emacs only** — uses Doom macros. |
+| `bindings-doom.el` | `SPC` leader bindings via `map!`. **Doom Emacs only** — uses Doom macros. |
 
 ### Key design constraints
 
 - `org-gtd.el` and all `bindings-*.el` files must work in **vanilla Emacs** — no Doom macros allowed.
-- `doom-extras.el` is the only file where `map!` and other Doom macros are permitted.
+- `bindings-doom.el` is the only file where `map!` and other Doom macros are permitted.
 - The same action is available across all three binding systems simultaneously (⌘, prefix, SPC).
 
 ### Keybinding consistency rule
@@ -30,7 +30,7 @@ A GTD configuration for Emacs org-mode, inspired by the workflow and feel of Thi
 When adding or changing a keybinding, update **all three** binding layers:
 1. `bindings-cmd.el` — `s-<key>` for GUI/macOS
 2. `bindings-prefix.el` — the shared prefix map (propagates to both `C-c g` and `F5`)
-3. `doom-extras.el` — `SPC <key>` for Doom
+3. `bindings-doom.el` — `SPC <key>` for Doom
 
 ### Auto-sink behavior
 
@@ -43,7 +43,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 - Opens automatically when `gtd.org` is visited or on Emacs startup (`find-file-hook`)
 - `RET` / mouse-click on a row opens that view in the right pane
 - `q` closes the dashboard pane
-- `g` or the Refresh row at the bottom re-renders counts
+- `g` re-renders counts
 - Counts refresh automatically on: todo state change, `org-schedule`, `org-deadline`, file save, and evil insert exit
 - Context tag rows are derived from `#+TAGS:` in `gtd.org` — no code changes needed when tags are added
 
@@ -132,7 +132,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 | Action | SPC | Prefix | ⌘ |
 |--------|-----|--------|---|
-| Dashboard | `SPC d` | `<p> d` | `⌘d` |
+| Dashboard | `SPC /` | `<p> /` | `⌘/` |
 | Inbox view | `SPC 0` | `<p> 0` | `⌘0` |
 | Today | `SPC 1` | `<p> 1` | `⌘1` |
 | Upcoming | `SPC 2` | `<p> 2` | `⌘2` |
@@ -147,6 +147,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 | New heading | `SPC N` | `<p> N` | `⇧⌘N` |
 | Complete | `SPC k` | `<p> k` | `⌘k` |
 | Cancel | `SPC K` | `<p> K` | `⌥⌘K` |
+| Duplicate | `SPC d` | `<p> d` | `⌘d` |
 | Refile | `SPC m` | `<p> m` | `⇧⌘M` |
 | Archive | `SPC y` | `<p> y` | `⇧⌘Y` |
 | Schedule | `SPC s` | `<p> s` | `⌘s` |
@@ -159,5 +160,4 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Zoom out (widen) | — | — | `⌘←` |
 | Go back (winner) | — | — | `⌘[` |
 | Tags | `SPC T` | `<p> T` | `⇧⌘T` |
-| Filter by tag | `SPC /` | `<p> /` | `^⌘F` |
 | Search headings | — | `<p> f` | `⌘f` |

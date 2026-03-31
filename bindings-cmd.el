@@ -6,7 +6,7 @@
   (let ((map org-mode-map))
 
     ;; ─── Views (global — accessible outside org buffers) ──────────────────
-    (global-set-key (kbd "s-d") #'my/org-dashboard)                                  ;; Dashboard
+    (global-set-key (kbd "s-/") #'my/org-dashboard)                                  ;; Dashboard
     (global-set-key (kbd "s-0") (lambda () (interactive) (org-agenda nil "0")))      ;; Inbox
     (global-set-key (kbd "s-1") (lambda () (interactive) (org-agenda nil "1")))      ;; Today
     (global-set-key (kbd "s-2") (lambda () (interactive) (org-agenda nil "2")))      ;; Upcoming
@@ -72,10 +72,7 @@
                                       (consult-org-heading)
                                     (occur "^\\*+ "))))
     (define-key map (kbd "s-T") #'org-set-tags-command)          ;; ⇧⌘T Tags
-    (define-key map (kbd "C-s-t") #'org-set-tags-command)        ;; ^⌘T Tags
-    (define-key map (kbd "C-s-f") (lambda () (interactive)       ;; ^⌘F Filter by tag
-                                    (let ((tag (completing-read "Tag: " (org-get-buffer-tags))))
-                                      (org-tags-view nil tag))))))
+    (define-key map (kbd "C-s-t") #'org-set-tags-command)))      ;; ^⌘T Tags
 
 (provide 'bindings-cmd)
 ;;; bindings-cmd.el ends here

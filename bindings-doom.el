@@ -1,4 +1,4 @@
-;;; doom-extras.el --- Doom Emacs SPC leader GTD bindings -*- lexical-binding: t; -*-
+;;; bindings-doom.el --- Doom Emacs SPC leader GTD bindings -*- lexical-binding: t; -*-
 ;; Requires: org-gtd.el (loaded first in config.el)
 ;; Load this ONLY in Doom Emacs. Adds SPC shortcuts on top of ⌘/C-c g/F5 bindings.
 
@@ -7,7 +7,7 @@
       "i"   #'my/org-open-inbox           ;; SPC i — Open Inbox to edit
 
       ;; ─── Views ──────────────────────────────────────────────────────────
-      "d"   #'my/org-dashboard                                   ;; Dashboard
+      "/"   #'my/org-dashboard                                   ;; Dashboard
       "0"   (lambda () (interactive) (my/org-open-view "0"))    ;; Inbox
       "1"   (lambda () (interactive) (my/org-open-view "1"))    ;; Today
       "2"   (lambda () (interactive) (my/org-open-view "2"))    ;; Upcoming
@@ -25,6 +25,8 @@
       ;; ─── Edit ───────────────────────────────────────────────────────────
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete
       "K"   (lambda () (interactive) (org-todo "CANCELLED"))  ;; Cancel
+      "d"   (lambda () (interactive)                           ;; Duplicate
+              (org-copy-subtree) (org-paste-subtree))
       "m"   #'org-refile                                       ;; Move to project
       "y"   #'org-archive-subtree                              ;; Archive
 
@@ -37,12 +39,9 @@
 
       ;; ─── Search & Filter ────────────────────────────────────────────────
       "T"   #'org-set-tags-command                 ;; Tag picker
-      "/"   (lambda () (interactive)               ;; Filter by tag
-              (let ((tag (completing-read "Tag: " (org-get-buffer-tags))))
-                (org-tags-view nil tag)))
 
       ;; ─── Navigation ─────────────────────────────────────────────────────
       "-"   #'my/org-zoom-toggle)                  ;; Toggle zoom (narrow/widen)
 
-(provide 'doom-extras)
-;;; doom-extras.el ends here
+(provide 'bindings-doom)
+;;; bindings-doom.el ends here

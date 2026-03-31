@@ -7,7 +7,7 @@
 
   ;; ─── Views ────────────────────────────────────────────────────────────────
   (define-key map (kbd "i") #'my/org-open-inbox)                                  ;; Open Inbox to edit
-  (define-key map (kbd "d") #'my/org-dashboard)                                   ;; Dashboard
+  (define-key map (kbd "/") #'my/org-dashboard)                                   ;; Dashboard
   (define-key map (kbd "0") (lambda () (interactive) (org-agenda nil "0")))       ;; Inbox
   (define-key map (kbd "1") (lambda () (interactive) (org-agenda nil "1")))       ;; Today
   (define-key map (kbd "2") (lambda () (interactive) (org-agenda nil "2")))       ;; Upcoming
@@ -51,10 +51,7 @@
                                (if (fboundp 'consult-org-heading)
                                    (consult-org-heading)
                                  (occur "^\\*+ "))))
-  (define-key map (kbd "T") #'org-set-tags-command)     ;; Tag picker
-  (define-key map (kbd "/") (lambda () (interactive)    ;; Filter by tag
-                               (let ((tag (completing-read "Tag: " (org-get-buffer-tags))))
-                                 (org-tags-view nil tag)))))
+  (define-key map (kbd "T") #'org-set-tags-command))    ;; Tag picker
 
 (provide 'bindings-prefix)
 ;;; bindings-prefix.el ends here
