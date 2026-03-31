@@ -123,6 +123,8 @@ Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on firs
 (load "~/dotfiles/org-gtd/bindings-f5.el")
 ```
 
+> **Mouse in terminal** — add `(xterm-mouse-mode 1)` to your config to enable mouse support. Works in iTerm2 and most modern terminals.
+
 ### 4. Restart Emacs
 
 Doom users: run `doom sync` before restarting.

@@ -115,6 +115,11 @@ When adding or changing a keybinding, update **all three** binding layers:
 - `SPC -` / `<p> -` toggles narrow/widen (zoom in and out of current subtree)
 - `⌘→` narrows to subtree; `⌘←` widens (GUI only)
 
+### Known issues / gaps
+
+- **No `SPC` binding for Search headings** — `SPC f` conflicts with Doom's file search. Use `<p> f` or `⌘ f` instead.
+- **No `SPC` binding for Zoom in/out** — `⌘ →` / `⌘ ←` GUI only. `SPC -` / `<p> -` toggle narrow/widen works in all modes.
+
 ### Known Doom Emacs conflicts and workarounds
 
 - **`SPC z`** — conflicts with Doom's zoom/font-size prefix. Use `SPC -` for zoom toggle instead.
