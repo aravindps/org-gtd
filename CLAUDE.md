@@ -119,6 +119,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 - **No `SPC` binding for Search headings** — `SPC f` conflicts with Doom's file search. Use `<p> f` or `⌘ f` instead.
 - **No `SPC` binding for Zoom in/out** — `⌘ →` / `⌘ ←` GUI only. `SPC -` / `<p> -` toggle narrow/widen works in all modes.
+- **Archive (`SPC y`) not yet decided** — `org-archive-subtree` moves subtrees to `gtd.org_archive`. Undecided whether to use it. Workflow note: since navigation is always via agenda/dashboard into narrowed subtrees, DONE/CANCELLED tasks in the file are not a day-to-day problem. Archive is recoverable but manual (cut from `_archive`, paste back). Revisit when `gtd.org` grows large.
 
 ### Known Doom Emacs conflicts and workarounds
 
