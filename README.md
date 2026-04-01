@@ -358,4 +358,4 @@ A few other things are explicitly out of scope:
 
 ## License
 
-MIT
+GPL-3.0 — see [LICENSE](LICENSE) for details.
