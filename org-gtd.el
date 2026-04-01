@@ -287,12 +287,26 @@ Press again or C-c C-c to restore the full tree."
               (org-back-to-heading t)
               (org-todo "PROJECT"))))
       (?q nil)
+      (?k (my/gtd-complete))
+      (?x (my/gtd-cancel))
       (_  (let ((state (cdr (assoc choice '((?n . "NEXT")
                                             (?w . "WAIT")
-                                            (?s . "SOMEDAY")
-                                            (?k . "DONE")
-                                            (?x . "CANCELLED"))))))
+                                            (?s . "SOMEDAY"))))))
             (when state (org-todo state)))))))
+
+;; ─── Complete / Cancel guards ────────────────────────────────────────────────
+
+(defun my/gtd-complete ()
+  "Mark task DONE. No-op if already DONE or CANCELLED."
+  (interactive)
+  (unless (member (org-get-todo-state) my/gtd-closed-states)
+    (org-todo "DONE")))
+
+(defun my/gtd-cancel ()
+  "Mark task CANCELLED. No-op if already DONE or CANCELLED."
+  (interactive)
+  (unless (member (org-get-todo-state) my/gtd-closed-states)
+    (org-todo "CANCELLED")))
 
 ;; ─── Block DONE if active child tasks remain ────────────────────────────────
 
