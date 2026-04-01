@@ -7,6 +7,8 @@
 
     ;; ─── Views (global — accessible outside org buffers) ──────────────────
     (global-set-key (kbd "s-/") #'my/org-dashboard)                                  ;; Dashboard
+    (with-eval-after-load 'evil
+      (define-key evil-normal-state-map (kbd "s-/") #'my/org-dashboard))
     (global-set-key (kbd "s-0") (lambda () (interactive) (org-agenda nil "0")))      ;; Inbox
     (global-set-key (kbd "s-1") (lambda () (interactive) (org-agenda nil "1")))      ;; Today
     (global-set-key (kbd "s-2") (lambda () (interactive) (org-agenda nil "2")))      ;; Upcoming

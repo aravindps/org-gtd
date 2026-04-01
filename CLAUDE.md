@@ -18,6 +18,7 @@ A GTD configuration for Emacs org-mode, inspired by the workflow and feel of Thi
 | `bindings-f5.el` | Applies prefix bindings under `F5`. Alternative for terminal. |
 | `bindings-cmd.el` | `s-` (⌘) bindings for GUI/macOS Emacs. |
 | `bindings-doom.el` | `SPC` leader bindings via `map!`. **Doom Emacs only** — uses Doom macros. |
+| `doom-overrides.el` | Doom/evil conflict fixes (C-M-RET, evil-org RET). **Doom Emacs only.** Load last. |
 
 ### Key design constraints
 

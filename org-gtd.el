@@ -9,6 +9,16 @@
 (defvar my/gtd-file nil
   "Path to your GTD org file. Set before loading: (setq my/gtd-file \"~/path/to/gtd.org\")")
 
+(defvar my/gtd-open-on-startup t
+  "If non-nil, open the GTD file automatically on Emacs startup.")
+
+(add-hook 'window-setup-hook
+          (lambda ()
+            (when (and my/gtd-open-on-startup my/gtd-file)
+              (find-file my/gtd-file))))
+
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode 0)))
+
 ;; ─── Constants ───────────────────────────────────────────────────────────────
 (defconst my/gtd-inbox-heading "Inbox")
 (defconst my/gtd-closed-states '("DONE" "CANCELLED"))
@@ -25,6 +35,13 @@
 
   ;; ─── Agenda window behaviour ───────────────────────────────────────────────
   (setq org-agenda-window-setup 'current-window)
+
+  ;; ─── Agenda prefix — hide file name prefix ─────────────────────────────────
+  (setq org-agenda-prefix-format
+        '((agenda . " %i %?-12t% s")
+          (todo   . "  ")
+          (tags   . "  ")
+          (search . " %i %-12:c")))
 
   ;; ─── Logging ───────────────────────────────────────────────────────────────
   (setq org-log-done 'time)
@@ -815,7 +832,7 @@ If no closed siblings exist, moves to the bottom."
                      (indicator (cond ((= total 0)  "?")
                                      ((> active 0) "")
                                      (t            "●")))
-                     (max-len   18)
+                     (max-len   (- (window-width) 6))
                      (display   (if (> (length name) max-len)
                                    (concat (substring name 0 (1- max-len)) "…")
                                  name))
