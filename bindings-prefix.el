@@ -25,6 +25,7 @@
                                (end-of-line) (newline) (insert "- [ ] ")))
 
   ;; ─── Edit ─────────────────────────────────────────────────────────────────
+  (define-key map (kbd "e") #'my/gtd-set-state)                     ;; State picker
   (define-key map (kbd "k") (lambda () (interactive) (org-todo "DONE")))       ;; Complete
   (define-key map (kbd "K") (lambda () (interactive) (org-todo "CANCELLED")))  ;; Cancel
   (define-key map (kbd "d") #'my/gtd-duplicate)                     ;; Duplicate

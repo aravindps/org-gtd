@@ -29,6 +29,7 @@
                                   (end-of-line) (newline) (insert "- [ ] ")))
 
     ;; ─── Edit ─────────────────────────────────────────────────────────────
+    (define-key map (kbd "s-e") #'my/gtd-set-state)                              ;; ⌘E State picker
     (define-key map (kbd "s-k") (lambda () (interactive) (org-todo "DONE")))       ;; ⌘K Complete
     (define-key map (kbd "M-s-k") (lambda () (interactive) (org-todo "CANCELLED")));; ⌥⌘K Cancel
     (define-key map (kbd "s-d") #'my/gtd-duplicate)                      ;; ⌘D Duplicate

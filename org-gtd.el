@@ -244,6 +244,31 @@ Result is cached and invalidated on save."
          (org-agenda-todo-keyword-format ""))
     (org-tags-view nil tag)))
 
+;; ─── State picker ────────────────────────────────────────────────────────────
+
+(defun my/gtd-set-state ()
+  "Set task state via a one-line mini-prompt. Single keypress, no Enter needed.
+[p] promotes the current subtree to a top-level PROJECT."
+  (interactive)
+  (let ((choice (read-char-choice
+                 "State: [n] NEXT  [w] WAIT  [s] SOMEDAY  [k] DONE  [x] CANCEL  [p] Promote to project  [q] quit  "
+                 '(?n ?w ?s ?k ?x ?p ?q))))
+    (pcase choice
+      (?p (let ((heading (org-get-heading t t t t)))
+            (when (y-or-n-p (format "Promote \"%s\" to top-level project? " heading))
+              (org-cut-subtree)
+              (goto-char (point-max))
+              (unless (bolp) (newline))
+              (org-paste-subtree 1)
+              (org-todo "PROJECT"))))
+      (?q nil)
+      (_  (let ((state (cdr (assoc choice '((?n . "NEXT")
+                                            (?w . "WAIT")
+                                            (?s . "SOMEDAY")
+                                            (?k . "DONE")
+                                            (?x . "CANCELLED"))))))
+            (when state (org-todo state)))))))
+
 ;; ─── Completed tasks sink to bottom ──────────────────────────────────────────
 
 (defun my/org-move-done-to-bottom ()

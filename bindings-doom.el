@@ -25,6 +25,7 @@
               (end-of-line) (newline) (insert "- [ ] "))
 
       ;; ─── Edit ───────────────────────────────────────────────────────────
+      "e"   #'my/gtd-set-state                                ;; State picker
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete
       "K"   (lambda () (interactive) (org-todo "CANCELLED"))  ;; Cancel
       "d"   #'my/gtd-duplicate                                 ;; Duplicate
