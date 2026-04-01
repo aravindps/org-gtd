@@ -33,7 +33,7 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 ![Navigation Pane](screenshots/Navigation%20Pane.png)
 
 ### Edit View
-![Edit View](screenshots/Edit%20View.png)
+![Edit View](screenshots/Edit%20view.png)
 
 ### Views
 
