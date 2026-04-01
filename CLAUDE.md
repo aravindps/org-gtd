@@ -119,7 +119,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 - **No `SPC` binding for Search headings** — `SPC f` conflicts with Doom's file search. Use `<p> f` or `⌘ f` instead.
 - **No `SPC` binding for Zoom in/out** — `⌘ →` / `⌘ ←` GUI only. `SPC -` / `<p> -` toggle narrow/widen works in all modes.
-- **Archive (`SPC y`) not yet decided** — `org-archive-subtree` moves subtrees to `gtd.org_archive`. Undecided whether to use it. Workflow note: since navigation is always via agenda/dashboard into narrowed subtrees, DONE/CANCELLED tasks in the file are not a day-to-day problem. Archive is recoverable but manual (cut from `_archive`, paste back). Revisit when `gtd.org` grows large.
+- **Archive (`SPC y`)** — `my/gtd-archive` wraps `org-archive-subtree` with a `y-or-n-p` confirmation prompt. Subtrees go to `gtd.org_archive`. Recoverable but manual (cut from `_archive`, paste back).
 
 ### Known Doom Emacs conflicts and workarounds
 
@@ -129,10 +129,13 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 ### Implementation notes
 
-- **Project scan** in dashboard uses `org-map-entries` at level 1, checking `org-get-todo-state` for the heading state and `org-get-scheduled-time` for the date. The `show-p` cond must explicitly enumerate valid project states (`nil`, `"PROJECT"`) and return `nil` as the default — a catch-all `(t t)` will incorrectly show level-1 `NEXT` tasks as projects.
+- **Project scan** in dashboard uses `org-map-entries` at level 1. Visibility is determined by `my/gtd--project-visible-p` which checks heading state and scheduled date. It must explicitly enumerate valid project states (`nil`, `"PROJECT"`) and return `nil` as the default — a catch-all `(t t)` will incorrectly show level-1 `NEXT` tasks as projects.
 - **Upcoming view** is a custom `*GTD Upcoming*` buffer, not an org-agenda buffer. It scans `gtd.org` directly, groups entries by date, and uses text properties (`mouse-face`, `action`) for click navigation. State labels are stripped during rendering.
 - **Dashboard counts** are computed by a full scan of `gtd.org` on every refresh. Counts refresh on: `org-after-todo-state-change-hook`, `org-schedule`, `org-deadline`, `after-save-hook`, and `evil-insert-state-exit-hook`.
 - **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, the subtree is cut and re-inserted at the end of the parent. This keeps active tasks at the top.
+- **Refile filtering** — `my/gtd-refile` wraps `org-refile` with `org-refile-target-verify-function` to exclude DONE/CANCELLED headings and the Inbox heading from refile targets.
+- **Context tags cache** — `my/org-context-tags` caches the `#+TAGS:` scan result in `my/gtd--context-tags-cache`. The cache is cleared via `after-save-hook` whenever `gtd.org` is saved.
+- **Shared internal helpers** — `my/gtd--insert-next-heading` is the shared implementation for `my/org-new-task` and `my/org-new-heading` (differ only in whether they move to parent first). `my/gtd--mark-active-line` is shared by dashboard and upcoming view for overlay highlighting.
 
 ### Keybindings reference
 

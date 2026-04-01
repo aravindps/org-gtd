@@ -265,7 +265,7 @@ All actions are available across all binding systems simultaneously.
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⌘ →` | `… ]` | — | Narrow to subtree |
+| `⌘ →` | — | — | Narrow to subtree |
 | `⌘ ←` | — | — | Widen to full file |
 | — | `… -` | `SPC -` | Toggle narrow/widen |
 | `⌘ [` | — | — | Go back (winner-undo) |
