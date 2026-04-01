@@ -21,7 +21,7 @@
   ;; ─── Create ───────────────────────────────────────────────────────────────
   (define-key map (kbd "n") #'my/org-new-heading)                   ;; New NEXT sibling (same level)
   (define-key map (kbd "N") #'my/org-new-task)                      ;; New NEXT task (child)
-  (define-key map (kbd "A") #'my/org-new-project)                   ;; New top-level project
+  (define-key map (kbd "a") #'my/org-new-project)                   ;; New top-level project
   (define-key map (kbd "c") (lambda () (interactive)                 ;; New checklist
                                (end-of-line) (newline) (insert "- [ ] ")))
 
@@ -33,8 +33,8 @@
   (define-key map (kbd "y") #'my/gtd-archive)                       ;; Archive
 
   ;; ─── Move ─────────────────────────────────────────────────────────────────
-  (define-key map (kbd "p") #'org-move-subtree-up)                  ;; Move up
-  (define-key map (kbd "P") #'org-move-subtree-down)                ;; Move down
+  (define-key map (kbd "<up>") #'org-move-subtree-up)                ;; Move up
+  (define-key map (kbd "<down>") #'org-move-subtree-down)            ;; Move down
   (define-key map (kbd "{") #'my/org-move-subtree-to-top)           ;; Move to top
   (define-key map (kbd "}") #'my/org-move-subtree-to-bottom)        ;; Move to bottom
   (define-key map (kbd "m") #'my/gtd-refile)                        ;; Move to project

@@ -23,7 +23,7 @@
     ;; ─── Create ───────────────────────────────────────────────────────────
     (define-key map (kbd "s-n") #'my/org-new-heading)                     ;; ⌘n  New NEXT sibling (after current heading's body)
     (define-key map (kbd "s-N") #'my/org-new-task)                       ;; ⇧⌘N New NEXT child of current heading
-    (define-key map (kbd "M-s-n") #'my/org-new-project)                  ;; ⌥⌘N New project
+    (define-key map (kbd "M-s-a") #'my/org-new-project)                  ;; ⌥⌘A New project
     (define-key map (kbd "s-C") (lambda () (interactive)                 ;; ⇧⌘C New checklist
                                   (end-of-line) (newline) (insert "- [ ] ")))
 
@@ -31,15 +31,15 @@
     (define-key map (kbd "s-'") #'my/gtd-toggle-hide-done)                       ;; ⌘' Hide/show DONE
     (define-key map (kbd "s-e") #'my/gtd-set-state)                              ;; ⌘E State picker
     (define-key map (kbd "s-k") #'my/gtd-complete)                                  ;; ⌘K Complete
-    (define-key map (kbd "M-s-k") #'my/gtd-cancel)                                 ;; ⌥⌘K Cancel
+    (define-key map (kbd "s-K") #'my/gtd-cancel)                                    ;; ⇧⌘K Cancel
     (define-key map (kbd "s-d") #'my/gtd-duplicate)                      ;; ⌘D Duplicate
-    (define-key map (kbd "s-Y") #'my/gtd-archive)                        ;; ⇧⌘Y Archive
+    (define-key map (kbd "s-y") #'my/gtd-archive)                        ;; ⌘y Archive
 
     ;; ─── Move ─────────────────────────────────────────────────────────────
     (define-key map (kbd "s-<up>") #'org-move-subtree-up)               ;; ⌘↑ Move up
     (define-key map (kbd "s-<down>") #'org-move-subtree-down)           ;; ⌘↓ Move down
-    (define-key map (kbd "M-s-<up>") #'my/org-move-subtree-to-top)      ;; ⌥⌘↑ Move to top
-    (define-key map (kbd "M-s-<down>") #'my/org-move-subtree-to-bottom) ;; ⌥⌘↓ Move to bottom
+    (define-key map (kbd "s-{") #'my/org-move-subtree-to-top)          ;; ⌘{ Move to top
+    (define-key map (kbd "s-}") #'my/org-move-subtree-to-bottom)       ;; ⌘} Move to bottom
     (define-key map (kbd "s-M") #'my/gtd-refile)                        ;; ⇧⌘M Refile / Move to project
 
     ;; ─── Dates ────────────────────────────────────────────────────────────

@@ -126,9 +126,20 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 - **No `SPC` binding for Search headings** — `SPC f` conflicts with Doom's file search. Use `<p> f` or `⌘ f` instead.
 - **No `SPC` binding for Zoom in/out** — `⌘ →` / `⌘ ←` GUI only. `SPC -` / `<p> -` toggle narrow/widen works in all modes.
-- **Move up/down/top/bottom** — fully mapped across all three layers: `SPC ↑`/`↓`/`{`/`}`, `<p> p`/`P`/`{`/`}`, `⌘ ↑`/`↓`/`⌥⌘↑`/`⌥⌘↓`.
 - **Archive (`SPC y`)** — `my/gtd-archive` wraps `org-archive-subtree` with a `y-or-n-p` confirmation prompt. Subtrees go to `gtd.org_archive`. Recoverable but manual (cut from `_archive`, paste back).
 - **Upcoming view unified** — all entry points (dashboard row, `SPC 2` / `<p> 2` / `⌘ 2`) now call `my/org-open-upcoming`, which opens the custom grouped `*GTD Upcoming*` buffer. The old org-agenda command "2" has been removed.
+
+### Keybinding differences across layers
+
+Most actions use the same key in all three layers. The exceptions below are forced by macOS system shortcuts that Emacs should not override.
+
+| Action | SPC | Prefix | ⌘ | Reason for difference |
+|--------|-----|--------|---|---|
+| Checklist item | `c` | `c` | `⌘ C` (shift) | `⌘c` = macOS copy |
+| Refile | `m` | `m` | `⌘ M` (shift) | `⌘m` = macOS minimize |
+| New top-level project | `a` | `a` | `⌥ ⌘ a` (option) | `⌘a` = macOS select all |
+| Search headings | — | `f` | `⌘ f` | `SPC f` = Doom file finder |
+| Zoom in / out | — | — | `⌘ →` / `⌘ ←` | SPC/prefix use zoom toggle (`-`) instead |
 
 ### Known Doom Emacs conflicts and workarounds
 
@@ -172,18 +183,18 @@ When adding or changing a keybinding, update **all three** binding layers:
 | New sibling heading | `SPC n` | `<p> n` | `⌘n` |
 | New child task | `SPC N` | `<p> N` | `⌘ N` |
 | Checklist item | `SPC c` | `<p> c` | `⌘ C` |
-| New top-level project | `SPC A` | `<p> A` | `⌥ ⌘ n` |
+| New top-level project | `SPC a` | `<p> a` | `⌥ ⌘ a` |
 | State picker | `SPC e` | `<p> e` | `⌘e` |
 | Complete | `SPC k` | `<p> k` | `⌘ k` |
-| Cancel | `SPC K` | `<p> K` | `⌥ ⌘ k` |
+| Cancel | `SPC K` | `<p> K` | `⌘ K` |
 | Toggle hide done | `SPC '` | `<p> '` | `⌘ '` |
 | Duplicate | `SPC d` | `<p> d` | `⌘ d` |
 | Refile | `SPC m` | `<p> m` | `⌘ M` |
-| Archive | `SPC y` | `<p> y` | `⌘ Y` |
-| Move up | `SPC ↑` | `<p> p` | `⌘ ↑` |
-| Move down | `SPC ↓` | `<p> P` | `⌘ ↓` |
-| Move to top | `SPC {` | `<p> {` | `⌥ ⌘ ↑` |
-| Move to bottom | `SPC }` | `<p> }` | `⌥ ⌘ ↓` |
+| Archive | `SPC y` | `<p> y` | `⌘ y` |
+| Move up | `SPC ↑` | `<p> ↑` | `⌘ ↑` |
+| Move down | `SPC ↓` | `<p> ↓` | `⌘ ↓` |
+| Move to top | `SPC {` | `<p> {` | `⌘ {` |
+| Move to bottom | `SPC }` | `<p> }` | `⌘ }` |
 | Schedule | `SPC s` | `<p> s` | `⌘ s` |
 | Schedule today | `SPC t` | `<p> t` | `⌘ t` |
 | Remove schedule | `SPC r` | `<p> r` | `⌘ r` |

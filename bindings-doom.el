@@ -21,7 +21,7 @@
       ;; ─── Create ─────────────────────────────────────────────────────────
       "n"   #'my/org-new-heading                     ;; New NEXT sibling (same level)
       "N"   #'my/org-new-task                        ;; New NEXT task (child)
-      "A"   #'my/org-new-project                     ;; New top-level project
+      "a"   #'my/org-new-project                     ;; New top-level project
       "c"   (lambda () (interactive)                 ;; New checklist item
               (end-of-line) (newline) (insert "- [ ] "))
 
