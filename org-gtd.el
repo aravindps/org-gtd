@@ -159,10 +159,14 @@ IF-CLOSED controls behaviour when the heading has a closed state:
       (forward-line -1)
       (end-of-line))
      (t
-      (forward-line 1)
-      (while (and (not (eobp))
-                  (not (looking-at org-heading-regexp)))
-        (forward-line 1))
+      (if (= level-offset 0)
+          ;; Sibling: skip entire subtree (including children)
+          (org-end-of-subtree t t)
+        ;; Child: skip only body text, stop before first child heading
+        (forward-line 1)
+        (while (and (not (eobp))
+                    (not (looking-at org-heading-regexp)))
+          (forward-line 1)))
       (unless (bolp) (newline))
       (insert (make-string (+ level level-offset) ?*) " NEXT \n")
       (forward-line -1)
