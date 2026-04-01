@@ -677,7 +677,9 @@ Result is cached and invalidated on save."
                      (action    (let ((m mark)) (lambda () (my/org-open-project m)))))
                 (insert (format "  %s\n" label))
                 (add-text-properties start (- (point) 1)
-                                     (list 'gtd-action action 'mouse-face 'highlight)))))
+                                     (list 'gtd-action action
+                                           'mouse-face 'highlight
+                                           'face 'default)))))
           (when context-tags
             (insert "\n")
             (my/org--dash-section-label "Contexts")
