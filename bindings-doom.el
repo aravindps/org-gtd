@@ -25,15 +25,14 @@
       ;; ─── Edit ───────────────────────────────────────────────────────────
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete
       "K"   (lambda () (interactive) (org-todo "CANCELLED"))  ;; Cancel
-      "d"   (lambda () (interactive)                           ;; Duplicate
-              (org-copy-subtree) (org-paste-subtree))
-      "m"   #'org-refile                                       ;; Move to project
-      "y"   #'org-archive-subtree                              ;; Archive
+      "d"   #'my/gtd-duplicate                                 ;; Duplicate
+      "m"   #'my/gtd-refile                                    ;; Move to project
+      "y"   #'my/gtd-archive                                   ;; Archive
 
       ;; ─── Dates ──────────────────────────────────────────────────────────
       "s"   #'org-schedule                                              ;; Schedule
       "t"   (lambda () (interactive) (org-schedule nil "."))           ;; Today
-      "r"   (lambda () (interactive) (org-schedule '(4)))              ;; Anytime
+      "r"   (lambda () (interactive) (org-schedule '(4)))              ;; Anytime — prefix arg 4 removes the schedule date
       "o"   (lambda () (interactive) (org-todo "SOMEDAY"))             ;; Someday
       "D"   #'org-deadline                                              ;; Deadline
 

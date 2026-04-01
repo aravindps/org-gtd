@@ -27,19 +27,18 @@
   ;; ─── Edit ─────────────────────────────────────────────────────────────────
   (define-key map (kbd "k") (lambda () (interactive) (org-todo "DONE")))       ;; Complete
   (define-key map (kbd "K") (lambda () (interactive) (org-todo "CANCELLED")))  ;; Cancel
-  (define-key map (kbd "d") (lambda () (interactive)                            ;; Duplicate
-                               (org-copy-subtree) (org-paste-subtree)))
-  (define-key map (kbd "y") #'org-archive-subtree)                  ;; Archive
+  (define-key map (kbd "d") #'my/gtd-duplicate)                     ;; Duplicate
+  (define-key map (kbd "y") #'my/gtd-archive)                       ;; Archive
 
   ;; ─── Move ─────────────────────────────────────────────────────────────────
   (define-key map (kbd "p") #'org-move-subtree-up)                  ;; Move up
   (define-key map (kbd "P") #'org-move-subtree-down)                ;; Move down
-  (define-key map (kbd "m") #'org-refile)                           ;; Move to project
+  (define-key map (kbd "m") #'my/gtd-refile)                        ;; Move to project
 
   ;; ─── Dates ────────────────────────────────────────────────────────────────
   (define-key map (kbd "s") #'org-schedule)                                          ;; Schedule
   (define-key map (kbd "t") (lambda () (interactive) (org-schedule nil ".")))        ;; Today
-  (define-key map (kbd "r") (lambda () (interactive) (org-schedule '(4))))           ;; Anytime
+  (define-key map (kbd "r") (lambda () (interactive) (org-schedule '(4))))           ;; Anytime — prefix arg 4 removes the schedule date
   (define-key map (kbd "o") (lambda () (interactive) (org-todo "SOMEDAY")))          ;; Someday
   (define-key map (kbd "D") #'org-deadline)                                          ;; Deadline
 

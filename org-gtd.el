@@ -30,7 +30,7 @@
   ;; ─── Refile ────────────────────────────────────────────────────────────────
   (setq org-refile-targets
         (list (list my/gtd-file :maxlevel 2)))
-  (setq org-refile-use-outline-path t)
+  (setq org-refile-use-outline-path 'file)
   (setq org-outline-path-complete-in-steps nil)
   (setq org-refile-allow-creating-parent-nodes 'confirm)
 
@@ -87,6 +87,31 @@
            ((org-agenda-overriding-header "Logbook — Completed")
             (org-agenda-todo-keyword-format "")
             (org-agenda-sorting-strategy '(timestamp-down)))))))
+
+;; ─── Refile (filtered) ───────────────────────────────────────────────────────
+
+(defun my/gtd-refile ()
+  "Refile current task, excluding DONE/CANCELLED headings and Inbox as targets."
+  (interactive)
+  (let ((org-refile-target-verify-function
+         (lambda ()
+           (and (not (member (org-get-todo-state) '("DONE" "CANCELLED")))
+                (not (string= (org-get-heading t t t t) "Inbox"))))))
+    (org-refile)))
+
+(defun my/gtd-archive ()
+  "Archive current subtree with confirmation."
+  (interactive)
+  (when (y-or-n-p "Archive this subtree? ")
+    (org-archive-subtree)))
+
+(defun my/gtd-duplicate ()
+  "Duplicate current subtree, placing the copy immediately after the original."
+  (interactive)
+  (org-back-to-heading t)
+  (org-copy-subtree)
+  (org-end-of-subtree t t)
+  (org-paste-subtree))
 
 ;; ─── New task ────────────────────────────────────────────────────────────────
 

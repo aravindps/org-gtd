@@ -31,9 +31,8 @@
     ;; ─── Edit ─────────────────────────────────────────────────────────────
     (define-key map (kbd "s-k") (lambda () (interactive) (org-todo "DONE")))       ;; ⌘K Complete
     (define-key map (kbd "M-s-k") (lambda () (interactive) (org-todo "CANCELLED")));; ⌥⌘K Cancel
-    (define-key map (kbd "s-d") (lambda () (interactive)                            ;; ⌘D Duplicate
-                                  (org-copy-subtree) (org-paste-subtree)))
-    (define-key map (kbd "s-Y") #'org-archive-subtree)                  ;; ⇧⌘Y Archive
+    (define-key map (kbd "s-d") #'my/gtd-duplicate)                      ;; ⌘D Duplicate
+    (define-key map (kbd "s-Y") #'my/gtd-archive)                        ;; ⇧⌘Y Archive
 
     ;; ─── Move ─────────────────────────────────────────────────────────────
     (define-key map (kbd "s-<up>") #'org-move-subtree-up)               ;; ⌘↑ Move up
@@ -46,12 +45,12 @@
                                          (condition-case nil
                                              (while t (org-move-subtree-down))
                                            (error nil))))
-    (define-key map (kbd "s-M") #'org-refile)                           ;; ⇧⌘M Refile / Move to project
+    (define-key map (kbd "s-M") #'my/gtd-refile)                        ;; ⇧⌘M Refile / Move to project
 
     ;; ─── Dates ────────────────────────────────────────────────────────────
     (define-key map (kbd "s-s") #'org-schedule)                                           ;; ⌘S Schedule
     (define-key map (kbd "s-t") (lambda () (interactive) (org-schedule nil ".")))        ;; ⌘T Today
-    (define-key map (kbd "s-r") (lambda () (interactive) (org-schedule '(4))))           ;; ⌘R Anytime
+    (define-key map (kbd "s-r") (lambda () (interactive) (org-schedule '(4))))           ;; ⌘R Anytime — prefix arg 4 removes the schedule date
     (define-key map (kbd "s-o") (lambda () (interactive) (org-todo "SOMEDAY")))          ;; ⌘O Someday
     (define-key map (kbd "s-D") #'org-deadline)                                          ;; ⇧⌘D Deadline
 
