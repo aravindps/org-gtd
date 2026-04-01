@@ -35,7 +35,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 ### Auto-sink behavior
 
-`my/org-move-done-to-bottom` is hooked on `org-after-todo-state-change-hook`. When a task is marked DONE or CANCELLED, it automatically moves to the bottom of its parent.
+`my/org-move-done-to-bottom` is hooked on `org-after-todo-state-change-hook`. When a task is marked DONE or CANCELLED, it automatically moves to the **top of the done group** (before the first existing DONE/CANCELLED sibling, not absolute bottom). This keeps newly-completed tasks visible at the top of the done section.
 
 ### Dashboard
 
@@ -125,7 +125,9 @@ When adding or changing a keybinding, update **all three** binding layers:
 ### Known Doom Emacs conflicts and workarounds
 
 - **`SPC z`** — conflicts with Doom's zoom/font-size prefix. Use `SPC -` for zoom toggle instead.
-- **`RET` in normal mode** — Doom binds `RET` to `+org/dwim-at-point` which toggles TODO states. Override with `(map! :after evil-org :map evil-org-mode-map :n "RET" #'org-return)` in `config.el`. Using `evil-define-key` alone is not sufficient because Doom's `evil-org` overrides it.
+- **`RET` in normal mode** — Doom binds `RET` to `+org/dwim-at-point` which toggles TODO states. Fixed in `doom-overrides.el` via `(define-key evil-org-mode-map (kbd "RET") #'org-return)`. Using `evil-define-key` alone is not sufficient because Doom's `evil-org` overrides it — the fix must run `with-eval-after-load 'evil-org`.
+- **`C-M-RET`** — Doom inserts a heading with a TODO state. Cleared in `doom-overrides.el`.
+- **`s-/` in evil normal state** — `evil-nerd-commenter` binds `s-/` in `evil-normal-state-map`, shadowing the global binding. Fixed in `bindings-cmd.el` with an explicit `evil-normal-state-map` override inside `with-eval-after-load 'evil`.
 - **Theme faces** — Doom's `def-doom-theme` macro does not reliably apply custom faces to org-mode buffers at load time. Buffer-local `face-remap-add-relative` can override individual faces but is fragile. Prefer sticking with a standard Doom theme.
 
 ### Implementation notes
@@ -134,11 +136,13 @@ When adding or changing a keybinding, update **all three** binding layers:
 - **Upcoming view** is a custom `*GTD Upcoming*` buffer, not an org-agenda buffer. It scans `gtd.org` directly, groups entries by date, and uses text properties (`mouse-face`, `action`) for click navigation. State labels are stripped during rendering.
 - **Dashboard counts** are computed by a full scan of `gtd.org` on every refresh. Counts refresh on: `org-after-todo-state-change-hook`, `org-schedule`, `org-deadline`, `after-save-hook`, and `evil-insert-state-exit-hook`.
 - **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, the subtree is cut and re-inserted at the end of the parent. This keeps active tasks at the top.
-- **DONE blocker** (`my/gtd--block-done-with-active-children`) is on `org-blocker-hook`. Prevents marking a heading DONE or CANCELLED if it has any child tasks with an active state (NEXT, WAIT, SOMEDAY). Applies to all state-change paths — keybindings, state picker, and `C-c C-t`.
-- **State picker** (`my/gtd-set-state`, `⌘e` / `SPC e`) — one-line minibuffer prompt, single keypress, no Enter needed. Options: NEXT, WAIT, SOMEDAY, DONE, CANCEL, Promote to project, quit. `[p] Promote` cuts the subtree, pastes it at the end of the file as a level-1 heading, and sets state to PROJECT (subtasks carried along automatically).
+- **Complete/cancel with children** — `my/gtd-complete` and `my/gtd-cancel` count active descendants. If any exist, they prompt: `Complete 'T1' and 3 child tasks?`. On confirmation, `my/gtd--mark-children-as` marks all active descendants bottom-up (using push+reverse to avoid intermediate blocker triggers), then marks the heading itself. Guards are in place so re-running on already-closed headings is a no-op.
+- **State picker** (`my/gtd-set-state`, `⌘e` / `SPC e`) — one-line minibuffer prompt, single keypress via `read-char-choice`, no Enter needed. Options: NEXT, WAIT, SOMEDAY, DONE, CANCEL, Promote to project, quit. `[p] Promote` cuts the subtree, finds `* Inbox`, moves to `org-end-of-subtree` of Inbox, pastes as a level-1 heading immediately after Inbox, then sets state to PROJECT (subtasks carried along automatically).
 - **Refile filtering** — `my/gtd-refile` wraps `org-refile` with `org-refile-target-verify-function` to exclude DONE/CANCELLED headings and the Inbox heading from refile targets.
 - **Context tags cache** — `my/org-context-tags` caches the `#+TAGS:` scan result in `my/gtd--context-tags-cache`. The cache is cleared via `after-save-hook` whenever `gtd.org` is saved.
-- **Shared internal helpers** — `my/gtd--insert-next-heading` is the shared implementation for `my/org-new-task` and `my/org-new-heading`. Both stay at the current heading; they differ only in `level-offset`: `0` for a sibling (new heading, `⌘n`), `1` for a child (new task, `⌘N`). Closed-state handling also differs: `⌘n` on a closed heading inserts as first sibling under parent (erroring if parent is also closed); `⌘N` on a closed heading always errors. `my/gtd--mark-active-line` is shared by dashboard and upcoming view for overlay highlighting.
+- **Shared internal helpers** — `my/gtd--insert-next-heading` is the shared implementation for `my/org-new-task` and `my/org-new-heading`. They differ in two ways: (1) `level-offset` — `0` for sibling (`⌘n`), `1` for child (`⌘N`); (2) `if-closed` — `'insert-before` for sibling (inserts as first sibling under parent, errors if parent is also closed), `'error` for child (always errors if heading is closed). For sibling insertion, `org-end-of-subtree` is used to skip past the entire subtree including all children. `my/gtd--mark-active-line` is shared by dashboard and upcoming view for overlay highlighting.
+- **Hide done** — `my/gtd-toggle-hide-done` (`⌘'` / `SPC '`) hides or reveals all DONE/CANCELLED headings in the buffer using `org-flag-region` on the full heading line plus its subtree. State is tracked with `defvar-local my/gtd--hide-done-active`. `my/gtd--reapply-hide-done` on `org-cycle-hook` re-applies the filter after any S-TAB visibility cycle so it persists.
+- **Startup settings** — `org-gtd.el` sets `org-agenda-prefix-format` (hides file prefix in views) and adds an `org-mode-hook` to disable line numbers. `my/gtd-open-on-startup` (default `t`) controls whether a `window-setup-hook` auto-opens `my/gtd-file` on Emacs launch.
 
 ### Keybindings reference
 
@@ -155,11 +159,12 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Context (NEXT) | `SPC 7` | `<p> 7` | `⌘7` |
 | Context (all) | `SPC 8` | `<p> 8` | `⌘8` |
 | Open Inbox | `SPC i` | `<p> i` | `⌘i` |
-| New task | `SPC n` | `<p> n` | `⌘n` |
-| New heading | `SPC N` | `<p> N` | `⌘ N` |
+| New sibling heading | `SPC n` | `<p> n` | `⌘n` |
+| New child task | `SPC N` | `<p> N` | `⌘ N` |
 | State picker | `SPC e` | `<p> e` | `⌘e` |
 | Complete | `SPC k` | `<p> k` | `⌘ k` |
 | Cancel | `SPC K` | `<p> K` | `⌥ ⌘ k` |
+| Toggle hide done | `SPC '` | `<p> '` | `⌘ '` |
 | Duplicate | `SPC d` | `<p> d` | `⌘ d` |
 | Refile | `SPC m` | `<p> m` | `⌘ M` |
 | Archive | `SPC y` | `<p> y` | `⌘ Y` |

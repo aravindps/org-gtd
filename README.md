@@ -14,7 +14,10 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 - **Intuitive keybindings** — `⌘ k` complete, `⌘ n` add, `⌘ M` move, and more
 - **Agenda views** — Inbox / Today / Upcoming / Anytime / Waiting / Someday / Logbook
 - **Dynamic context views** — auto-detects all `@tags`, no code changes when you add new ones
-- **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the bottom automatically
+- **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the top of the done group automatically
+- **Smart completion** — completing a task with active children prompts to complete all of them together
+- **State picker** — `⌘ e` opens a one-line prompt; single keypress sets state or promotes a task to a top-level project
+- **Hide done** — `⌘ '` toggles DONE/CANCELLED tasks in and out of view; persists across outline cycles
 - **Auto-save** — saves on idle and on leaving insert mode; dashboard refreshes on every save
 - **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
 - **Clear project states** — `PROJECT` state marks active projects; indicators show active (`  `), stale (`●`), or empty (`?`)
@@ -59,6 +62,7 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 | `bindings-f5.el` | `F5` prefix bindings for terminal Emacs | Terminal (alternative) |
 | `bindings-prefix.el` | Shared helper used by `bindings-ccg.el` and `bindings-f5.el` | Auto-loaded |
 | `bindings-doom.el` | `SPC` leader bindings — Doom Emacs only | Doom only |
+| `doom-overrides.el` | Doom/evil conflict fixes — Doom Emacs only | Doom only (load last) |
 
 ---
 
@@ -94,15 +98,12 @@ Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on firs
 ```elisp
 (setq my/gtd-file "~/path/to/your/gtd.org")
 
-(load "~/dotfiles/org-gtd/org-gtd.el")       ;; always load first
-(load "~/dotfiles/org-gtd/bindings-cmd.el")  ;; ⌘ keys (GUI/macOS)
-(load "~/dotfiles/org-gtd/bindings-ccg.el")  ;; C-c g prefix
-(load "~/dotfiles/org-gtd/bindings-f5.el")   ;; F5 prefix
-(load "~/dotfiles/org-gtd/bindings-doom.el") ;; SPC leader (Doom only)
-
-;; Doom overrides org-agenda-files — re-assert it after org loads
-(after! org
-  (setq org-agenda-files (list my/gtd-file)))
+(load "~/dotfiles/org-gtd/org-gtd.el")        ;; always load first
+(load "~/dotfiles/org-gtd/bindings-cmd.el")   ;; ⌘ keys (GUI/macOS)
+(load "~/dotfiles/org-gtd/bindings-ccg.el")   ;; C-c g prefix
+(load "~/dotfiles/org-gtd/bindings-f5.el")    ;; F5 prefix
+(load "~/dotfiles/org-gtd/bindings-doom.el")  ;; SPC leader (Doom only)
+(load "~/dotfiles/org-gtd/doom-overrides.el") ;; Doom/evil conflict fixes (load last)
 ```
 
 **Vanilla Emacs — GUI** (`~/.emacs` or `~/.emacs.d/init.el`):
@@ -227,17 +228,19 @@ All actions are available across all binding systems simultaneously.
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⌘ n` | `… n` | `SPC n` | New to-do |
-| `⌘ N` | `… N` | `SPC N` | New heading |
-| `⌘ C` | `… c` | — | New checklist item |
-| `⌥ ⌘ n` | — | — | New project (top-level) |
+| `⌘ n` | `… n` | `SPC n` | New sibling heading (NEXT) |
+| `⌘ N` | `… N` | `SPC N` | New child task (NEXT) |
+| `⌘ C` | `… c` | `SPC c` | New checklist item |
+| `⌥ ⌘ n` | — | — | New top-level project |
 
 ### Edit
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
+| `⌘ e` | `… e` | `SPC e` | State picker (NEXT / WAIT / SOMEDAY / DONE / CANCEL / Promote) |
 | `⌘ k` | `… k` | `SPC k` | Complete → auto-sinks |
 | `⌥ ⌘ k` | `… K` | `SPC K` | Cancel → auto-sinks |
+| `⌘ '` | `… '` | `SPC '` | Toggle hide DONE/CANCELLED |
 | `⌘ d` | `… d` | `SPC d` | Duplicate subtree |
 | `⌘ Y` | `… y` | `SPC y` | Archive subtree |
 
@@ -290,9 +293,12 @@ All actions are available across all binding systems simultaneously.
 | Key | Action |
 |-----|--------|
 | `S-Right` / `S-Left` | Cycle state forward / back |
-| `⌘ k` / `… k` | → DONE |
-| `⌥ ⌘ k` / `… K` | → CANCELLED |
+| `⌘ e` / `… e` | State picker — single keypress, all states |
+| `⌘ k` / `… k` | → DONE (with child-task confirmation if needed) |
+| `⌥ ⌘ k` / `… K` | → CANCELLED (with child-task confirmation if needed) |
 | `⌘ o` / `… o` | → SOMEDAY |
+
+> **Promote to project** — in the state picker, press `p` to cut a task and re-insert it as a top-level project immediately after the `* Inbox` heading, carrying all its children along.
 
 ---
 
