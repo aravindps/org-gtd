@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A GTD configuration for Emacs org-mode, inspired by the workflow and feel of Things 3. Pure Emacs Lisp — no build system, no tests, no package manager. Changes take effect by reloading files in a running Emacs instance.
 
+## Scope
+
+Small, composable blocks that each do one thing well — swap any piece out without breaking the rest. The core GTD steps (capture, clarify, organize, reflect, engage) are not enforced by the tool. This setup just gives you the structure to represent them.
+
+- **Weekly review** — not enforced or automated; the dashboard and views give enough surface area to audit the system when needed.
+- **Reference** — lives outside the execution layer; `gtd.org` is for action, not storage.
+- **Routines and calendar** — no calendar view, no recurring tasks; keeps the org file lean.
+
 ## Architecture
 
 ### File roles

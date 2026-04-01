@@ -19,6 +19,7 @@
     (global-set-key (kbd "s-7") (lambda () (interactive) (my/org-pick-context)))     ;; Context NEXT
     (global-set-key (kbd "s-8") (lambda () (interactive) (my/org-pick-context-all))) ;; Context All
     (global-set-key (kbd "s-i") #'my/org-open-inbox)                                 ;; Open Inbox
+    (global-set-key (kbd "C-s-o") #'my/gtd-switch-file)                               ;; Switch GTD file
 
     ;; ─── Create ───────────────────────────────────────────────────────────
     (define-key map (kbd "s-n") #'my/org-new-heading)                     ;; ⌘n  New NEXT sibling (after current heading's body)

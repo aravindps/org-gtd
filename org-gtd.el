@@ -14,8 +14,10 @@
 
 (add-hook 'window-setup-hook
           (lambda ()
-            (when (and my/gtd-open-on-startup my/gtd-file)
-              (find-file my/gtd-file))))
+            (when my/gtd-open-on-startup
+              (if my/gtd-file
+                  (find-file my/gtd-file)
+                (user-error "org-gtd: Set my/gtd-file before loading, e.g. (setq my/gtd-file \"/path/to/gtd.org\")")))))
 
 (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode 0)))
 
@@ -31,7 +33,8 @@
 (with-eval-after-load 'org
 
   ;; ─── Files ─────────────────────────────────────────────────────────────────
-  (setq org-agenda-files (list my/gtd-file))
+  (when my/gtd-file
+    (setq org-agenda-files (list my/gtd-file)))
 
   ;; ─── Agenda window behaviour ───────────────────────────────────────────────
   (setq org-agenda-window-setup 'current-window)
@@ -51,8 +54,9 @@
         '((sequence "PROJECT" "NEXT" "WAIT" "SOMEDAY" "|" "DONE" "CANCELLED")))
 
   ;; ─── Refile ────────────────────────────────────────────────────────────────
-  (setq org-refile-targets
-        (list (list my/gtd-file :maxlevel 2)))
+  (when my/gtd-file
+    (setq org-refile-targets
+          (list (list my/gtd-file :maxlevel 2))))
   (setq org-refile-use-outline-path 'file)
   (setq org-outline-path-complete-in-steps nil)
   (setq org-refile-allow-creating-parent-nodes 'confirm)
@@ -442,6 +446,30 @@ If no closed siblings exist, moves to the bottom."
     (my/org-dashboard--open)))
 
 (add-hook 'find-file-hook #'my/gtd-maybe-open-dashboard)
+
+;; ─── Switch file ─────────────────────────────────────────────────────────────
+
+(defun my/gtd-switch-file ()
+  "Close all buffers and switch to a different GTD org file."
+  (interactive)
+  (let ((file (read-file-name "GTD file: " nil nil t nil
+                              (lambda (f) (string-suffix-p ".org" f)))))
+    ;; Save current GTD file if modified
+    (let ((old-buf (get-file-buffer my/gtd-file)))
+      (when (and old-buf (buffer-modified-p old-buf))
+        (with-current-buffer old-buf (save-buffer))))
+    ;; Kill all buffers except *scratch* and *Messages*
+    (dolist (buf (buffer-list))
+      (unless (member (buffer-name buf) '("*scratch*" "*Messages*"))
+        (kill-buffer buf)))
+    ;; Point everything at the new file
+    (setq my/gtd-file (expand-file-name file))
+    (setq org-agenda-files (list my/gtd-file))
+    (setq org-refile-targets (list (list my/gtd-file :maxlevel 2)))
+    (setq my/gtd--context-tags-cache nil)
+    (delete-other-windows)
+    (find-file my/gtd-file)
+    (my/org-dashboard)))
 
 ;; ─── Auto-save ───────────────────────────────────────────────────────────────
 

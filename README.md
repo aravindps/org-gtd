@@ -348,20 +348,23 @@ The dashboard opens automatically. Switch back to your real file by updating `my
 
 This setup covers the **ground level of GTD** — capturing, clarifying, and doing. It is not a full GTD implementation. Areas of focus, horizons of focus, and higher-altitude reviews are out of scope. The goal is a clean, fast task system in Emacs that gets out of your way.
 
-A few other things are explicitly out of scope:
+### Philosophy
+
+Small, composable blocks that each do one thing well — swap any piece out without breaking the rest. The core GTD steps (capture, clarify, organize, reflect, engage) are not enforced by the tool. This setup just gives you the structure to represent them. You bring the discipline.
+
+### Out of scope
+
+**Weekly review** — Not enforced or automated. The dashboard and views give you enough surface area to audit the system when you choose to.
+
+**Reference** — Lives outside the execution layer. Notes, documents, and knowledge belong in a separate system (Obsidian, Notion, files, whatever works). `gtd.org` is for action, not storage.
+
+**Routines and calendar** — No calendar view, no recurring tasks. This keeps the org file lean. Scheduling (`⌘ s`, `⌘ t`) sets dates for ordering tasks in Today/Upcoming views, not for time-blocking. A separate calendar app (macOS Calendar, Fantastical, etc.) handles events. Tasks and calendar stay separate by design.
 
 **External references** — Projects can link out to other apps (Obsidian, Notion, Bear, a browser URL) using plain org links. Those links open in the right pane when clicked. Notes and project details can live in an external system, or stay inside `gtd.org` — either works. This setup does not try to be a note-taking system.
-
-**Calendar** — Scheduling (`⌘ s`, `⌘ t`) sets dates on tasks for ordering and surfacing in Today/Upcoming views. There is no calendar view. A separate calendar app (macOS Calendar, Fantastical, etc.) handles time-blocked events. Tasks and calendar stay separate by design.
 
 ---
 
 ## Contributing
-
-### Areas that could use help
-
-- Support for multiple org files
-- Linux/Windows keybinding alternatives
 
 ### How to contribute
 
