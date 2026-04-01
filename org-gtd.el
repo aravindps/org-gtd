@@ -149,6 +149,8 @@ IF-CLOSED controls behaviour when the heading has a closed state:
       (user-error "Heading is closed (%s). Re-open it first." (org-get-todo-state)))
      ((and closed (eq if-closed 'insert-before))
       (org-up-heading-safe)
+      (when (member (org-get-todo-state) my/gtd-closed-states)
+        (user-error "Heading is closed (%s). Re-open it first." (org-get-todo-state)))
       (forward-line 1)
       (while (and (not (eobp))
                   (not (looking-at org-heading-regexp)))
