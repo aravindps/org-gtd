@@ -11,5 +11,16 @@
 (with-eval-after-load 'evil-org
   (define-key evil-org-mode-map (kbd "RET") #'org-return))
 
+;; Agenda: RET opens task zoomed, q is no-op (prevent accidental close)
+(with-eval-after-load 'org-agenda
+  (evil-define-key '(normal motion) org-agenda-mode-map
+    (kbd "RET") #'my/org-agenda-goto-zoomed
+    (kbd "q")   #'ignore))
+
+;; Dashboard: evil normal-state overrides so RET/g/q aren't shadowed by evil
+(evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "RET") #'my/gtd-dashboard-activate)
+(evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "g")   #'my/org-dashboard--open)
+(evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "q")   #'ignore)
+
 (provide 'doom-overrides)
 ;;; doom-overrides.el ends here

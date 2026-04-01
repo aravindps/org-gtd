@@ -608,11 +608,6 @@ If no closed siblings exist, moves to the bottom."
       (mouse-set-point event)
       (my/org-agenda-goto-zoomed))))
 
-(with-eval-after-load 'evil
-  (with-eval-after-load 'org-agenda
-    (evil-define-key '(normal motion) org-agenda-mode-map
-      (kbd "RET") #'my/org-agenda-goto-zoomed
-      (kbd "q")   #'ignore)))
 
 ;; ─── Smart view opener ───────────────────────────────────────────────────────
 
@@ -642,11 +637,6 @@ If no closed siblings exist, moves to the bottom."
 (define-key my/gtd-dashboard-mode-map (kbd "g")     #'my/org-dashboard--open)
 (define-key my/gtd-dashboard-mode-map (kbd "q")     #'ignore)
 (define-key my/gtd-dashboard-mode-map [mouse-1]     #'my/gtd-dashboard-mouse-activate)
-;; Evil-mode: bind RET in normal state so it isn't shadowed by evil-ret
-(with-eval-after-load 'evil
-  (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "RET") #'my/gtd-dashboard-activate)
-  (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "g")   #'my/org-dashboard--open)
-  (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "q")   #'ignore))
 
 (defun my/gtd--mark-active-line (buf-name ov-var)
   "Highlight the current line in BUF-NAME, storing overlay in OV-VAR."
