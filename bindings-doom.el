@@ -40,6 +40,7 @@
       "D"   #'org-deadline                                              ;; Deadline
 
       ;; ─── Search & Filter ────────────────────────────────────────────────
+      "'"   #'my/gtd-toggle-hide-done              ;; Hide/show DONE
       "T"   #'org-set-tags-command                 ;; Tag picker
 
       ;; ─── Navigation ─────────────────────────────────────────────────────

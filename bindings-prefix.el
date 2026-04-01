@@ -46,6 +46,8 @@
   ;; ─── Navigate ─────────────────────────────────────────────────────────────
   (define-key map (kbd "-") #'my/org-zoom-toggle)       ;; Toggle zoom (narrow/widen)
 
+  (define-key map (kbd "'") #'my/gtd-toggle-hide-done)  ;; Hide/show DONE
+
   ;; ─── Search & Filter ──────────────────────────────────────────────────────
   (define-key map (kbd "f") (lambda () (interactive)    ;; Search headings
                                (if (fboundp 'consult-org-heading)

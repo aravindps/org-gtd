@@ -244,6 +244,18 @@ Result is cached and invalidated on save."
          (org-agenda-todo-keyword-format ""))
     (org-tags-view nil tag)))
 
+;; ─── Hide/show DONE tasks ────────────────────────────────────────────────────
+
+(defun my/gtd-toggle-hide-done ()
+  "Toggle visibility of DONE/CANCELLED tasks in the org buffer.
+When active, only NEXT/WAIT/SOMEDAY headings are shown (sparse tree).
+Press again or C-c C-c to restore the full tree."
+  (interactive)
+  (if (eq last-command 'my/gtd-toggle-hide-done)
+      (progn (org-show-all) (message "Showing all tasks"))
+    (org-match-sparse-tree nil "TODO=\"NEXT\"|TODO=\"WAIT\"|TODO=\"SOMEDAY\"")
+    (message "Hiding DONE/CANCELLED — press ⌘' again or C-c C-c to restore")))
+
 ;; ─── State picker ────────────────────────────────────────────────────────────
 
 (defun my/gtd-set-state ()
