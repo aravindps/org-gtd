@@ -133,6 +133,8 @@ When adding or changing a keybinding, update **all three** binding layers:
 - **Upcoming view** is a custom `*GTD Upcoming*` buffer, not an org-agenda buffer. It scans `gtd.org` directly, groups entries by date, and uses text properties (`mouse-face`, `action`) for click navigation. State labels are stripped during rendering.
 - **Dashboard counts** are computed by a full scan of `gtd.org` on every refresh. Counts refresh on: `org-after-todo-state-change-hook`, `org-schedule`, `org-deadline`, `after-save-hook`, and `evil-insert-state-exit-hook`.
 - **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, the subtree is cut and re-inserted at the end of the parent. This keeps active tasks at the top.
+- **DONE blocker** (`my/gtd--block-done-with-active-children`) is on `org-blocker-hook`. Prevents marking a heading DONE or CANCELLED if it has any child tasks with an active state (NEXT, WAIT, SOMEDAY). Applies to all state-change paths — keybindings, state picker, and `C-c C-t`.
+- **State picker** (`my/gtd-set-state`, `⌘e` / `SPC e`) — one-line minibuffer prompt, single keypress, no Enter needed. Options: NEXT, WAIT, SOMEDAY, DONE, CANCEL, Promote to project, quit. `[p] Promote` cuts the subtree, pastes it at the end of the file as a level-1 heading, and sets state to PROJECT (subtasks carried along automatically).
 - **Refile filtering** — `my/gtd-refile` wraps `org-refile` with `org-refile-target-verify-function` to exclude DONE/CANCELLED headings and the Inbox heading from refile targets.
 - **Context tags cache** — `my/org-context-tags` caches the `#+TAGS:` scan result in `my/gtd--context-tags-cache`. The cache is cleared via `after-save-hook` whenever `gtd.org` is saved.
 - **Shared internal helpers** — `my/gtd--insert-next-heading` is the shared implementation for `my/org-new-task` and `my/org-new-heading`. Both stay at the current heading; they differ only in `level-offset`: `0` for a sibling (new heading, `⌘n`), `1` for a child (new task, `⌘N`). Closed-state handling also differs: `⌘n` on a closed heading inserts as first sibling under parent (erroring if parent is also closed); `⌘N` on a closed heading always errors. `my/gtd--mark-active-line` is shared by dashboard and upcoming view for overlay highlighting.
@@ -154,6 +156,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Open Inbox | `SPC i` | `<p> i` | `⌘i` |
 | New task | `SPC n` | `<p> n` | `⌘n` |
 | New heading | `SPC N` | `<p> N` | `⌘ N` |
+| State picker | `SPC e` | `<p> e` | `⌘e` |
 | Complete | `SPC k` | `<p> k` | `⌘ k` |
 | Cancel | `SPC K` | `<p> K` | `⌥ ⌘ k` |
 | Duplicate | `SPC d` | `<p> d` | `⌘ d` |

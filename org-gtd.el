@@ -269,6 +269,24 @@ Result is cached and invalidated on save."
                                             (?x . "CANCELLED"))))))
             (when state (org-todo state)))))))
 
+;; ─── Block DONE if active child tasks remain ────────────────────────────────
+
+(defun my/gtd--block-done-with-active-children ()
+  "Prevent marking a heading DONE/CANCELLED if it has active child tasks.
+Active means NEXT, WAIT, or SOMEDAY. Hooks into org-blocker-hook so it
+applies to all state-change paths (keybindings, state picker, C-c C-t)."
+  (if (member org-state my/gtd-closed-states)
+      (save-excursion
+        (let ((end (save-excursion (org-end-of-subtree t) (point)))
+              (ok t))
+          (while (and ok (re-search-forward org-heading-regexp end t))
+            (when (member (org-get-todo-state) '("NEXT" "WAIT" "SOMEDAY"))
+              (setq ok nil)))
+          ok))
+    t))
+
+(add-hook 'org-blocker-hook #'my/gtd--block-done-with-active-children)
+
 ;; ─── Completed tasks sink to bottom ──────────────────────────────────────────
 
 (defun my/org-move-done-to-bottom ()
