@@ -9,6 +9,12 @@
 (defvar my/gtd-file nil
   "Path to your GTD org file. Set before loading: (setq my/gtd-file \"~/path/to/gtd.org\")")
 
+;; ─── Constants ───────────────────────────────────────────────────────────────
+(defconst my/gtd-inbox-heading "Inbox")
+(defconst my/gtd-closed-states '("DONE" "CANCELLED"))
+(defconst my/gtd-active-states '("NEXT" "WAIT" "SOMEDAY"))
+(defconst my/gtd-project-states '(nil "PROJECT"))
+
 ;; ─── Winner mode ─────────────────────────────────────────────────────────────
 (winner-mode 1)
 
@@ -88,6 +94,20 @@
             (org-agenda-todo-keyword-format "")
             (org-agenda-sorting-strategy '(timestamp-down)))))))
 
+;; ─── Dashboard helpers ───────────────────────────────────────────────────────
+
+(defun my/gtd--project-visible-p (htext state sched now-f)
+  "Return non-nil if a level-1 heading should appear in the dashboard project list.
+HTEXT is the heading text, STATE is the todo state, SCHED is the scheduled time,
+NOW-F is the current time as a float."
+  (let ((future-p (and sched (> (float-time sched) now-f))))
+    (cond
+     ((string= htext my/gtd-inbox-heading)    nil)  ; Inbox is never a project
+     ((member state my/gtd-closed-states)      nil)  ; DONE/CANCELLED hidden
+     ((member state '("WAIT" "SOMEDAY"))       (and sched (not future-p)))  ; only if due
+     ((member state my/gtd-project-states)     (not future-p))              ; hide if future
+     (t nil))))                                                              ; lone NEXT etc
+
 ;; ─── Refile (filtered) ───────────────────────────────────────────────────────
 
 (defun my/gtd-refile ()
@@ -95,8 +115,8 @@
   (interactive)
   (let ((org-refile-target-verify-function
          (lambda ()
-           (and (not (member (org-get-todo-state) '("DONE" "CANCELLED")))
-                (not (string= (org-get-heading t t t t) "Inbox"))))))
+           (and (not (member (org-get-todo-state) my/gtd-closed-states))
+                (not (string= (org-get-heading t t t t) my/gtd-inbox-heading))))))
     (org-refile)))
 
 (defun my/gtd-archive ()
@@ -115,14 +135,15 @@
 
 ;; ─── New task ────────────────────────────────────────────────────────────────
 
-(defun my/org-new-task ()
-  "Insert a new child heading with NEXT state after the parent heading's body text."
-  (interactive)
+(defun my/gtd--insert-next-heading (error-label move-to-parent)
+  "Insert a NEXT child heading after the current heading's body text.
+If MOVE-TO-PARENT is non-nil and current heading has a TODO state, move up first.
+ERROR-LABEL is used in the closed-state error message."
   (org-back-to-heading t)
-  (when (org-get-todo-state)
+  (when (and move-to-parent (org-get-todo-state))
     (org-up-heading-safe))
-  (when (member (org-get-todo-state) '("DONE" "CANCELLED"))
-    (user-error "Project is closed (%s). Re-open it first." (org-get-todo-state)))
+  (when (member (org-get-todo-state) my/gtd-closed-states)
+    (user-error "%s is closed (%s). Re-open it first." error-label (org-get-todo-state)))
   (let ((level (org-outline-level)))
     (forward-line 1)
     (while (and (not (eobp))
@@ -132,20 +153,15 @@
     (forward-line -1)
     (end-of-line)))
 
-(defun my/org-new-heading ()
-  "Insert a new child heading with NEXT state after the current heading's body text."
+(defun my/org-new-task ()
+  "Insert a new NEXT task under the parent project."
   (interactive)
-  (org-back-to-heading t)
-  (when (member (org-get-todo-state) '("DONE" "CANCELLED"))
-    (user-error "Heading is closed (%s). Re-open it first." (org-get-todo-state)))
-  (let ((level (org-outline-level)))
-    (forward-line 1)
-    (while (and (not (eobp))
-                (not (looking-at org-heading-regexp)))
-      (forward-line 1))
-    (insert (make-string (1+ level) ?*) " NEXT \n")
-    (forward-line -1)
-    (end-of-line)))
+  (my/gtd--insert-next-heading "Project" t))
+
+(defun my/org-new-heading ()
+  "Insert a new NEXT child heading under the current heading."
+  (interactive)
+  (my/gtd--insert-next-heading "Heading" nil))
 
 ;; ─── Inbox ───────────────────────────────────────────────────────────────────
 
@@ -163,43 +179,59 @@
 
 ;; ─── Context views ───────────────────────────────────────────────────────────
 
+(defvar my/gtd--context-tags-cache nil
+  "Cached list of @context tags from gtd.org #+TAGS line.")
+
+(defun my/gtd--context-tags-invalidate ()
+  "Clear the context tags cache."
+  (setq my/gtd--context-tags-cache nil))
+
+(add-hook 'after-save-hook
+          (lambda ()
+            (when (and my/gtd-file
+                       (string= (buffer-file-name) (expand-file-name my/gtd-file)))
+              (my/gtd--context-tags-invalidate))))
+
 (defun my/org-context-tags ()
-  "Return all @context tags (with @ prefix) defined in gtd.org #+TAGS line."
-  (with-current-buffer (find-file-noselect (car org-agenda-files))
-    (save-restriction
-      (widen)
-      (save-excursion
-        (goto-char (point-min))
-        (let (tags)
-          (while (re-search-forward "#\\+TAGS:.*" nil t)
-            (let ((line (match-string 0))
-                  (start 0))
-              (while (string-match "\\(@[a-zA-Z_]+\\)" line start)
-                (push (match-string 1 line) tags)
-                (setq start (match-end 0)))))
-          (delete-dups tags))))))
+  "Return all @context tags (with @ prefix) defined in gtd.org #+TAGS line.
+Result is cached and invalidated on save."
+  (or my/gtd--context-tags-cache
+      (setq my/gtd--context-tags-cache
+            (with-current-buffer (find-file-noselect (car org-agenda-files))
+              (save-restriction
+                (widen)
+                (save-excursion
+                  (goto-char (point-min))
+                  (let (tags)
+                    (while (re-search-forward "#\\+TAGS:.*" nil t)
+                      (let ((line (match-string 0))
+                            (start 0))
+                        (while (string-match "\\(@[a-zA-Z_]+\\)" line start)
+                          (push (match-string 1 line) tags)
+                          (setq start (match-end 0)))))
+                    (delete-dups tags))))))))
 
 (defun my/org-pick-context ()
   "Prompt for an @context tag and show NEXT tasks for it."
   (interactive)
-  (let ((tag (completing-read "Context: " (my/org-context-tags) nil t)))
-    (let ((org-agenda-overriding-header tag)
-          (org-agenda-todo-keyword-format ""))
-      (org-tags-view t (format "%s+TODO=\"NEXT\"" tag)))))
+  (let* ((tag (completing-read "Context: " (my/org-context-tags) nil t))
+         (org-agenda-overriding-header tag)
+         (org-agenda-todo-keyword-format ""))
+    (org-tags-view t (format "%s+TODO=\"NEXT\"" tag))))
 
 (defun my/org-pick-context-all ()
   "Prompt for an @context tag and show ALL tasks for it."
   (interactive)
-  (let ((tag (completing-read "Context: " (my/org-context-tags) nil t)))
-    (let ((org-agenda-overriding-header tag)
-          (org-agenda-todo-keyword-format ""))
-      (org-tags-view nil tag))))
+  (let* ((tag (completing-read "Context: " (my/org-context-tags) nil t))
+         (org-agenda-overriding-header tag)
+         (org-agenda-todo-keyword-format ""))
+    (org-tags-view nil tag)))
 
 ;; ─── Completed tasks sink to bottom ──────────────────────────────────────────
 
 (defun my/org-move-done-to-bottom ()
   "Move DONE or CANCELLED task to bottom of its sibling list."
-  (when (member org-state '("DONE" "CANCELLED"))
+  (when (member org-state my/gtd-closed-states)
     (condition-case nil
         (while t (org-move-subtree-down))
       (error nil))))
@@ -395,20 +427,21 @@
   (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "g")   #'my/org-dashboard--open)
   (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "q")   #'ignore))
 
+(defun my/gtd--mark-active-line (buf-name ov-var)
+  "Highlight the current line in BUF-NAME, storing overlay in OV-VAR."
+  (when-let ((buf (get-buffer buf-name)))
+    (with-current-buffer buf
+      (when (overlayp (symbol-value ov-var))
+        (delete-overlay (symbol-value ov-var)))
+      (set ov-var (make-overlay (line-beginning-position) (line-end-position)))
+      (overlay-put (symbol-value ov-var) 'face 'secondary-selection))))
+
 (defvar my/gtd-dashboard--active-ov nil
   "Overlay marking the currently active dashboard row.")
 
 (defun my/gtd-dashboard-mark-active ()
   "Highlight the current dashboard row as active."
-  (when-let ((buf (get-buffer "*GTD*")))
-    (with-current-buffer buf
-      (when (overlayp my/gtd-dashboard--active-ov)
-        (delete-overlay my/gtd-dashboard--active-ov))
-      (save-excursion
-        (goto-char (point))
-        (setq my/gtd-dashboard--active-ov
-              (make-overlay (line-beginning-position) (line-end-position)))
-        (overlay-put my/gtd-dashboard--active-ov 'face 'secondary-selection)))))
+  (my/gtd--mark-active-line "*GTD*" 'my/gtd-dashboard--active-ov))
 
 (defun my/gtd-dashboard-mouse-activate (event)
   "Mouse click handler — move point to click position then open view."
@@ -431,13 +464,7 @@
 
 (defun my/org-upcoming-mark-active ()
   "Highlight the current line in the upcoming view."
-  (when-let ((buf (get-buffer "*GTD Upcoming*")))
-    (with-current-buffer buf
-      (when (overlayp my/org-upcoming--active-ov)
-        (delete-overlay my/org-upcoming--active-ov))
-      (setq my/org-upcoming--active-ov
-            (make-overlay (line-beginning-position) (line-end-position)))
-      (overlay-put my/org-upcoming--active-ov 'face 'secondary-selection))))
+  (my/gtd--mark-active-line "*GTD Upcoming*" 'my/org-upcoming--active-ov))
 
 (defun my/org-upcoming-goto ()
   "Open the task at point in the right pane, narrowed to its subtree."
@@ -503,19 +530,16 @@
           (insert "\n")
           (let ((current-section nil))
             (dolist (entry entries)
-              (let* ((sched-f (nth 0 entry))
-                     (htext  (nth 1 entry))
-                     (state  (nth 2 entry))
-                     (mark   (nth 3 entry))
-                     (days   (/ (- sched-f today-start) 86400))
-                     (section (cond
-                               ((< days 1) nil)
-                               ((< days 2) "Tomorrow")
-                               ((< days 7)
-                                (nth (nth 6 (decode-time (seconds-to-time sched-f)))
-                                     '("Sunday" "Monday" "Tuesday" "Wednesday"
-                                       "Thursday" "Friday" "Saturday")))
-                               (t (format-time-string "%B" (seconds-to-time sched-f))))))
+              (pcase-let* ((`(,sched-f ,htext ,state ,mark) entry)
+                           (days    (/ (- sched-f today-start) 86400))
+                           (section (cond
+                                     ((< days 1) nil)
+                                     ((< days 2) "Tomorrow")
+                                     ((< days 7)
+                                      (nth (nth 6 (decode-time (seconds-to-time sched-f)))
+                                           '("Sunday" "Monday" "Tuesday" "Wednesday"
+                                             "Thursday" "Friday" "Saturday")))
+                                     (t (format-time-string "%B" (seconds-to-time sched-f))))))
                 (when section
                   (unless (equal section current-section)
                     (setq current-section section)
@@ -561,50 +585,36 @@
          (proj-names '()) (proj-data (make-hash-table :test 'equal)) (current-l1 nil))
     (with-current-buffer (find-file-noselect my/gtd-file)
       (save-restriction
-      (widen)
-      (org-map-entries
-       (lambda ()
-         (let* ((state  (org-get-todo-state))
-                (tags   (org-get-tags))
-                (sched  (org-get-scheduled-time (point)))
-                (dead   (org-get-deadline-time  (point)))
-                (active (and state (not (member state '("DONE" "CANCELLED" "SOMEDAY")))))
-                (ctx    (seq-find (lambda (tg) (string-prefix-p "@" tg)) tags))
-                (lvl    (org-outline-level))
-                (htext  (org-get-heading t t t t)))
-           ;; Projects: level-1 headings
-           ;; Show: no-state or PROJECT, with no future scheduled date
-           ;; Show: WAIT/SOMEDAY only if scheduled date is today or past
-           ;; Hide: DONE/CANCELLED, and anything with a future scheduled date
-           (if (= lvl 1)
-               (let* ((proj-sched sched)
-                      (future-p   (and proj-sched (> (float-time proj-sched) now-f)))
-                      (show-p     (cond
-                                   ((string= htext "Inbox") nil)
-                                   ((member state '("DONE" "CANCELLED")) nil)
-                                   ((member state '("WAIT" "SOMEDAY"))
-                                    (and proj-sched (not future-p)))
-                                   ((or (null state) (equal state "PROJECT"))
-                                    (not future-p))
-                                   (t nil)))) ; NEXT/anything else at level-1 = not a project
-                 (if show-p
-                     (progn
-                       (setq current-l1 htext)
-                       (push htext proj-names)
-                       (puthash htext (vector 0 0 (point-marker)) proj-data))
-                   (setq current-l1 nil)))
+        (widen)
+        (org-map-entries
+         (lambda ()
+           (let* ((state  (org-get-todo-state))
+                  (tags   (org-get-tags))
+                  (sched  (org-get-scheduled-time (point)))
+                  (dead   (org-get-deadline-time  (point)))
+                  (active (and state (not (member state '("DONE" "CANCELLED" "SOMEDAY")))))
+                  (ctx    (seq-find (lambda (tg) (string-prefix-p "@" tg)) tags))
+                  (lvl    (org-outline-level))
+                  (htext  (org-get-heading t t t t)))
+             (if (= lvl 1)
+               (if (my/gtd--project-visible-p htext state sched now-f)
+                   (progn
+                     (setq current-l1 htext)
+                     (push htext proj-names)
+                     (puthash htext (vector 0 0 (point-marker)) proj-data))
+                 (setq current-l1 nil))
              (when (and current-l1 state)
                (let ((v (gethash current-l1 proj-data)))
                  (when v
                    (aset v 1 (1+ (aref v 1)))
-                   (when (member state '("NEXT" "WAIT" "SOMEDAY"))
+                   (when (member state my/gtd-active-states)
                      (aset v 0 (1+ (aref v 0))))))))
            ;; Inbox: level-2 headings under "* Inbox" with no todo state
            (when (and (not state)
                       (= (org-outline-level) 2)
                       (save-excursion
                         (org-up-heading-safe)
-                        (string= (org-get-heading t t t t) "Inbox")))
+                        (string= (org-get-heading t t t t) my/gtd-inbox-heading)))
              (cl-incf inbox))
            ;; Today: scheduled/deadline today or overdue
            (when (and active
