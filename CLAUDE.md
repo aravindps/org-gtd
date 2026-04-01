@@ -12,7 +12,7 @@ A GTD configuration for Emacs org-mode, inspired by the workflow and feel of Thi
 
 | File | Role |
 |------|------|
-| `org-gtd.el` | Core: agenda views, helper functions, auto-sink hook. **No keybindings.** Load first. |
+| `org-gtd.el` | Core: agenda views, helper functions, auto-sink hook, startup settings. Internal mode-map bindings only (dashboard, agenda). **No user-facing keybindings.** Load first. |
 | `bindings-prefix.el` | Shared binding helper — defines `my/gtd-apply-prefix-bindings`. Never load directly. |
 | `bindings-ccg.el` | Applies prefix bindings under `C-c g`. Load for terminal Emacs. |
 | `bindings-f5.el` | Applies prefix bindings under `F5`. Alternative for terminal. |
@@ -24,6 +24,7 @@ A GTD configuration for Emacs org-mode, inspired by the workflow and feel of Thi
 
 - `org-gtd.el` and all `bindings-*.el` files must work in **vanilla Emacs** — no Doom macros allowed.
 - `bindings-doom.el` is the only file where `map!` and other Doom macros are permitted.
+- `doom-overrides.el` uses `with-eval-after-load` (vanilla-compatible) even though it's only loaded in Doom.
 - The same action is available across all three binding systems simultaneously (⌘, prefix, SPC).
 
 ### Keybinding consistency rule
@@ -35,18 +36,21 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 ### Auto-sink behavior
 
-`my/org-move-done-to-bottom` is hooked on `org-after-todo-state-change-hook`. When a task is marked DONE or CANCELLED, it automatically moves to the **top of the done group** (before the first existing DONE/CANCELLED sibling, not absolute bottom). This keeps newly-completed tasks visible at the top of the done section.
+`my/org-move-done-to-bottom` is hooked on `org-after-todo-state-change-hook`. When a task is marked DONE or CANCELLED, it calls `org-move-subtree-down` in a loop, stopping before the first existing DONE/CANCELLED sibling. This places the task at the **top of the done group** (not absolute bottom), keeping active tasks above and recently-completed tasks visible.
 
 ### Dashboard
 
 `my/org-dashboard` renders a `*GTD*` buffer with live counts for every view. It opens in a 30/70 left/right split — dashboard left, content right. Key behaviours:
 
-- Opens automatically when `gtd.org` is visited or on Emacs startup (`find-file-hook`)
+- Opens automatically when `gtd.org` is visited (`find-file-hook`) or on Emacs startup (`window-setup-hook`, controlled by `my/gtd-open-on-startup`)
 - `RET` / mouse-click on a row opens that view in the right pane
-- `q` closes the dashboard pane
+- `q` is bound to `#'ignore` (no-op) — close the dashboard with `SPC /` / `⌘/` (toggle)
 - `g` re-renders counts
 - Counts refresh automatically on: todo state change, `org-schedule`, `org-deadline`, file save, and evil insert exit
 - Context tag rows are derived from `#+TAGS:` in `gtd.org` — no code changes needed when tags are added
+- A "No context" row shows NEXT tasks with no `@tag`
+- The Logbook row intentionally shows no count (count is not computed)
+- Project name width scales dynamically with window width
 
 ### Auto-save
 
@@ -78,15 +82,18 @@ When adding or changing a keybinding, update **all three** binding layers:
 - `DONE` / `CANCELLED` — finished; auto-sunk to top of done group within parent on state change
 
 **View membership**:
-- **Today**: tasks with `NEXT`/`WAIT` scheduled for today or overdue
-- **Upcoming**: all future-scheduled tasks grouped by day (within 7 days) then by month; excludes `SOMEDAY`; custom buffer not org-agenda
-- **Anytime**: all `NEXT` tasks without a schedule date
+- **Today**: scheduled tasks for today or overdue (all non-DONE/CANCELLED states); the agenda `skip-function` only excludes DONE/CANCELLED
+- **Upcoming (dashboard)**: `my/org-upcoming-view` — custom `*GTD Upcoming*` buffer, groups future-scheduled tasks by day (within 7 days) then month; excludes SOMEDAY and today's tasks
+- **Upcoming (keybinding `2`)**: `org-agenda nil "2"` — standard org-agenda `tags-todo` view showing all future-scheduled non-DONE/CANCELLED tasks as a flat list. This differs from the dashboard's custom grouped view.
+- **Anytime**: all `NEXT` tasks without a schedule date or deadline
 - **Waiting**: all `WAIT` tasks
 - **Someday**: all `SOMEDAY` tasks
 - **Logbook**: all `DONE`/`CANCELLED` tasks
 - **Context**: `NEXT` tasks filtered by a chosen `@tag`
 
-**State labels in views**: Only the Today view shows state labels. All other views suppress state labels via `org-agenda-todo-keyword-format ""`. Logbook uses visual decorations instead: ✓ for DONE, strikethrough on task text for CANCELLED.
+**State labels in views**: Only the Today view shows state labels. All other views suppress state labels via `org-agenda-todo-keyword-format ""`. Logbook uses visual decorations instead: checkmark prefix for DONE, strikethrough on task text for CANCELLED.
+
+**Empty-state messages**: When an agenda view has no entries, a contextual placeholder is shown (e.g. "Nothing due today.", "No actionable tasks."). Implemented by `my/org-agenda-empty-state` on `org-agenda-finalize-hook`.
 
 **Deferred projects**: A project with `WAIT` or `SOMEDAY` state is hidden from the dashboard unless it has a scheduled date that is today or in the past. This keeps the left pane free of parked items while surfacing them when their scheduled date arrives.
 
@@ -102,7 +109,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 ### Project indicators (left pane)
 
-- `  Name` — has active tasks (`NEXT`/`WAIT`/`SOMEDAY`)
+- `Name` (no prefix) — has active tasks (`NEXT`/`WAIT`/`SOMEDAY`)
 - `● Name` — stale (tasks exist but all `DONE`/`CANCELLED`)
 - `? Name` — empty (no child tasks yet)
 
@@ -111,7 +118,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 - Clicking any view row opens content in the **right pane**
 - Clicking a task in any view opens it **narrowed to its subtree** in the right pane
 - To return to a list view: click it again from the left dashboard
-- `⌘[` / `winner-undo` goes back to the previous window configuration (`winner-mode` must be enabled)
+- `⌘[` / `winner-undo` goes back to the previous window configuration (`winner-mode` is enabled by `org-gtd.el`)
 - `SPC -` / `<p> -` toggles narrow/widen (zoom in and out of current subtree)
 - `⌘→` narrows to subtree; `⌘←` widens (GUI only)
 
@@ -119,7 +126,9 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 - **No `SPC` binding for Search headings** — `SPC f` conflicts with Doom's file search. Use `<p> f` or `⌘ f` instead.
 - **No `SPC` binding for Zoom in/out** — `⌘ →` / `⌘ ←` GUI only. `SPC -` / `<p> -` toggle narrow/widen works in all modes.
+- **No `SPC` binding for Move up/down** — `<p> p` / `<p> P` and `⌘ ↑` / `⌘ ↓` only.
 - **Archive (`SPC y`)** — `my/gtd-archive` wraps `org-archive-subtree` with a `y-or-n-p` confirmation prompt. Subtrees go to `gtd.org_archive`. Recoverable but manual (cut from `_archive`, paste back).
+- **Upcoming view duality** — the dashboard "Upcoming" row opens `my/org-upcoming-view` (custom grouped buffer), while `SPC 2` / `<p> 2` / `⌘ 2` open the org-agenda command "2" (flat tags-todo list). These show different output.
 
 ### Known Doom Emacs conflicts and workarounds
 
@@ -131,17 +140,19 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 ### Implementation notes
 
-- **Project scan** in dashboard uses `org-map-entries` at level 1. Visibility is determined by `my/gtd--project-visible-p` which checks heading state and scheduled date. It must explicitly enumerate valid project states (`nil`, `"PROJECT"`) and return `nil` as the default — a catch-all `(t t)` will incorrectly show level-1 `NEXT` tasks as projects.
-- **Upcoming view** is a custom `*GTD Upcoming*` buffer, not an org-agenda buffer. It scans `gtd.org` directly, groups entries by date, and uses text properties (`mouse-face`, `action`) for click navigation. State labels are stripped during rendering.
-- **Dashboard counts** are computed by a full scan of `gtd.org` on every refresh. Counts refresh on: `org-after-todo-state-change-hook`, `org-schedule`, `org-deadline`, `after-save-hook`, and `evil-insert-state-exit-hook`.
+- **Project scan** in dashboard uses `org-map-entries` to scan all headings. Level-1 headings are identified inline via `(= lvl 1)`. Visibility is determined by `my/gtd--project-visible-p` which checks heading state and scheduled date. It must explicitly enumerate valid project states (`nil`, `"PROJECT"`) and return `nil` as the default — a catch-all `(t t)` will incorrectly show level-1 `NEXT` tasks as projects.
+- **Upcoming view** (`my/org-upcoming-view`) is a custom `*GTD Upcoming*` buffer, not an org-agenda buffer. It scans `gtd.org` directly, groups entries by date, and uses text properties (`mouse-face`, `gtd-marker`) for click navigation. State labels are stripped during rendering.
+- **Dashboard counts** are computed by a full scan of `gtd.org` on every refresh. Counts refresh on: `org-after-todo-state-change-hook`, `org-schedule`, `org-deadline`, `after-save-hook`, and `evil-insert-state-exit-hook`. The Logbook row intentionally shows no count.
 - **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, it calls `org-move-subtree-down` in a loop, stopping before the first existing closed sibling. This places the task at the top of the done group (not absolute bottom), keeping active tasks above and recently-completed tasks visible.
-- **Complete/cancel with children** — `my/gtd-complete` and `my/gtd-cancel` count active descendants. If any exist, they prompt: `Complete 'T1' and 3 child tasks?`. On confirmation, `my/gtd--mark-children-as` marks all active descendants bottom-up (using push+reverse to avoid intermediate blocker triggers), then marks the heading itself. Guards are in place so re-running on already-closed headings is a no-op.
-- **State picker** (`my/gtd-set-state`, `⌘e` / `SPC e`) — one-line minibuffer prompt, single keypress via `read-char-choice`, no Enter needed. Options: NEXT, WAIT, SOMEDAY, DONE, CANCEL, Promote to project, quit. `[p] Promote` cuts the subtree, finds `* Inbox`, moves to `org-end-of-subtree` of Inbox, pastes as a level-1 heading immediately after Inbox, then sets state to PROJECT (subtasks carried along automatically).
+- **Complete/cancel with children** — `my/gtd-complete` and `my/gtd-cancel` count active descendants. If any exist, they prompt: `Complete 'T1' and 3 child tasks?`. On confirmation, `my/gtd--mark-children-as` marks all active descendants bottom-up (`push` naturally reverses scan order to give bottom-up processing, avoiding intermediate state-change hook triggers), then marks the heading itself. Guards are in place so re-running on already-closed headings is a no-op.
+- **State picker** (`my/gtd-set-state`, `⌘e` / `SPC e`) — one-line minibuffer prompt, single keypress via `read-char-choice`, no Enter needed. Options: NEXT, WAIT, SOMEDAY, DONE, CANCEL, Promote to project, quit. `[p] Promote` cuts the subtree, finds `* Inbox`, moves to `org-end-of-subtree` of Inbox, pastes as a level-1 heading immediately after Inbox, then sets state to PROJECT (subtasks carried along automatically). If `* Inbox` is not found, falls back to after the last top-level heading.
 - **Refile filtering** — `my/gtd-refile` wraps `org-refile` with `org-refile-target-verify-function` to exclude DONE/CANCELLED headings and the Inbox heading from refile targets.
 - **Context tags cache** — `my/org-context-tags` caches the `#+TAGS:` scan result in `my/gtd--context-tags-cache`. The cache is cleared via `after-save-hook` whenever `gtd.org` is saved.
 - **Shared internal helpers** — `my/gtd--insert-next-heading` is the shared implementation for `my/org-new-task` and `my/org-new-heading`. They differ in two ways: (1) `level-offset` — `0` for sibling (`⌘n`), `1` for child (`⌘N`); (2) `if-closed` — `'insert-before` for sibling (inserts as first sibling under parent, errors if parent is also closed), `'error` for child (always errors if heading is closed). For sibling insertion, `org-end-of-subtree` is used to skip past the entire subtree including all children. `my/gtd--mark-active-line` is shared by dashboard and upcoming view for overlay highlighting.
 - **Hide done** — `my/gtd-toggle-hide-done` (`⌘'` / `SPC '`) hides or reveals all DONE/CANCELLED headings in the buffer using `org-flag-region` on the full heading line plus its subtree. State is tracked with `defvar-local my/gtd--hide-done-active`. `my/gtd--reapply-hide-done` on `org-cycle-hook` re-applies the filter after any S-TAB visibility cycle so it persists.
-- **Startup settings** — `org-gtd.el` sets `org-agenda-prefix-format` (hides file prefix in views) and adds an `org-mode-hook` to disable line numbers. `my/gtd-open-on-startup` (default `t`) controls whether a `window-setup-hook` auto-opens `my/gtd-file` on Emacs launch.
+- **Startup settings** — `org-gtd.el` sets `org-agenda-prefix-format` (hides file prefix in views), enables `winner-mode`, and adds an `org-mode-hook` to disable line numbers. `my/gtd-open-on-startup` (default `t`) controls whether a `window-setup-hook` auto-opens `my/gtd-file` on Emacs launch.
+- **Agenda UI** — `q` is bound to `#'ignore` in both `org-agenda-mode-map` and `my/gtd-dashboard-mode-map` to prevent accidental closure. Mode line and cursor are suppressed in agenda buffers. `my/org-agenda-empty-state` inserts contextual placeholders when views have no entries.
+- **Smart view opener** — `my/org-open-view` opens agenda views in the right pane when the dashboard is visible. Currently used only by `bindings-doom.el`; `bindings-cmd.el` and `bindings-prefix.el` call `(org-agenda nil KEY)` directly.
 
 ### Keybindings reference
 
@@ -160,6 +171,8 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Open Inbox | `SPC i` | `<p> i` | `⌘i` |
 | New sibling heading | `SPC n` | `<p> n` | `⌘n` |
 | New child task | `SPC N` | `<p> N` | `⌘ N` |
+| Checklist item | `SPC c` | `<p> c` | `⌘ C` |
+| New top-level project | — | — | `⌥ ⌘ n` |
 | State picker | `SPC e` | `<p> e` | `⌘e` |
 | Complete | `SPC k` | `<p> k` | `⌘ k` |
 | Cancel | `SPC K` | `<p> K` | `⌥ ⌘ k` |
@@ -167,6 +180,10 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Duplicate | `SPC d` | `<p> d` | `⌘ d` |
 | Refile | `SPC m` | `<p> m` | `⌘ M` |
 | Archive | `SPC y` | `<p> y` | `⌘ Y` |
+| Move up | — | `<p> p` | `⌘ ↑` |
+| Move down | — | `<p> P` | `⌘ ↓` |
+| Move to top | — | — | `⌥ ⌘ ↑` |
+| Move to bottom | — | — | `⌥ ⌘ ↓` |
 | Schedule | `SPC s` | `<p> s` | `⌘ s` |
 | Schedule today | `SPC t` | `<p> t` | `⌘ t` |
 | Remove schedule | `SPC r` | `<p> r` | `⌘ r` |
@@ -177,6 +194,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Zoom out (widen) | — | — | `⌘ ←` |
 | Go back (winner) | — | — | `⌘ [` |
 | Tags | `SPC T` | `<p> T` | `⌘ T` |
+| Tags (alt) | — | — | `^ ⌘ T` |
 | Search headings | — | `<p> f` | `⌘ f` |
 
 ---
@@ -191,12 +209,13 @@ When adding or changing a keybinding, update **all three** binding layers:
 - **Tags** — `org-get-tags`, `org-tags-view`, `org-set-tags-command`
 - **Narrowing** — `org-narrow-to-subtree`, `widen`, `buffer-narrowed-p`
 - **Heading navigation** — `org-map-entries`, `org-outline-level`, `org-get-heading`, `org-up-heading-safe`
-- **Subtree ops** — `org-insert-subheading`, `org-move-subtree-up/down`, `org-copy-subtree`, `org-paste-subtree`, `org-archive-subtree`
+- **Subtree ops** — `org-move-subtree-up/down`, `org-copy-subtree`, `org-paste-subtree`, `org-cut-subtree`, `org-archive-subtree`, `org-end-of-subtree`
+- **Visibility** — `org-flag-region` for hiding DONE headings
 - **Logging** — `org-log-done`
-- **Hooks** — `org-after-todo-state-change-hook`, `org-agenda-finalize-hook`, `org-agenda-mode-hook`
+- **Hooks** — `org-after-todo-state-change-hook`, `org-agenda-finalize-hook`, `org-agenda-mode-hook`, `org-cycle-hook`
 
 ### Emacs UI / buffer management
-- **Custom major mode** — `define-derived-mode` (dashboard and upcoming view)
+- **Custom major mode** — `define-derived-mode` for dashboard (`my/gtd-dashboard-mode`); upcoming view uses `special-mode` directly
 - **Overlays** — active row highlight in dashboard and upcoming view
 - **Text properties** — clickable rows, mouse-face, markers for jump-to-task
 - **Window management** — `split-window-right`, `window-in-direction`, `delete-other-windows`, `winner-mode`

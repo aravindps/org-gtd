@@ -745,7 +745,7 @@ If no closed siblings exist, moves to the bottom."
   (let* ((context-tags (my/org-context-tags))
          (today-d (let ((d (decode-time))) (list (nth 4 d) (nth 3 d) (nth 5 d))))
          (now-f   (float-time))
-         (inbox 0) (today 0) (upcoming 0) (anytime 0) (waiting 0) (someday 0) (logbook 0)
+         (inbox 0) (today 0) (upcoming 0) (anytime 0) (waiting 0) (someday 0)
          (ctx-counts (mapcar (lambda (tag) (cons tag 0)) context-tags))
          (no-ctx 0)
          (proj-names '()) (proj-data (make-hash-table :test 'equal)) (current-l1 nil))
@@ -796,10 +796,9 @@ If no closed siblings exist, moves to the bottom."
            ;; Anytime: NEXT with no schedule and no deadline
            (when (and (equal state "NEXT") (not sched) (not dead))
              (cl-incf anytime))
-           ;; Waiting / Someday / Logbook
+           ;; Waiting / Someday
            (when (equal state "WAIT")      (cl-incf waiting))
            (when (equal state "SOMEDAY")   (cl-incf someday))
-           (when (member state '("DONE" "CANCELLED")) (cl-incf logbook))
            ;; Context: all NEXT tasks, by @tag
            (when (equal state "NEXT")
              (if ctx

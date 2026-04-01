@@ -18,7 +18,10 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 - **Smart completion** — completing a task with active children prompts to complete all of them together
 - **State picker** — `⌘ e` opens a one-line prompt; single keypress sets state or promotes a task to a top-level project
 - **Hide done** — `⌘ '` toggles DONE/CANCELLED tasks in and out of view; persists across outline cycles
+- **Logbook decorations** — DONE entries show a checkmark prefix; CANCELLED entries show strikethrough
+- **Empty-state messages** — views display contextual messages when no tasks match (e.g. "Nothing due today.")
 - **Auto-save** — saves on idle and on leaving insert mode; dashboard refreshes on every save
+- **Auto-open** — `gtd.org` opens automatically on Emacs startup (configurable via `my/gtd-open-on-startup`)
 - **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
 - **Clear project states** — `PROJECT` state marks active projects; indicators show active (`  `), stale (`●`), or empty (`?`)
 
@@ -30,7 +33,7 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 ![Navigation Pane](screenshots/Navigation%20Pane.png)
 
 ### Edit View
-![Edit View](screenshots/Edit%20view.png)
+![Edit View](screenshots/Edit%20View.png)
 
 ### Views
 
@@ -56,13 +59,14 @@ A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Thing
 
 | File | Purpose | Load when |
 |------|---------|-----------|
-| `org-gtd.el` | Core: agenda views, functions, auto-sink. No keybindings. | Always (load first) |
+| `org-gtd.el` | Core: agenda views, functions, auto-sink. No user keybindings. | Always (load first) |
 | `bindings-cmd.el` | `⌘` key bindings for GUI Emacs (macOS) | GUI / Doom |
 | `bindings-ccg.el` | `C-c g` prefix bindings for terminal Emacs | Terminal |
 | `bindings-f5.el` | `F5` prefix bindings for terminal Emacs | Terminal (alternative) |
 | `bindings-prefix.el` | Shared helper used by `bindings-ccg.el` and `bindings-f5.el` | Auto-loaded |
 | `bindings-doom.el` | `SPC` leader bindings — Doom Emacs only | Doom only |
 | `doom-overrides.el` | Doom/evil conflict fixes — Doom Emacs only | Doom only (load last) |
+| `demo.org` | Sample GTD file for trying the setup | Optional |
 
 ---
 
@@ -86,13 +90,11 @@ git clone https://github.com/<you>/org-gtd ~/dotfiles/org-gtd
 * My First Project
 ** NEXT First task :@office:
 ** NEXT Second task :@ask:
-
-* Standalone Task :@home:
 ```
 
 ### 3. Load from your Emacs config
 
-Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on first load.
+Set `my/gtd-file` **before** loading anything. This variable is required — loading without it will cause errors.
 
 **Doom Emacs** (`~/.config/doom/config.el`):
 ```elisp
@@ -126,7 +128,14 @@ Set `my/gtd-file` before loading anything. If omitted, Emacs will prompt on firs
 
 > **Mouse in terminal** — add `(xterm-mouse-mode 1)` to your config to enable mouse support. Works in iTerm2 and most modern terminals.
 
-### 4. Restart Emacs
+### 4. Configuration
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `my/gtd-file` | `nil` | **Required.** Path to your GTD org file. |
+| `my/gtd-open-on-startup` | `t` | Open `gtd.org` automatically on Emacs launch. Set to `nil` to disable. |
+
+### 5. Restart Emacs
 
 Doom users: run `doom sync` before restarting.
 
@@ -144,6 +153,8 @@ Opening `gtd.org` (or pressing `SPC /` / `⌘/`) shows a live count dashboard in
 
 Counts update automatically whenever you change a task state, reschedule, or save the file.
 
+The Contexts section includes a "No context" row showing NEXT tasks that have no `@tag`.
+
 ---
 
 ## How It Works
@@ -155,11 +166,12 @@ Counts update automatically whenever you change a task state, reschedule, or sav
 ### Task States
 
 ```
-NEXT → WAIT → SOMEDAY → DONE → CANCELLED
+PROJECT → NEXT → WAIT → SOMEDAY → DONE → CANCELLED
 ```
 
 | State | Meaning |
 |-------|---------|
+| `PROJECT` | Marks a level-1 heading as a project |
 | `NEXT` | Ready to work on |
 | `WAIT` | Blocked / waiting on someone |
 | `SOMEDAY` | Maybe later |
@@ -187,13 +199,13 @@ The context picker auto-detects them — no code changes needed when you add new
 
 **Know the project?** Open `gtd.org`, navigate to the project, press `⌘ n` / `C-c g n`.
 
-**Quick thought?** Press `SPC i` / `C-c g i` → narrows to Inbox → type task → `⌘ -` / `C-c g -` to zoom out when done.
+**Quick thought?** Press `SPC i` / `C-c g i` → narrows to Inbox → type task → `SPC -` / `C-c g -` to zoom out when done.
 
 ### Triaging Inbox
 
 Open Inbox view (`SPC 0` / `C-c g 0`), navigate to an item, then:
 - `⌘ M` / `C-c g m` — refile to an existing project
-- `⌘ n` / `C-c g n` — convert to a NEXT task under a project
+- `⌘ e` / `C-c g e` — use the state picker to set state or promote to project
 
 ### Finishing a task
 
@@ -215,7 +227,7 @@ All actions are available across all binding systems simultaneously.
 | Dashboard | `⌘ /` | `… /` | `SPC /` |
 | Inbox view | `⌘ 0` | `… 0` | `SPC 0` |
 | Today | `⌘ 1` | `… 1` | `SPC 1` |
-| Upcoming (7 days) | `⌘ 2` | `… 2` | `SPC 2` |
+| Upcoming | `⌘ 2` | `… 2` | `SPC 2` |
 | Anytime (NEXT, no date) | `⌘ 3` | `… 3` | `SPC 3` |
 | Waiting (blocked) | `⌘ 4` | `… 4` | `SPC 4` |
 | Someday | `⌘ 5` | `… 5` | `SPC 5` |
@@ -340,7 +352,7 @@ A few other things are explicitly out of scope:
 
 **External references** — Projects can link out to other apps (Obsidian, Notion, Bear, a browser URL) using plain org links. Those links open in the right pane when clicked. Notes and project details can live in an external system, or stay inside `gtd.org` — either works. This setup does not try to be a note-taking system.
 
-**Calendar** — Scheduling (`⌘S`, `⌘T`) sets dates on tasks for ordering and surfacing in Today/Upcoming views. There is no calendar view. A separate calendar app (macOS Calendar, Fantastical, etc.) handles time-blocked events. Tasks and calendar stay separate by design.
+**Calendar** — Scheduling (`⌘ s`, `⌘ t`) sets dates on tasks for ordering and surfacing in Today/Upcoming views. There is no calendar view. A separate calendar app (macOS Calendar, Fantastical, etc.) handles time-blocked events. Tasks and calendar stay separate by design.
 
 ---
 
