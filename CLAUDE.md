@@ -135,7 +135,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 - **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, the subtree is cut and re-inserted at the end of the parent. This keeps active tasks at the top.
 - **Refile filtering** — `my/gtd-refile` wraps `org-refile` with `org-refile-target-verify-function` to exclude DONE/CANCELLED headings and the Inbox heading from refile targets.
 - **Context tags cache** — `my/org-context-tags` caches the `#+TAGS:` scan result in `my/gtd--context-tags-cache`. The cache is cleared via `after-save-hook` whenever `gtd.org` is saved.
-- **Shared internal helpers** — `my/gtd--insert-next-heading` is the shared implementation for `my/org-new-task` and `my/org-new-heading` (differ only in whether they move to parent first). `my/gtd--mark-active-line` is shared by dashboard and upcoming view for overlay highlighting.
+- **Shared internal helpers** — `my/gtd--insert-next-heading` is the shared implementation for `my/org-new-task` and `my/org-new-heading`. Both stay at the current heading; they differ only in `level-offset`: `1` for a child (new task, `⌘n`), `0` for a sibling (new heading, `⌘N`). `my/gtd--mark-active-line` is shared by dashboard and upcoming view for overlay highlighting.
 
 ### Keybindings reference
 

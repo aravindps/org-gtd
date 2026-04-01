@@ -19,8 +19,8 @@
     (global-set-key (kbd "s-i") #'my/org-open-inbox)                                 ;; Open Inbox
 
     ;; ─── Create ───────────────────────────────────────────────────────────
-    (define-key map (kbd "s-n") #'my/org-new-task)                        ;; ⌘n  New NEXT sibling at top (after parent notes)
-    (define-key map (kbd "s-N") #'my/org-new-heading)                    ;; ⇧⌘N New NEXT child at top (after current node notes)
+    (define-key map (kbd "s-n") #'my/org-new-task)                        ;; ⌘n  New NEXT child of current heading
+    (define-key map (kbd "s-N") #'my/org-new-heading)                    ;; ⇧⌘N New NEXT sibling (after current heading's body)
     (define-key map (kbd "M-s-n") (lambda () (interactive)               ;; ⌥⌘N New project
                                     (goto-char (point-max))
                                     (org-insert-heading)

@@ -135,9 +135,11 @@ NOW-F is the current time as a float."
 
 ;; ─── New task ────────────────────────────────────────────────────────────────
 
-(defun my/gtd--insert-next-heading (error-label move-to-parent)
-  "Insert a NEXT child heading after the current heading's body text.
+(defun my/gtd--insert-next-heading (error-label move-to-parent level-offset)
+  "Insert a NEXT heading after the current heading's body text.
 If MOVE-TO-PARENT is non-nil and current heading has a TODO state, move up first.
+LEVEL-OFFSET is added to the current heading level to determine the new heading depth:
+use 1 for a child, 0 for a sibling.
 ERROR-LABEL is used in the closed-state error message."
   (org-back-to-heading t)
   (when (and move-to-parent (org-get-todo-state))
@@ -149,19 +151,20 @@ ERROR-LABEL is used in the closed-state error message."
     (while (and (not (eobp))
                 (not (looking-at org-heading-regexp)))
       (forward-line 1))
-    (insert (make-string (1+ level) ?*) " NEXT \n")
+    (unless (bolp) (newline))
+    (insert (make-string (+ level level-offset) ?*) " NEXT \n")
     (forward-line -1)
     (end-of-line)))
 
 (defun my/org-new-task ()
-  "Insert a new NEXT task under the parent project."
+  "Insert a new NEXT child task under the current heading."
   (interactive)
-  (my/gtd--insert-next-heading "Project" t))
+  (my/gtd--insert-next-heading "Heading" nil 1))
 
 (defun my/org-new-heading ()
-  "Insert a new NEXT child heading under the current heading."
+  "Insert a new NEXT sibling heading after the current heading."
   (interactive)
-  (my/gtd--insert-next-heading "Heading" nil))
+  (my/gtd--insert-next-heading "Heading" nil 0))
 
 ;; ─── Inbox ───────────────────────────────────────────────────────────────────
 
