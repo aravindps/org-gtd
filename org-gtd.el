@@ -671,7 +671,7 @@ Result is cached and invalidated on save."
           (my/org--dash-row "Anytime"  anytime  (lambda () (my/org-open-view "3")))
           (my/org--dash-row "Waiting"  waiting  (lambda () (my/org-open-view "4")))
           (my/org--dash-row "Someday"  someday  (lambda () (my/org-open-view "5")))
-          (my/org--dash-row "Logbook"  0        (lambda () (my/org-open-view "6")))
+          (my/org--dash-row "Logbook"  logbook  (lambda () (my/org-open-view "6")))
           (when proj-names
             (insert "\n")
             (my/org--dash-section-label "Projects")

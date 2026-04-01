@@ -21,6 +21,8 @@
       ;; ─── Create ─────────────────────────────────────────────────────────
       "n"   #'my/org-new-heading                     ;; New NEXT sibling (same level)
       "N"   #'my/org-new-task                        ;; New NEXT task (child)
+      "c"   (lambda () (interactive)                 ;; New checklist item
+              (end-of-line) (newline) (insert "- [ ] "))
 
       ;; ─── Edit ───────────────────────────────────────────────────────────
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete
