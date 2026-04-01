@@ -271,7 +271,7 @@ Result is cached and invalidated on save."
 
 ;; ─── Block DONE if active child tasks remain ────────────────────────────────
 
-(defun my/gtd--block-done-with-active-children ()
+(defun my/gtd--block-done-with-active-children (_change-plist)
   "Prevent marking a heading DONE/CANCELLED if it has active child tasks.
 Active means NEXT, WAIT, or SOMEDAY. Hooks into org-blocker-hook so it
 applies to all state-change paths (keybindings, state picker, C-c C-t)."
