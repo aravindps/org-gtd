@@ -253,26 +253,35 @@ Result is cached and invalidated on save."
 (defvar-local my/gtd--hide-done-active nil
   "Non-nil when the hide-DONE sparse tree filter is active.")
 
+(defun my/gtd--flag-done-headings (flag)
+  "Hide (FLAG=t) or show (FLAG=nil) all DONE/CANCELLED headings in the buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward org-heading-regexp nil t)
+      (when (member (org-get-todo-state) my/gtd-closed-states)
+        (let ((start (line-beginning-position))
+              (end (save-excursion (org-end-of-subtree t t) (point))))
+          (org-flag-region start end flag 'outline))))))
+
 (defun my/gtd-toggle-hide-done ()
-  "Toggle visibility of DONE/CANCELLED tasks in the org buffer.
-When active, only NEXT/WAIT/SOMEDAY headings are shown (sparse tree).
-Press again to restore the full tree."
+  "Toggle visibility of DONE/CANCELLED headings in the org buffer.
+Works on top of the current S-TAB visibility mode."
   (interactive)
   (if my/gtd--hide-done-active
       (progn
         (setq my/gtd--hide-done-active nil)
-        (org-show-all)
-        (message "Showing all tasks"))
+        (my/gtd--flag-done-headings nil)
+        (message "Showing DONE/CANCELLED tasks"))
     (setq my/gtd--hide-done-active t)
-    (org-match-sparse-tree nil "TODO=\"NEXT\"|TODO=\"WAIT\"|TODO=\"SOMEDAY\"")
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward org-heading-regexp nil t)
-        (when (member (org-get-todo-state) my/gtd-closed-states)
-          (let ((start (line-beginning-position))
-                (end (save-excursion (org-end-of-subtree t t) (point))))
-            (org-flag-region start end t 'outline)))))
+    (my/gtd--flag-done-headings t)
     (message "Hiding DONE/CANCELLED — press ⌘' again to restore")))
+
+(defun my/gtd--reapply-hide-done (&rest _)
+  "Re-hide DONE/CANCELLED headings after S-TAB cycle if filter is active."
+  (when my/gtd--hide-done-active
+    (my/gtd--flag-done-headings t)))
+
+(add-hook 'org-cycle-hook #'my/gtd--reapply-hide-done)
 
 ;; ─── State picker ────────────────────────────────────────────────────────────
 
