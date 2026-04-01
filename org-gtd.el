@@ -250,15 +250,29 @@ Result is cached and invalidated on save."
 
 ;; ─── Hide/show DONE tasks ────────────────────────────────────────────────────
 
+(defvar-local my/gtd--hide-done-active nil
+  "Non-nil when the hide-DONE sparse tree filter is active.")
+
 (defun my/gtd-toggle-hide-done ()
   "Toggle visibility of DONE/CANCELLED tasks in the org buffer.
 When active, only NEXT/WAIT/SOMEDAY headings are shown (sparse tree).
-Press again or C-c C-c to restore the full tree."
+Press again to restore the full tree."
   (interactive)
-  (if (eq last-command 'my/gtd-toggle-hide-done)
-      (progn (org-show-all) (message "Showing all tasks"))
+  (if my/gtd--hide-done-active
+      (progn
+        (setq my/gtd--hide-done-active nil)
+        (org-show-all)
+        (message "Showing all tasks"))
+    (setq my/gtd--hide-done-active t)
     (org-match-sparse-tree nil "TODO=\"NEXT\"|TODO=\"WAIT\"|TODO=\"SOMEDAY\"")
-    (message "Hiding DONE/CANCELLED — press ⌘' again or C-c C-c to restore")))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward org-heading-regexp nil t)
+        (when (member (org-get-todo-state) my/gtd-closed-states)
+          (let ((start (line-beginning-position))
+                (end (save-excursion (org-end-of-subtree t t) (point))))
+            (org-flag-region start end t 'outline)))))
+    (message "Hiding DONE/CANCELLED — press ⌘' again to restore")))
 
 ;; ─── State picker ────────────────────────────────────────────────────────────
 
