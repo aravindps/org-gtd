@@ -84,7 +84,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 **View membership**:
 - **Today**: scheduled tasks for today or overdue (all non-DONE/CANCELLED states); the agenda `skip-function` only excludes DONE/CANCELLED
 - **Upcoming (dashboard)**: `my/org-upcoming-view` — custom `*GTD Upcoming*` buffer, groups future-scheduled tasks by day (within 7 days) then month; excludes SOMEDAY and today's tasks
-- **Upcoming (keybinding `2`)**: `org-agenda nil "2"` — standard org-agenda `tags-todo` view showing all future-scheduled non-DONE/CANCELLED tasks as a flat list. This differs from the dashboard's custom grouped view.
+- **Upcoming (keybinding `2`)**: `my/org-open-upcoming` — opens the custom grouped `*GTD Upcoming*` buffer (same as clicking the dashboard row). Dashboard-aware: opens in the right pane when the dashboard is visible.
 - **Anytime**: all `NEXT` tasks without a schedule date or deadline
 - **Waiting**: all `WAIT` tasks
 - **Someday**: all `SOMEDAY` tasks
@@ -126,9 +126,9 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 - **No `SPC` binding for Search headings** — `SPC f` conflicts with Doom's file search. Use `<p> f` or `⌘ f` instead.
 - **No `SPC` binding for Zoom in/out** — `⌘ →` / `⌘ ←` GUI only. `SPC -` / `<p> -` toggle narrow/widen works in all modes.
-- **No `SPC` binding for Move up/down** — `<p> p` / `<p> P` and `⌘ ↑` / `⌘ ↓` only.
+- **Move up/down/top/bottom** — fully mapped across all three layers: `SPC ↑`/`↓`/`{`/`}`, `<p> p`/`P`/`{`/`}`, `⌘ ↑`/`↓`/`⌥⌘↑`/`⌥⌘↓`.
 - **Archive (`SPC y`)** — `my/gtd-archive` wraps `org-archive-subtree` with a `y-or-n-p` confirmation prompt. Subtrees go to `gtd.org_archive`. Recoverable but manual (cut from `_archive`, paste back).
-- **Upcoming view duality** — the dashboard "Upcoming" row opens `my/org-upcoming-view` (custom grouped buffer), while `SPC 2` / `<p> 2` / `⌘ 2` open the org-agenda command "2" (flat tags-todo list). These show different output.
+- **Upcoming view unified** — all entry points (dashboard row, `SPC 2` / `<p> 2` / `⌘ 2`) now call `my/org-open-upcoming`, which opens the custom grouped `*GTD Upcoming*` buffer. The old org-agenda command "2" has been removed.
 
 ### Known Doom Emacs conflicts and workarounds
 
@@ -152,7 +152,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 - **Hide done** — `my/gtd-toggle-hide-done` (`⌘'` / `SPC '`) hides or reveals all DONE/CANCELLED headings in the buffer using `org-flag-region` on the full heading line plus its subtree. State is tracked with `defvar-local my/gtd--hide-done-active`. `my/gtd--reapply-hide-done` on `org-cycle-hook` re-applies the filter after any S-TAB visibility cycle so it persists.
 - **Startup settings** — `org-gtd.el` sets `org-agenda-prefix-format` (hides file prefix in views), enables `winner-mode`, and adds an `org-mode-hook` to disable line numbers. `my/gtd-open-on-startup` (default `t`) controls whether a `window-setup-hook` auto-opens `my/gtd-file` on Emacs launch.
 - **Agenda UI** — `q` is bound to `#'ignore` in both `org-agenda-mode-map` and `my/gtd-dashboard-mode-map` to prevent accidental closure. Mode line and cursor are suppressed in agenda buffers. `my/org-agenda-empty-state` inserts contextual placeholders when views have no entries.
-- **Smart view opener** — `my/org-open-view` opens agenda views in the right pane when the dashboard is visible. Currently used only by `bindings-doom.el`; `bindings-cmd.el` and `bindings-prefix.el` call `(org-agenda nil KEY)` directly.
+- **Smart view opener** — `my/org-open-view` opens agenda views in the right pane when the dashboard is visible. Used by all three binding layers. `my/org-open-upcoming` is the equivalent wrapper for the custom `*GTD Upcoming*` buffer.
 
 ### Keybindings reference
 
@@ -172,7 +172,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 | New sibling heading | `SPC n` | `<p> n` | `⌘n` |
 | New child task | `SPC N` | `<p> N` | `⌘ N` |
 | Checklist item | `SPC c` | `<p> c` | `⌘ C` |
-| New top-level project | — | — | `⌥ ⌘ n` |
+| New top-level project | `SPC A` | `<p> A` | `⌥ ⌘ n` |
 | State picker | `SPC e` | `<p> e` | `⌘e` |
 | Complete | `SPC k` | `<p> k` | `⌘ k` |
 | Cancel | `SPC K` | `<p> K` | `⌥ ⌘ k` |
@@ -180,10 +180,10 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Duplicate | `SPC d` | `<p> d` | `⌘ d` |
 | Refile | `SPC m` | `<p> m` | `⌘ M` |
 | Archive | `SPC y` | `<p> y` | `⌘ Y` |
-| Move up | — | `<p> p` | `⌘ ↑` |
-| Move down | — | `<p> P` | `⌘ ↓` |
-| Move to top | — | — | `⌥ ⌘ ↑` |
-| Move to bottom | — | — | `⌥ ⌘ ↓` |
+| Move up | `SPC ↑` | `<p> p` | `⌘ ↑` |
+| Move down | `SPC ↓` | `<p> P` | `⌘ ↓` |
+| Move to top | `SPC {` | `<p> {` | `⌥ ⌘ ↑` |
+| Move to bottom | `SPC }` | `<p> }` | `⌥ ⌘ ↓` |
 | Schedule | `SPC s` | `<p> s` | `⌘ s` |
 | Schedule today | `SPC t` | `<p> t` | `⌘ t` |
 | Remove schedule | `SPC r` | `<p> r` | `⌘ r` |
@@ -192,9 +192,8 @@ When adding or changing a keybinding, update **all three** binding layers:
 | Zoom toggle | `SPC -` | `<p> -` | — |
 | Zoom in (narrow) | — | — | `⌘ →` |
 | Zoom out (widen) | — | — | `⌘ ←` |
-| Go back (winner) | — | — | `⌘ [` |
+| Go back (winner) | `SPC [` | `<p> [` | `⌘ [` |
 | Tags | `SPC T` | `<p> T` | `⌘ T` |
-| Tags (alt) | — | — | `^ ⌘ T` |
 | Search headings | — | `<p> f` | `⌘ f` |
 
 ---

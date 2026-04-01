@@ -81,13 +81,6 @@
             (org-agenda-skip-function
              '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
 
-          ;; 2 — Upcoming
-          ("2" "Upcoming" tags-todo "SCHEDULED>=\"<today>\""
-           ((org-agenda-overriding-header "Upcoming")
-            (org-agenda-sorting-strategy '(scheduled-up))
-            (org-agenda-skip-function
-             '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
-
           ;; 3 — Anytime
           ("3" "Anytime" tags-todo "TODO=\"NEXT\""
            ((org-agenda-overriding-header "Anytime")
@@ -404,6 +397,31 @@ If no closed siblings exist, moves to the bottom."
 
 (add-hook 'org-after-todo-state-change-hook #'my/org-move-done-to-bottom)
 
+;; ─── Move to top / bottom ────────────────────────────────────────────────
+
+(defun my/org-move-subtree-to-top ()
+  "Move the current subtree to the top among its siblings."
+  (interactive)
+  (condition-case nil
+      (while t (org-move-subtree-up))
+    (error nil)))
+
+(defun my/org-move-subtree-to-bottom ()
+  "Move the current subtree to the bottom among its siblings."
+  (interactive)
+  (condition-case nil
+      (while t (org-move-subtree-down))
+    (error nil)))
+
+;; ─── New top-level project ──────────────────────────────────────────────
+
+(defun my/org-new-project ()
+  "Insert a new top-level heading at the end of the buffer."
+  (interactive)
+  (goto-char (point-max))
+  (org-insert-heading)
+  (org-promote-subtree))
+
 ;; ─── Zoom toggle ─────────────────────────────────────────────────────────────
 
 (defun my/org-zoom-toggle ()
@@ -577,6 +595,15 @@ If no closed siblings exist, moves to the bottom."
         (with-selected-window (or (window-in-direction 'right dash-win) dash-win)
           (org-agenda nil key))
       (org-agenda nil key))))
+
+(defun my/org-open-upcoming ()
+  "Open the Upcoming view. If the dashboard is visible, open in the right pane."
+  (interactive)
+  (let ((dash-win (get-buffer-window "*GTD*")))
+    (if dash-win
+        (with-selected-window (or (window-in-direction 'right dash-win) dash-win)
+          (my/org-upcoming-view))
+      (my/org-upcoming-view))))
 
 ;; ─── Dashboard ───────────────────────────────────────────────────────────────
 
@@ -815,7 +842,7 @@ If no closed siblings exist, moves to the bottom."
           (insert "\n")
           (my/org--dash-row "Inbox"    inbox    (lambda () (my/org-open-view "0")))
           (my/org--dash-row "Today"    today    (lambda () (my/org-open-view "1")))
-          (my/org--dash-row "Upcoming" upcoming #'my/org-upcoming-view)
+          (my/org--dash-row "Upcoming" upcoming #'my/org-open-upcoming)
           (my/org--dash-row "Anytime"  anytime  (lambda () (my/org-open-view "3")))
           (my/org--dash-row "Waiting"  waiting  (lambda () (my/org-open-view "4")))
           (my/org--dash-row "Someday"  someday  (lambda () (my/org-open-view "5")))

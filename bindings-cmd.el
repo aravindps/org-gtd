@@ -9,13 +9,13 @@
     (global-set-key (kbd "s-/") #'my/org-dashboard)                                  ;; Dashboard
     (with-eval-after-load 'evil
       (define-key evil-normal-state-map (kbd "s-/") #'my/org-dashboard))
-    (global-set-key (kbd "s-0") (lambda () (interactive) (org-agenda nil "0")))      ;; Inbox
-    (global-set-key (kbd "s-1") (lambda () (interactive) (org-agenda nil "1")))      ;; Today
-    (global-set-key (kbd "s-2") (lambda () (interactive) (org-agenda nil "2")))      ;; Upcoming
-    (global-set-key (kbd "s-3") (lambda () (interactive) (org-agenda nil "3")))      ;; Anytime
-    (global-set-key (kbd "s-4") (lambda () (interactive) (org-agenda nil "4")))      ;; Waiting
-    (global-set-key (kbd "s-5") (lambda () (interactive) (org-agenda nil "5")))      ;; Someday
-    (global-set-key (kbd "s-6") (lambda () (interactive) (org-agenda nil "6")))      ;; Logbook
+    (global-set-key (kbd "s-0") (lambda () (interactive) (my/org-open-view "0")))    ;; Inbox
+    (global-set-key (kbd "s-1") (lambda () (interactive) (my/org-open-view "1")))    ;; Today
+    (global-set-key (kbd "s-2") #'my/org-open-upcoming)                              ;; Upcoming
+    (global-set-key (kbd "s-3") (lambda () (interactive) (my/org-open-view "3")))    ;; Anytime
+    (global-set-key (kbd "s-4") (lambda () (interactive) (my/org-open-view "4")))    ;; Waiting
+    (global-set-key (kbd "s-5") (lambda () (interactive) (my/org-open-view "5")))    ;; Someday
+    (global-set-key (kbd "s-6") (lambda () (interactive) (my/org-open-view "6")))    ;; Logbook
     (global-set-key (kbd "s-7") (lambda () (interactive) (my/org-pick-context)))     ;; Context NEXT
     (global-set-key (kbd "s-8") (lambda () (interactive) (my/org-pick-context-all))) ;; Context All
     (global-set-key (kbd "s-i") #'my/org-open-inbox)                                 ;; Open Inbox
@@ -23,10 +23,7 @@
     ;; ─── Create ───────────────────────────────────────────────────────────
     (define-key map (kbd "s-n") #'my/org-new-heading)                     ;; ⌘n  New NEXT sibling (after current heading's body)
     (define-key map (kbd "s-N") #'my/org-new-task)                       ;; ⇧⌘N New NEXT child of current heading
-    (define-key map (kbd "M-s-n") (lambda () (interactive)               ;; ⌥⌘N New project
-                                    (goto-char (point-max))
-                                    (org-insert-heading)
-                                    (org-promote-subtree)))
+    (define-key map (kbd "M-s-n") #'my/org-new-project)                  ;; ⌥⌘N New project
     (define-key map (kbd "s-C") (lambda () (interactive)                 ;; ⇧⌘C New checklist
                                   (end-of-line) (newline) (insert "- [ ] ")))
 
@@ -41,14 +38,8 @@
     ;; ─── Move ─────────────────────────────────────────────────────────────
     (define-key map (kbd "s-<up>") #'org-move-subtree-up)               ;; ⌘↑ Move up
     (define-key map (kbd "s-<down>") #'org-move-subtree-down)           ;; ⌘↓ Move down
-    (define-key map (kbd "M-s-<up>") (lambda () (interactive)           ;; ⌥⌘↑ Move to top
-                                       (condition-case nil
-                                           (while t (org-move-subtree-up))
-                                         (error nil))))
-    (define-key map (kbd "M-s-<down>") (lambda () (interactive)         ;; ⌥⌘↓ Move to bottom
-                                         (condition-case nil
-                                             (while t (org-move-subtree-down))
-                                           (error nil))))
+    (define-key map (kbd "M-s-<up>") #'my/org-move-subtree-to-top)      ;; ⌥⌘↑ Move to top
+    (define-key map (kbd "M-s-<down>") #'my/org-move-subtree-to-bottom) ;; ⌥⌘↓ Move to bottom
     (define-key map (kbd "s-M") #'my/gtd-refile)                        ;; ⇧⌘M Refile / Move to project
 
     ;; ─── Dates ────────────────────────────────────────────────────────────
@@ -68,8 +59,7 @@
                                   (if (fboundp 'consult-org-heading)
                                       (consult-org-heading)
                                     (occur "^\\*+ "))))
-    (define-key map (kbd "s-T") #'org-set-tags-command)          ;; ⇧⌘T Tags
-    (define-key map (kbd "C-s-t") #'org-set-tags-command)))      ;; ^⌘T Tags
+    (define-key map (kbd "s-T") #'org-set-tags-command)))        ;; ⇧⌘T Tags
 
 (provide 'bindings-cmd)
 ;;; bindings-cmd.el ends here

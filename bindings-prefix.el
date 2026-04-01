@@ -8,19 +8,20 @@
   ;; ─── Views ────────────────────────────────────────────────────────────────
   (define-key map (kbd "i") #'my/org-open-inbox)                                  ;; Open Inbox to edit
   (define-key map (kbd "/") #'my/org-dashboard)                                   ;; Dashboard
-  (define-key map (kbd "0") (lambda () (interactive) (org-agenda nil "0")))       ;; Inbox
-  (define-key map (kbd "1") (lambda () (interactive) (org-agenda nil "1")))       ;; Today
-  (define-key map (kbd "2") (lambda () (interactive) (org-agenda nil "2")))       ;; Upcoming
-  (define-key map (kbd "3") (lambda () (interactive) (org-agenda nil "3")))       ;; Anytime
-  (define-key map (kbd "4") (lambda () (interactive) (org-agenda nil "4")))       ;; Waiting
-  (define-key map (kbd "5") (lambda () (interactive) (org-agenda nil "5")))       ;; Someday
-  (define-key map (kbd "6") (lambda () (interactive) (org-agenda nil "6")))       ;; Logbook
+  (define-key map (kbd "0") (lambda () (interactive) (my/org-open-view "0")))     ;; Inbox
+  (define-key map (kbd "1") (lambda () (interactive) (my/org-open-view "1")))     ;; Today
+  (define-key map (kbd "2") #'my/org-open-upcoming)                               ;; Upcoming
+  (define-key map (kbd "3") (lambda () (interactive) (my/org-open-view "3")))     ;; Anytime
+  (define-key map (kbd "4") (lambda () (interactive) (my/org-open-view "4")))     ;; Waiting
+  (define-key map (kbd "5") (lambda () (interactive) (my/org-open-view "5")))     ;; Someday
+  (define-key map (kbd "6") (lambda () (interactive) (my/org-open-view "6")))     ;; Logbook
   (define-key map (kbd "7") (lambda () (interactive) (my/org-pick-context)))      ;; Context NEXT
   (define-key map (kbd "8") (lambda () (interactive) (my/org-pick-context-all)))  ;; Context All
 
   ;; ─── Create ───────────────────────────────────────────────────────────────
   (define-key map (kbd "n") #'my/org-new-heading)                   ;; New NEXT sibling (same level)
   (define-key map (kbd "N") #'my/org-new-task)                      ;; New NEXT task (child)
+  (define-key map (kbd "A") #'my/org-new-project)                   ;; New top-level project
   (define-key map (kbd "c") (lambda () (interactive)                 ;; New checklist
                                (end-of-line) (newline) (insert "- [ ] ")))
 
@@ -34,6 +35,8 @@
   ;; ─── Move ─────────────────────────────────────────────────────────────────
   (define-key map (kbd "p") #'org-move-subtree-up)                  ;; Move up
   (define-key map (kbd "P") #'org-move-subtree-down)                ;; Move down
+  (define-key map (kbd "{") #'my/org-move-subtree-to-top)           ;; Move to top
+  (define-key map (kbd "}") #'my/org-move-subtree-to-bottom)        ;; Move to bottom
   (define-key map (kbd "m") #'my/gtd-refile)                        ;; Move to project
 
   ;; ─── Dates ────────────────────────────────────────────────────────────────
@@ -45,6 +48,7 @@
 
   ;; ─── Navigate ─────────────────────────────────────────────────────────────
   (define-key map (kbd "-") #'my/org-zoom-toggle)       ;; Toggle zoom (narrow/widen)
+  (define-key map (kbd "[") #'winner-undo)              ;; Go back
 
   (define-key map (kbd "'") #'my/gtd-toggle-hide-done)  ;; Hide/show DONE
 
