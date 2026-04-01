@@ -296,44 +296,70 @@ Press again or C-c C-c to restore the full tree."
 
 ;; ─── Complete / Cancel guards ────────────────────────────────────────────────
 
+(defun my/gtd--active-child-count ()
+  "Count active (NEXT/WAIT/SOMEDAY) tasks in current subtree including self."
+  (let ((count 0)
+        (end (save-excursion (org-end-of-subtree t) (point))))
+    (save-excursion
+      (org-back-to-heading t)
+      (while (re-search-forward org-heading-regexp end t)
+        (when (member (org-get-todo-state) '("NEXT" "WAIT" "SOMEDAY"))
+          (cl-incf count))))
+    count))
+
+(defun my/gtd--mark-children-as (state)
+  "Mark all active tasks in current subtree as STATE, bottom-up (including self)."
+  (let ((markers '())
+        (end (save-excursion (org-end-of-subtree t) (point))))
+    (save-excursion
+      (org-back-to-heading t)
+      (while (re-search-forward org-heading-regexp end t)
+        (when (member (org-get-todo-state) '("NEXT" "WAIT" "SOMEDAY"))
+          (push (point-marker) markers))))
+    (dolist (marker markers)  ;; push reverses order → bottom-up
+      (goto-char marker)
+      (org-todo state))))
+
 (defun my/gtd-complete ()
-  "Mark task DONE. No-op if already DONE or CANCELLED."
+  "Mark task DONE. No-op if already closed.
+If active tasks exist in subtree, asks to mark them all DONE (including self)."
   (interactive)
   (unless (member (org-get-todo-state) my/gtd-closed-states)
-    (org-todo "DONE")))
+    (let ((count (my/gtd--active-child-count)))
+      (if (> count 1)
+          (when (y-or-n-p (format "Complete \"%s\" and %d child task%s? "
+                                  (org-get-heading t t t t)
+                                  (1- count)
+                                  (if (= count 2) "" "s")))
+            (my/gtd--mark-children-as "DONE"))
+        (org-todo "DONE")))))
 
 (defun my/gtd-cancel ()
-  "Mark task CANCELLED. No-op if already DONE or CANCELLED."
+  "Mark task CANCELLED. No-op if already closed.
+If active tasks exist in subtree, asks to mark them all CANCELLED (including self)."
   (interactive)
   (unless (member (org-get-todo-state) my/gtd-closed-states)
-    (org-todo "CANCELLED")))
+    (let ((count (my/gtd--active-child-count)))
+      (if (> count 1)
+          (when (y-or-n-p (format "Cancel \"%s\" and %d child task%s? "
+                                  (org-get-heading t t t t)
+                                  (1- count)
+                                  (if (= count 2) "" "s")))
+            (my/gtd--mark-children-as "CANCELLED"))
+        (org-todo "CANCELLED")))))
 
-;; ─── Block DONE if active child tasks remain ────────────────────────────────
-
-(defun my/gtd--block-done-with-active-children (change-plist)
-  "Prevent marking a heading DONE/CANCELLED if it has active child tasks.
-Active means NEXT, WAIT, or SOMEDAY. Hooks into org-blocker-hook so it
-applies to all state-change paths (keybindings, state picker, C-c C-t)."
-  (let ((new-state (plist-get change-plist :to)))
-    (if (member new-state my/gtd-closed-states)
-        (save-excursion
-          (let ((end (save-excursion (org-end-of-subtree t) (point)))
-                (ok t))
-            (while (and ok (re-search-forward org-heading-regexp end t))
-              (when (member (org-get-todo-state) '("NEXT" "WAIT" "SOMEDAY"))
-                (setq ok nil)))
-            ok))
-      t)))
-
-(add-hook 'org-blocker-hook #'my/gtd--block-done-with-active-children)
 
 ;; ─── Completed tasks sink to bottom ──────────────────────────────────────────
 
 (defun my/org-move-done-to-bottom ()
-  "Move DONE or CANCELLED task to bottom of its sibling list."
+  "Move DONE or CANCELLED task just before the first closed sibling.
+If no closed siblings exist, moves to the bottom."
   (when (member org-state my/gtd-closed-states)
     (condition-case nil
-        (while t (org-move-subtree-down))
+        (while (save-excursion
+                 (and (org-get-next-sibling)
+                      (not (member (org-get-todo-state) my/gtd-closed-states))))
+          (org-move-subtree-down))
       (error nil))))
 
 (add-hook 'org-after-todo-state-change-hook #'my/org-move-done-to-bottom)
