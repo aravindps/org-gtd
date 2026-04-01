@@ -19,8 +19,8 @@
   (define-key map (kbd "8") (lambda () (interactive) (my/org-pick-context-all)))  ;; Context All
 
   ;; ─── Create ───────────────────────────────────────────────────────────────
-  (define-key map (kbd "n") #'my/org-new-task)                       ;; New NEXT task (child)
-  (define-key map (kbd "N") #'my/org-new-heading)                   ;; New heading (same level, NEXT)
+  (define-key map (kbd "n") #'my/org-new-heading)                   ;; New NEXT sibling (same level)
+  (define-key map (kbd "N") #'my/org-new-task)                      ;; New NEXT task (child)
   (define-key map (kbd "c") (lambda () (interactive)                 ;; New checklist
                                (end-of-line) (newline) (insert "- [ ] ")))
 

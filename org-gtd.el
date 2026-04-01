@@ -135,36 +135,48 @@ NOW-F is the current time as a float."
 
 ;; ─── New task ────────────────────────────────────────────────────────────────
 
-(defun my/gtd--insert-next-heading (error-label move-to-parent level-offset)
-  "Insert a NEXT heading after the current heading's body text.
-If MOVE-TO-PARENT is non-nil and current heading has a TODO state, move up first.
-LEVEL-OFFSET is added to the current heading level to determine the new heading depth:
-use 1 for a child, 0 for a sibling.
-ERROR-LABEL is used in the closed-state error message."
+(defun my/gtd--insert-next-heading (level-offset if-closed)
+  "Insert a NEXT heading relative to the current heading.
+LEVEL-OFFSET controls depth: 0 = sibling, 1 = child.
+IF-CLOSED controls behaviour when the heading has a closed state:
+  \\='error        — signal a user-error
+  \\='insert-before — insert the new heading before the current one instead."
   (org-back-to-heading t)
-  (when (and move-to-parent (org-get-todo-state))
-    (org-up-heading-safe))
-  (when (member (org-get-todo-state) my/gtd-closed-states)
-    (user-error "%s is closed (%s). Re-open it first." error-label (org-get-todo-state)))
-  (let ((level (org-outline-level)))
-    (forward-line 1)
-    (while (and (not (eobp))
-                (not (looking-at org-heading-regexp)))
-      (forward-line 1))
-    (unless (bolp) (newline))
-    (insert (make-string (+ level level-offset) ?*) " NEXT \n")
-    (forward-line -1)
-    (end-of-line)))
+  (let ((level (org-outline-level))
+        (closed (member (org-get-todo-state) my/gtd-closed-states)))
+    (cond
+     ((and closed (eq if-closed 'error))
+      (user-error "Heading is closed (%s). Re-open it first." (org-get-todo-state)))
+     ((and closed (eq if-closed 'insert-before))
+      (org-up-heading-safe)
+      (forward-line 1)
+      (while (and (not (eobp))
+                  (not (looking-at org-heading-regexp)))
+        (forward-line 1))
+      (insert (make-string (+ level level-offset) ?*) " NEXT \n")
+      (forward-line -1)
+      (end-of-line))
+     (t
+      (forward-line 1)
+      (while (and (not (eobp))
+                  (not (looking-at org-heading-regexp)))
+        (forward-line 1))
+      (unless (bolp) (newline))
+      (insert (make-string (+ level level-offset) ?*) " NEXT \n")
+      (forward-line -1)
+      (end-of-line)))))
 
 (defun my/org-new-task ()
-  "Insert a new NEXT child task under the current heading."
+  "Insert a new NEXT child task under the current heading.
+Errors if the current heading is closed."
   (interactive)
-  (my/gtd--insert-next-heading "Heading" nil 1))
+  (my/gtd--insert-next-heading 1 'error))
 
 (defun my/org-new-heading ()
-  "Insert a new NEXT sibling heading after the current heading."
+  "Insert a new NEXT sibling heading.
+If the current heading is closed, inserts before it instead of after."
   (interactive)
-  (my/gtd--insert-next-heading "Heading" nil 0))
+  (my/gtd--insert-next-heading 0 'insert-before))
 
 ;; ─── Inbox ───────────────────────────────────────────────────────────────────
 

@@ -19,8 +19,8 @@
       "8"   (lambda () (interactive) (my/org-pick-context-all)) ;; Context All
 
       ;; ─── Create ─────────────────────────────────────────────────────────
-      "n"   #'my/org-new-task                        ;; New NEXT task (child)
-      "N"   #'my/org-new-heading                     ;; New heading (same level, NEXT)
+      "n"   #'my/org-new-heading                     ;; New NEXT sibling (same level)
+      "N"   #'my/org-new-task                        ;; New NEXT task (child)
 
       ;; ─── Edit ───────────────────────────────────────────────────────────
       "k"   (lambda () (interactive) (org-todo "DONE"))       ;; Complete
