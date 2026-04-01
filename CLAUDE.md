@@ -54,8 +54,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 
 ### GTD data model
 
-- **Area** = level-1 heading with no TODO state — a container, never shown in dashboard
-- **Project** = level-1 heading with `PROJECT` state (or no state if not yet classified) — shown in dashboard left pane
+- **Project** = level-1 heading with `PROJECT` state or no state — shown in dashboard left pane
 - **Task** = any heading with a TODO state (`NEXT`, `WAIT`, `SOMEDAY`, `DONE`, `CANCELLED`) inside a project
 - **Inbox** = a top-level heading named "Inbox"; items there have no state and are excluded from projects
 - Single org file pointed to by `my/gtd-file` (user must set before loading)
@@ -76,7 +75,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 - `NEXT` — actionable, will show in Today/Anytime/Context views
 - `WAIT` — blocked on something external
 - `SOMEDAY` — deferred, not committed
-- `DONE` / `CANCELLED` — finished; auto-sunk to bottom of parent on state change
+- `DONE` / `CANCELLED` — finished; auto-sunk to top of done group within parent on state change
 
 **View membership**:
 - **Today**: tasks with `NEXT`/`WAIT` scheduled for today or overdue
@@ -135,7 +134,7 @@ When adding or changing a keybinding, update **all three** binding layers:
 - **Project scan** in dashboard uses `org-map-entries` at level 1. Visibility is determined by `my/gtd--project-visible-p` which checks heading state and scheduled date. It must explicitly enumerate valid project states (`nil`, `"PROJECT"`) and return `nil` as the default — a catch-all `(t t)` will incorrectly show level-1 `NEXT` tasks as projects.
 - **Upcoming view** is a custom `*GTD Upcoming*` buffer, not an org-agenda buffer. It scans `gtd.org` directly, groups entries by date, and uses text properties (`mouse-face`, `action`) for click navigation. State labels are stripped during rendering.
 - **Dashboard counts** are computed by a full scan of `gtd.org` on every refresh. Counts refresh on: `org-after-todo-state-change-hook`, `org-schedule`, `org-deadline`, `after-save-hook`, and `evil-insert-state-exit-hook`.
-- **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, the subtree is cut and re-inserted at the end of the parent. This keeps active tasks at the top.
+- **Auto-sink** (`my/org-move-done-to-bottom`) runs on `org-after-todo-state-change-hook`. When marking DONE/CANCELLED, it calls `org-move-subtree-down` in a loop, stopping before the first existing closed sibling. This places the task at the top of the done group (not absolute bottom), keeping active tasks above and recently-completed tasks visible.
 - **Complete/cancel with children** — `my/gtd-complete` and `my/gtd-cancel` count active descendants. If any exist, they prompt: `Complete 'T1' and 3 child tasks?`. On confirmation, `my/gtd--mark-children-as` marks all active descendants bottom-up (using push+reverse to avoid intermediate blocker triggers), then marks the heading itself. Guards are in place so re-running on already-closed headings is a no-op.
 - **State picker** (`my/gtd-set-state`, `⌘e` / `SPC e`) — one-line minibuffer prompt, single keypress via `read-char-choice`, no Enter needed. Options: NEXT, WAIT, SOMEDAY, DONE, CANCEL, Promote to project, quit. `[p] Promote` cuts the subtree, finds `* Inbox`, moves to `org-end-of-subtree` of Inbox, pastes as a level-1 heading immediately after Inbox, then sets state to PROJECT (subtasks carried along automatically).
 - **Refile filtering** — `my/gtd-refile` wraps `org-refile` with `org-refile-target-verify-function` to exclude DONE/CANCELLED headings and the Inbox heading from refile targets.

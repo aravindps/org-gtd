@@ -140,7 +140,6 @@ Opening `gtd.org` (or pressing `SPC /` / `⌘/`) shows a live count dashboard in
 |-----|--------|
 | `RET` / click | Open view in right pane |
 | `g` | Re-render counts |
-| `q` | Close dashboard pane |
 | `SPC /` / `⌘/` | Toggle dashboard open/closed |
 
 Counts update automatically whenever you change a task state, reschedule, or save the file.
@@ -164,8 +163,8 @@ NEXT → WAIT → SOMEDAY → DONE → CANCELLED
 | `NEXT` | Ready to work on |
 | `WAIT` | Blocked / waiting on someone |
 | `SOMEDAY` | Maybe later |
-| `DONE` | Completed — auto-sinks to bottom |
-| `CANCELLED` | Dropped — auto-sinks to bottom |
+| `DONE` | Completed — auto-sinks into done group |
+| `CANCELLED` | Dropped — auto-sinks into done group |
 
 ### Context Tags
 
@@ -198,7 +197,7 @@ Open Inbox view (`SPC 0` / `C-c g 0`), navigate to an item, then:
 
 ### Finishing a task
 
-`⌘ k` / `C-c g k` → marks DONE, auto-sinks to bottom of project.
+`⌘ k` / `C-c g k` → marks DONE, auto-sinks into the done group within the project.
 
 Blocked? `S-Right` to cycle to `WAIT`.
 
