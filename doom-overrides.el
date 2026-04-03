@@ -22,5 +22,17 @@
 (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "g")   #'my/org-dashboard--open)
 (evil-define-key 'normal my/gtd-dashboard-mode-map (kbd "q")   #'ignore)
 
+;; Help: bind all action keys in evil normal state so they aren't swallowed
+(dolist (key '("/" "0" "1" "2" "3" "4" "5" "6" "7" "8" "i"
+              "n" "N" "a" "c"
+              "e" "k" "K" "d" "y" "'"
+              "<up>" "<down>" "{" "}" "m"
+              "s" "t" "r" "o" "D"
+              "-" "[" "f" "T"
+              "q" "?"))
+  (let ((fn (lookup-key my/gtd-help-mode-map (kbd key))))
+    (when fn
+      (evil-define-key 'normal my/gtd-help-mode-map (kbd key) fn))))
+
 (provide 'doom-overrides)
 ;;; doom-overrides.el ends here

@@ -60,7 +60,8 @@
                                   (if (fboundp 'consult-org-heading)
                                       (consult-org-heading)
                                     (occur "^\\*+ "))))
-    (define-key map (kbd "s-T") #'org-set-tags-command)))        ;; ⇧⌘T Tags
+    (define-key map (kbd "s-T") #'org-set-tags-command)          ;; ⇧⌘T Tags
+    (define-key map (kbd "s-?") #'my/gtd-help)))                ;; ⌘? Help
 
 (provide 'bindings-cmd)
 ;;; bindings-cmd.el ends here

@@ -958,5 +958,160 @@ Multiple calls within 0.3s collapse into a single refresh."
                          (list 'gtd-action action 'mouse-face 'highlight)))
   (insert "\n"))
 
+;; ─── Help ────────────────────────────────────────────────────────────────────
+
+(defvar my/gtd-help-mode-map (make-sparse-keymap)
+  "Keymap for GTD help buffer.")
+
+(define-derived-mode my/gtd-help-mode special-mode "GTD Help"
+  "Interactive GTD keybinding cheatsheet. Press any key to execute."
+  (setq-local mode-line-format nil)
+  (setq-local cursor-type nil))
+
+(defun my/gtd-help--bind (key fn)
+  "Bind KEY in help buffer to close help then call FN."
+  (define-key my/gtd-help-mode-map (kbd key)
+    (lambda () (interactive)
+      (quit-window)
+      (call-interactively fn))))
+
+(defun my/gtd-help--bind-view (key view-key)
+  "Bind KEY in help buffer to close help then open agenda view VIEW-KEY."
+  (define-key my/gtd-help-mode-map (kbd key)
+    (lambda () (interactive)
+      (quit-window)
+      (my/org-open-view view-key))))
+
+;; Views
+(my/gtd-help--bind "/" #'my/org-dashboard)
+(my/gtd-help--bind-view "0" "0")
+(my/gtd-help--bind-view "1" "1")
+(my/gtd-help--bind "2" #'my/org-open-upcoming)
+(my/gtd-help--bind-view "3" "3")
+(my/gtd-help--bind-view "4" "4")
+(my/gtd-help--bind-view "5" "5")
+(my/gtd-help--bind-view "6" "6")
+(my/gtd-help--bind "7" #'my/org-pick-context)
+(my/gtd-help--bind "8" #'my/org-pick-context-all)
+(my/gtd-help--bind "i" #'my/org-open-inbox)
+
+;; Create
+(my/gtd-help--bind "n" #'my/org-new-heading)
+(my/gtd-help--bind "N" #'my/org-new-task)
+(my/gtd-help--bind "a" #'my/org-new-project)
+(define-key my/gtd-help-mode-map (kbd "c")
+  (lambda () (interactive)
+    (quit-window)
+    (end-of-line) (newline) (insert "- [ ] ")))
+
+;; Edit
+(my/gtd-help--bind "e" #'my/gtd-set-state)
+(my/gtd-help--bind "k" #'my/gtd-complete)
+(my/gtd-help--bind "K" #'my/gtd-cancel)
+(my/gtd-help--bind "d" #'my/gtd-duplicate)
+(my/gtd-help--bind "y" #'my/gtd-archive)
+(my/gtd-help--bind "'" #'my/gtd-toggle-hide-done)
+
+;; Move
+(my/gtd-help--bind "<up>" #'org-move-subtree-up)
+(my/gtd-help--bind "<down>" #'org-move-subtree-down)
+(my/gtd-help--bind "{" #'my/org-move-subtree-to-top)
+(my/gtd-help--bind "}" #'my/org-move-subtree-to-bottom)
+(my/gtd-help--bind "m" #'my/gtd-refile)
+
+;; Dates
+(my/gtd-help--bind "s" #'org-schedule)
+(define-key my/gtd-help-mode-map (kbd "t")
+  (lambda () (interactive) (quit-window) (org-schedule nil ".")))
+(define-key my/gtd-help-mode-map (kbd "r")
+  (lambda () (interactive) (quit-window) (org-schedule '(4))))
+(define-key my/gtd-help-mode-map (kbd "o")
+  (lambda () (interactive) (quit-window) (org-todo "SOMEDAY")))
+(my/gtd-help--bind "D" #'org-deadline)
+
+;; Navigate
+(my/gtd-help--bind "-" #'my/org-zoom-toggle)
+(my/gtd-help--bind "[" #'winner-undo)
+(define-key my/gtd-help-mode-map (kbd "f")
+  (lambda () (interactive)
+    (quit-window)
+    (if (fboundp 'consult-org-heading) (consult-org-heading) (occur "^\\*+ "))))
+(my/gtd-help--bind "T" #'org-set-tags-command)
+
+;; Close
+(define-key my/gtd-help-mode-map (kbd "q") #'quit-window)
+(define-key my/gtd-help-mode-map (kbd "?") #'quit-window)
+
+(defun my/gtd-help--row (key1 label1 &optional key2 label2)
+  "Insert one or two help entries on a line."
+  (let ((col1 (format "  %s  %-22s" (propertize (format "%-4s" key1) 'face 'bold) label1)))
+    (insert col1)
+    (when key2
+      (insert (format "  %s  %s" (propertize (format "%-4s" key2) 'face 'bold) label2)))
+    (insert "\n")))
+
+(defun my/gtd-help ()
+  "Open interactive GTD help in the right pane. Toggle if already open."
+  (interactive)
+  (let ((existing (get-buffer-window "*GTD Help*")))
+    (if existing
+        (quit-window nil existing)
+      (let ((buf (get-buffer-create "*GTD Help*")))
+        (with-current-buffer buf
+          (let ((inhibit-read-only t))
+            (erase-buffer)
+            (my/gtd-help-mode)
+            (insert "\n")
+            (insert (propertize "  GTD Help" 'face '(:weight bold :height 1.1)))
+            (insert (propertize " — press any key to run\n\n" 'face 'shadow))
+
+            (my/org--dash-section-label "Views")
+            (my/gtd-help--row "/"  "Dashboard toggle"    "0"  "Inbox view")
+            (my/gtd-help--row "1"  "Today"               "2"  "Upcoming")
+            (my/gtd-help--row "3"  "Anytime"             "4"  "Waiting")
+            (my/gtd-help--row "5"  "Someday"             "6"  "Logbook")
+            (my/gtd-help--row "7"  "Context (NEXT)"      "8"  "Context (all)")
+            (my/gtd-help--row "i"  "Open Inbox")
+
+            (insert "\n")
+            (my/org--dash-section-label "Create")
+            (my/gtd-help--row "n"  "New sibling"         "N"  "New child task")
+            (my/gtd-help--row "a"  "New project"         "c"  "Checklist item")
+
+            (insert "\n")
+            (my/org--dash-section-label "Edit")
+            (my/gtd-help--row "e"  "State picker"        "k"  "Complete")
+            (my/gtd-help--row "K"  "Cancel"              "d"  "Duplicate")
+            (my/gtd-help--row "y"  "Archive"             "'"  "Hide/show done")
+
+            (insert "\n")
+            (my/org--dash-section-label "Move")
+            (my/gtd-help--row "↑"  "Move up"             "↓"  "Move down")
+            (my/gtd-help--row "{"  "Move to top"         "}"  "Move to bottom")
+            (my/gtd-help--row "m"  "Refile")
+
+            (insert "\n")
+            (my/org--dash-section-label "Dates")
+            (my/gtd-help--row "s"  "Schedule"            "t"  "Schedule today")
+            (my/gtd-help--row "r"  "Remove schedule"     "o"  "Someday")
+            (my/gtd-help--row "D"  "Deadline")
+
+            (insert "\n")
+            (my/org--dash-section-label "Navigate")
+            (my/gtd-help--row "-"  "Zoom toggle"         "["  "Go back")
+            (my/gtd-help--row "T"  "Tags"                "f"  "Search headings")
+
+            (insert "\n")
+            (my/gtd-help--row "q"  "Close help")
+
+            (goto-char (point-min))))
+        ;; Open in right pane if dashboard visible, and focus it
+        (let* ((dash-win (get-buffer-window "*GTD*"))
+               (target (if dash-win
+                           (or (window-in-direction 'right dash-win) dash-win)
+                         (selected-window))))
+          (set-window-buffer target buf)
+          (select-window target))))))
+
 (provide 'org-gtd)
 ;;; org-gtd.el ends here

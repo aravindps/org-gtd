@@ -52,7 +52,8 @@
 
       ;; ─── Navigation ─────────────────────────────────────────────────────
       "-"   #'my/org-zoom-toggle                   ;; Toggle zoom (narrow/widen)
-      "["   #'winner-undo)                         ;; Go back
+      "["   #'winner-undo                          ;; Go back
+      "?"   #'my/gtd-help)                        ;; Help
 
 (provide 'bindings-doom)
 ;;; bindings-doom.el ends here

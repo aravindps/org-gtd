@@ -57,7 +57,8 @@
                                (if (fboundp 'consult-org-heading)
                                    (consult-org-heading)
                                  (occur "^\\*+ "))))
-  (define-key map (kbd "T") #'org-set-tags-command))    ;; Tag picker
+  (define-key map (kbd "T") #'org-set-tags-command)     ;; Tag picker
+  (define-key map (kbd "?") #'my/gtd-help))             ;; Help
 
 (provide 'bindings-prefix)
 ;;; bindings-prefix.el ends here
