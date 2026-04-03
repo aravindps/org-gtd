@@ -1,15 +1,9 @@
-       -*- mode: org; coding: utf-8 -*-
 #+TITLE: GTD
 #+STARTUP: overview
 #+TODO: PROJECT NEXT WAIT SOMEDAY | DONE CANCELLED
 #+TAGS: @home @office @phone @errands @email
 
-* Inbox
-** Buy a new charger
-** REPLY to dentist appointment email
-** Look into standing desk options
-
-* PROJECT Launch Personal Website                                   :@office:
+* PROJECT Launch Personal Website :@office:
 ** NEXT Write the about page
 ** NEXT Set up domain and hosting
    SCHEDULED: <2026-04-01 Wed>
@@ -18,6 +12,11 @@
    CLOSED: [2026-03-22 Sun]
 ** DONE Buy the domain
    CLOSED: [2026-03-20 Fri]
+
+* Inbox
+** Buy a new charger
+** REPLY to dentist appointment email
+** Look into standing desk options
 
 * PROJECT Q2 Health Goals                                          :@home:
 ** NEXT Book annual checkup
@@ -42,8 +41,8 @@
 ** SOMEDAY Add a home office room
 
 * PROJECT Quick Wins                                               :@phone:
-** NEXT Call mom
-** NEXT Renew car insurance                                       :@errands:
+** WAIT Call mom
+** WAIT Renew car insurance :@errands:
    DEADLINE: <2026-04-10 Fri>
 ** SOMEDAY Learn to make sourdough                                :@home:
 ** DONE Submit tax return                                         :@office:

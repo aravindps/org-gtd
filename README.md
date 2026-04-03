@@ -1,76 +1,62 @@
+![org-gtd](screenshots/banner.png)
+
 # org-gtd
 
-> **Keywords:** org-mode gtd, emacs gtd, getting things done emacs, org-mode productivity, doom emacs gtd, emacs task manager
+GTD in Emacs. No packages, no dependencies — just Elisp.
 
-A GTD setup for Emacs using org-mode, inspired by the workflow and feel of Things 3. Works with **Doom Emacs** and **vanilla Emacs** (GUI + terminal).
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
+[![Emacs](https://img.shields.io/badge/Emacs-27%2B-purple.svg)](https://www.gnu.org/software/emacs/)
+[![Doom](https://img.shields.io/badge/Doom-compatible-green.svg)](https://github.com/doomemacs/doomemacs)
 
-> **Not the `org-gtd` MELPA package.** This is an independent configuration — no package manager, no dependencies, just Emacs Lisp loaded directly from your config.
+A GTD setup for org-mode, inspired by the workflow and feel of Things 3. Works with **Doom Emacs** and **vanilla Emacs** (GUI + terminal).
+
+> **Not the `org-gtd` MELPA package.** This is an independent configuration loaded directly from your config.
+
+### Quick Start
+
+```elisp
+(setq my/gtd-file "~/path/to/your/gtd.org")
+(load "~/dotfiles/org-gtd/org-gtd.el")
+(load "~/dotfiles/org-gtd/bindings-cmd.el")
+```
+
+---
+
+**Contents:** [Features](#features) · [Installation](#installation) · [Daily Workflow](#daily-workflow) · [How It Works](#how-it-works) · [Keybindings](#keybinding-reference) · [Demo](#try-it-with-demoorg) · [Scope](#scope)
 
 ---
 
 ## Features
 
+**Views**
 - **Live dashboard** — counts for every view in a 30/70 split; click a row to open it
-- **Intuitive keybindings** — `⌘ k` complete, `⌘ n` add, `⌘ M` move, and more
 - **Agenda views** — Inbox / Today / Upcoming / Anytime / Waiting / Someday / Logbook
 - **Dynamic context views** — auto-detects all `@tags`, no code changes when you add new ones
-- **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the top of the done group automatically
-- **Smart completion** — completing a task with active children prompts to complete all of them together
-- **State picker** — `⌘ e` opens a one-line prompt; single keypress sets state or promotes a task to a top-level project
-- **Hide done** — `⌘ '` toggles DONE/CANCELLED tasks in and out of view; persists across outline cycles
 - **Logbook decorations** — DONE entries show a checkmark prefix; CANCELLED entries show strikethrough
 - **Empty-state messages** — views display contextual messages when no tasks match (e.g. "Nothing due today.")
+
+**Editing**
+- **State picker** — `⌘ e` opens a one-line prompt; single keypress sets state or promotes a task to a top-level project
+- **Completed tasks auto-sink** — DONE/CANCELLED tasks move to the top of the done group automatically
+- **Smart completion** — completing a task with active children prompts to complete all of them together
+- **Hide done** — `⌘ '` toggles DONE/CANCELLED tasks in and out of view; persists across outline cycles
+- **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
+
+**Organization**
+- **Clear project states** — `PROJECT` state marks active projects; indicators show active (`  `), blocked/deferred (`~`), stale (`●`), or empty (`?`)
+- **Intuitive keybindings** — `⌘ k` complete, `⌘ n` add, `⌘ M` move, and more
+- **Interactive help** — `SPC ?` / `⌘ ?` opens a cheatsheet; press any key to execute the action
+
+**Automation**
 - **Auto-save** — saves on idle and on leaving insert mode; dashboard refreshes on every save
 - **Auto-open** — `gtd.org` opens automatically on Emacs startup (configurable via `my/gtd-open-on-startup`)
-- **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
-- **Clear project states** — `PROJECT` state marks active projects; indicators show active (`  `), stale (`●`), or empty (`?`)
-
----
-
-## Screenshots
-
-### Navigation Pane
-![Navigation Pane](screenshots/Navigation%20Pane.png)
-
-### Edit View
-![Edit View](screenshots/Edit%20view.png)
-
-### Views
-
-| Today | Anytime |
-|-------|---------|
-| ![Today](screenshots/Today.png) | ![Anytime](screenshots/Anytime.png) |
-
-| Upcoming | Waiting |
-|----------|---------|
-| ![Upcoming](screenshots/Upcoming%207%20days.png) | ![Waiting](screenshots/Waiting.png) |
-
-| Someday | Logbook |
-|---------|---------|
-| ![Someday](screenshots/Someday.png) | ![Logbook](screenshots/Logbook.png) |
-
-| Context view | |
-|-------------|--|
-| ![Context view](screenshots/Context%20view.png) | |
-
----
-
-## File Structure
-
-| File | Purpose | Load when |
-|------|---------|-----------|
-| `org-gtd.el` | Core: agenda views, functions, auto-sink. No user keybindings. | Always (load first) |
-| `bindings-cmd.el` | `⌘` key bindings for GUI Emacs (macOS) | GUI / Doom |
-| `bindings-ccg.el` | `C-c g` prefix bindings for terminal Emacs | Terminal |
-| `bindings-f5.el` | `F5` prefix bindings for terminal Emacs | Terminal (alternative) |
-| `bindings-prefix.el` | Shared helper used by `bindings-ccg.el` and `bindings-f5.el` | Auto-loaded |
-| `bindings-doom.el` | `SPC` leader bindings — Doom Emacs only | Doom only |
-| `doom-overrides.el` | Doom/evil conflict fixes — Doom Emacs only | Doom only (load last) |
-| `demo.org` | Sample GTD file for trying the setup | Optional |
 
 ---
 
 ## Installation
+
+<details>
+<summary>Setup steps</summary>
 
 ### 1. Clone the repository
 
@@ -139,52 +125,7 @@ Set `my/gtd-file` **before** loading anything. This variable is required — loa
 
 Doom users: run `doom sync` before restarting.
 
----
-
-## Dashboard
-
-Opening `gtd.org` (or pressing `SPC /` / `⌘/`) shows a live count dashboard in the left pane. Press the same key again to close it. Click or press `RET` on any row to open that view on the right.
-
-| Key | Action |
-|-----|--------|
-| `RET` / click | Open view in right pane |
-| `g` | Re-render counts |
-| `SPC /` / `⌘/` | Toggle dashboard open/closed |
-
-Counts update automatically whenever you change a task state, reschedule, or save the file.
-
-The Contexts section includes a "No context" row showing NEXT tasks that have no `@tag`.
-
----
-
-## How It Works
-
-**Projects** = level-1 headings with `PROJECT` state (or no state). Has subtask children.
-**Tasks** = subtask headings with a state (`NEXT`, `WAIT`, `SOMEDAY`).
-**Inbox** = raw unprocessed items under `* Inbox`. No state needed.
-
-### Task States
-
-```
-PROJECT → NEXT → WAIT → SOMEDAY → DONE → CANCELLED
-```
-
-| State | Meaning |
-|-------|---------|
-| `PROJECT` | Marks a level-1 heading as a project |
-| `NEXT` | Ready to work on |
-| `WAIT` | Blocked / waiting on someone |
-| `SOMEDAY` | Maybe later |
-| `DONE` | Completed — auto-sinks into done group |
-| `CANCELLED` | Dropped — auto-sinks into done group |
-
-### Context Tags
-
-Tags starting with `@` are contexts. Add them to `#+TAGS:` in your `gtd.org`:
-```
-@home    @office    @standup    @ask
-```
-The context picker auto-detects them — no code changes needed when you add new ones.
+</details>
 
 ---
 
@@ -215,9 +156,49 @@ Blocked? `S-Right` to cycle to `WAIT`.
 
 ---
 
+## How It Works
+
+**Projects** = level-1 headings with `PROJECT` state (or no state). Has subtask children.
+
+**Tasks** = subtask headings with a state (`NEXT`, `WAIT`, `SOMEDAY`).  
+
+**Inbox** = raw unprocessed items under `* Inbox`. No state needed.
+
+### Task States
+
+```
+PROJECT → NEXT → WAIT → SOMEDAY → DONE → CANCELLED
+```
+
+| State | Meaning |
+|-------|---------|
+| `PROJECT` | Marks a level-1 heading as a project |
+| `NEXT` | Ready to work on |
+| `WAIT` | Blocked / waiting on someone |
+| `SOMEDAY` | Maybe later |
+| `DONE` | Completed — auto-sinks into done group |
+| `CANCELLED` | Dropped — auto-sinks into done group |
+
+### Context Tags
+
+Tags starting with `@` are contexts. Add them to `#+TAGS:` in your `gtd.org`:
+```
+@home    @office    @standup    @ask
+```
+The context picker auto-detects them — no code changes needed when you add new ones.
+
+### Dashboard
+
+Opening `gtd.org` (or pressing `SPC /` / `⌘/`) shows a live count dashboard in the left pane. Counts update automatically on state changes, reschedules, and saves. The Contexts section includes a "No context" row for untagged NEXT tasks.
+
+---
+
 ## Keybinding Reference
 
-All actions are available across all binding systems simultaneously.
+All actions are available across all binding systems simultaneously. Press `SPC ?` / `⌘ ?` in Emacs for an interactive cheatsheet.
+
+<details>
+<summary>Full keybinding tables</summary>
 
 ### Views
 
@@ -299,21 +280,16 @@ All actions are available across all binding systems simultaneously.
 | `@office\|@home` | tag OR tag |
 | `@office-DONE` | tag but NOT done |
 
-### Task State Shortcuts
-
-| Key | Action |
-|-----|--------|
-| `S-Right` / `S-Left` | Cycle state forward / back |
-| `⌘ e` / `… e` | State picker — single keypress, all states |
-| `⌘ k` / `… k` | → DONE (with child-task confirmation if needed) |
-| `⌥ ⌘ k` / `… K` | → CANCELLED (with child-task confirmation if needed) |
-| `⌘ o` / `… o` | → SOMEDAY |
-
 > **Promote to project** — in the state picker, press `p` to cut a task and re-insert it as a top-level project immediately after the `* Inbox` heading, carrying all its children along.
+
+</details>
 
 ---
 
 ## Try It With demo.org
+
+<details>
+<summary>Quick-start with the included demo file</summary>
 
 A `demo.org` file is included so you can try the setup without touching your real data. It covers the full GTD structure — inbox items, projects, tasks in every state, scheduled and deadline entries, and context tags.
 
@@ -342,31 +318,37 @@ Then paste into `M-:` (`M-x eval-expression`):
 
 The dashboard opens automatically. Switch back to your real file by updating `my/gtd-file` and reloading.
 
+</details>
+
 ---
 
 ## Scope
 
-This setup covers the **ground level of GTD** — capturing, clarifying, and doing. It is not a full GTD implementation. Areas of focus, horizons of focus, and higher-altitude reviews are out of scope. The goal is a clean, fast task system in Emacs that gets out of your way.
+Covers the **ground level of GTD** — capturing, clarifying, and doing. No weekly review automation, no calendar, no recurring tasks, no reference storage. The goal is a clean, fast task system in Emacs that gets out of your way. You bring the discipline.
 
-### Philosophy
+---
 
-Small, composable blocks that each do one thing well — swap any piece out without breaking the rest. The core GTD steps (capture, clarify, organize, reflect, engage) are not enforced by the tool. This setup just gives you the structure to represent them. You bring the discipline.
+## File Structure
 
-### Out of scope
+<details>
+<summary>Files and load order</summary>
 
-**Weekly review** — Not enforced or automated. The dashboard and views give you enough surface area to audit the system when you choose to.
+| File | Purpose | Load when |
+|------|---------|-----------|
+| `org-gtd.el` | Core: agenda views, functions, auto-sink. No user keybindings. | Always (load first) |
+| `bindings-cmd.el` | `⌘` key bindings for GUI Emacs (macOS) | GUI / Doom |
+| `bindings-ccg.el` | `C-c g` prefix bindings for terminal Emacs | Terminal |
+| `bindings-f5.el` | `F5` prefix bindings for terminal Emacs | Terminal (alternative) |
+| `bindings-prefix.el` | Shared helper used by `bindings-ccg.el` and `bindings-f5.el` | Auto-loaded |
+| `bindings-doom.el` | `SPC` leader bindings — Doom Emacs only | Doom only |
+| `doom-overrides.el` | Doom/evil conflict fixes — Doom Emacs only | Doom only (load last) |
+| `demo.org` | Sample GTD file for trying the setup | Optional |
 
-**Reference** — Lives outside the execution layer. Notes, documents, and knowledge belong in a separate system (Obsidian, Notion, files, whatever works). `gtd.org` is for action, not storage.
-
-**Routines and calendar** — No calendar view, no recurring tasks. This keeps the org file lean. Scheduling (`⌘ s`, `⌘ t`) sets dates for ordering tasks in Today/Upcoming views, not for time-blocking. A separate calendar app (macOS Calendar, Fantastical, etc.) handles events. Tasks and calendar stay separate by design.
-
-**External references** — Projects can link out to other apps (Obsidian, Notion, Bear, a browser URL) using plain org links. Those links open in the right pane when clicked. Notes and project details can live in an external system, or stay inside `gtd.org` — either works. This setup does not try to be a note-taking system.
+</details>
 
 ---
 
 ## Contributing
-
-### How to contribute
 
 1. Fork and create a branch: `git checkout -b feature/your-idea`
 2. Keep `org-gtd.el` and `bindings-*.el` free of Doom macros — they must work in vanilla Emacs

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 28px;
+  }
+
+  .card {
+    width: 540px;
+    height: 620px;
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    padding: 32px 28px;
+  }
+
+  .card h2 {
+    color: white;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.2;
+    z-index: 10;
+    position: relative;
+    text-align: center;
+  }
+
+  .card .screenshots {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 480px;
+  }
+
+  .card .screenshots img {
+    position: absolute;
+    border-radius: 10px;
+  }
+
+  /* Frosted accent */
+  .frost {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 14px;
+    border-radius: 8px;
+  }
+
+  /* Watermark */
+  .card::before {
+    content: '~ \25CF ? NEXT PROJECT WAIT SOMEDAY DONE \25CF ~ NEXT ? SOMEDAY WAIT PROJECT ~ \25CF DONE NEXT ~ ? WAIT SOMEDAY \25CF PROJECT DONE ~ NEXT ? \25CF WAIT SOMEDAY PROJECT ~ DONE \25CF NEXT ?';
+    position: absolute;
+    top: -80px;
+    left: -60px;
+    right: -60px;
+    bottom: -80px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    word-spacing: 16px;
+    line-height: 2.4;
+    color: rgba(255,255,255,0.06);
+    z-index: 0;
+    pointer-events: none;
+    word-break: break-all;
+    overflow: hidden;
+    transform: rotate(-15deg);
+    padding: 40px;
+  }
+  .card-help::before {
+    color: rgba(0,0,0,0.05);
+  }
+
+  /* Card 1: Dashboard */
+  .card-dashboard {
+    background: linear-gradient(160deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  }
+  .card-dashboard .screenshots img {
+    width: 900px;
+    top: 0;
+    left: -10px;
+    z-index: 2;
+  }
+
+  /* Card 2: Themes */
+  .card-themes {
+    background: linear-gradient(160deg, #f59e0b 0%, #f97316 50%, #ef4444 100%);
+  }
+  .card-themes .screenshots img:nth-child(1) {
+    width: 400px;
+    top: 30px;
+    left: 70px;
+    transform: rotate(0deg);
+    z-index: 2;
+  }
+  .card-themes .screenshots img:nth-child(2) {
+    width: 400px;
+    top: 50px;
+    right: -15px;
+    transform: rotate(5deg);
+    z-index: 3;
+  }
+  .card-themes .screenshots img:nth-child(3) {
+    width: 400px;
+    top: 10px;
+    left: -10px;
+    transform: rotate(-5deg);
+    z-index: 1;
+  }
+
+  /* Card 3: Help */
+  .card-help {
+    background: linear-gradient(160deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%);
+  }
+  .card-help h2 {
+    color: #312e81;
+  }
+  .card-help .screenshots img {
+    width: 500px;
+    top: 0;
+    left: 20px;
+    z-index: 2;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card card-dashboard">
+    <h2>Everything<br>at <span class="frost">a glance</span></h2>
+    <div class="screenshots">
+      <img src="./themes-card_files/Navigation Pane.png">
+    </div>
+  </div>
+
+  <div class="card card-themes">
+    <h2>Fits any<br><span class="frost">themes</span></h2>
+    <div class="screenshots">
+      <img src="./themes-card_files/theme-gruvbox.png">
+      <img src="./themes-card_files/theme-light.png">
+      <img src="./themes-card_files/theme-solarized.png">
+    </div>
+  </div>
+
+  <div class="card card-help">
+    <h2>Press <span class="frost" style="font-family:monospace;background:rgba(0,0,0,0.15)">?</span><br>for anything</h2>
+    <div class="screenshots">
+      <img src="./themes-card_files/Help Light.png">
+    </div>
+  </div>
+
+</body>
+</html>
