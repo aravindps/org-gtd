@@ -496,12 +496,14 @@ If no closed siblings exist, moves to the bottom."
 (advice-add 'org-schedule :after (lambda (&rest _) (my/gtd-auto-refresh)))
 (advice-add 'org-deadline :after (lambda (&rest _) (my/gtd-auto-refresh)))
 
-(defun my/gtd-auto-refresh ()
-  "Refresh dashboard counts and agenda view after a task state change."
-  ;; Refresh dashboard buffer in place (no window changes)
+(defvar my/gtd--refresh-timer nil
+  "Idle timer used to debounce dashboard/agenda refreshes.")
+
+(defun my/gtd--do-refresh ()
+  "Actually refresh dashboard and agenda views."
+  (setq my/gtd--refresh-timer nil)
   (when (get-buffer-window "*GTD*")
     (my/org-dashboard--open))
-  ;; Refresh agenda views in place without re-prompting
   (dolist (win (window-list))
     (with-current-buffer (window-buffer win)
       (when (derived-mode-p 'org-agenda-mode)
@@ -509,6 +511,14 @@ If no closed siblings exist, moves to the bottom."
           (cl-letf (((symbol-function 'completing-read)
                      (lambda (&rest _) match)))
             (org-agenda-redo t)))))))
+
+(defun my/gtd-auto-refresh ()
+  "Schedule a debounced refresh of dashboard and agenda views.
+Multiple calls within 0.3s collapse into a single refresh."
+  (when my/gtd--refresh-timer
+    (cancel-timer my/gtd--refresh-timer))
+  (setq my/gtd--refresh-timer
+        (run-with-idle-timer 0.3 nil #'my/gtd--do-refresh)))
 
 ;; ─── Agenda mouse click ──────────────────────────────────────────────────────
 
@@ -812,14 +822,16 @@ If no closed siblings exist, moves to the bottom."
                    (progn
                      (setq current-l1 htext)
                      (push htext proj-names)
-                     (puthash htext (vector 0 0 (point-marker)) proj-data))
+                     (puthash htext (vector 0 0 (point-marker) 0) proj-data))
                  (setq current-l1 nil))
              (when (and current-l1 state)
                (let ((v (gethash current-l1 proj-data)))
                  (when v
                    (aset v 1 (1+ (aref v 1)))
                    (when (member state my/gtd-active-states)
-                     (aset v 0 (1+ (aref v 0))))))))
+                     (aset v 0 (1+ (aref v 0))))
+                   (when (equal state "NEXT")
+                     (aset v 3 (1+ (aref v 3))))))))
            ;; Inbox: level-2 headings under "* Inbox" with no todo state
            (when (and (not state)
                       (= (org-outline-level) 2)
@@ -873,9 +885,11 @@ If no closed siblings exist, moves to the bottom."
                      (active    (aref v 0))
                      (total     (aref v 1))
                      (mark      (aref v 2))
-                     (indicator (cond ((= total 0)  "?")
-                                     ((> active 0) "")
-                                     (t            "●")))
+                     (has-next  (aref v 3))
+                     (indicator (cond ((= total 0)    "?")
+                                     ((> has-next 0)  "")
+                                     ((> active 0)    "~")
+                                     (t               "●")))
                      (max-len   (- (window-width) 6))
                      (display   (if (> (length name) max-len)
                                    (concat (substring name 0 (1- max-len)) "…")
