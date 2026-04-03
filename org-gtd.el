@@ -306,6 +306,7 @@ Works on top of the current S-TAB visibility mode."
   (let ((choice (read-char-choice
                  "State: [n] NEXT  [w] WAIT  [s] SOMEDAY  [k] DONE  [x] CANCEL  [p] Promote to project  [q] quit  "
                  '(?n ?w ?s ?k ?x ?p ?q))))
+    (message nil)
     (pcase choice
       (?p (let ((heading (org-get-heading t t t t)))
             (when (y-or-n-p (format "Promote \"%s\" to top-level project? " heading))
