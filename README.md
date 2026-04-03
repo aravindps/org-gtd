@@ -5,7 +5,7 @@
 GTD in Emacs. No packages, no dependencies — just Elisp.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
-[![Emacs](https://img.shields.io/badge/Emacs-27%2B-purple.svg)](https://www.gnu.org/software/emacs/)
+[![Emacs](https://img.shields.io/badge/Emacs-org--mode-purple.svg)](https://www.gnu.org/software/emacs/)
 [![Doom](https://img.shields.io/badge/Doom-compatible-green.svg)](https://github.com/doomemacs/doomemacs)
 
 A GTD setup for org-mode, inspired by the workflow and feel of Things 3. Works with **Doom Emacs** and **vanilla Emacs** (GUI + terminal).
@@ -43,7 +43,7 @@ A GTD setup for org-mode, inspired by the workflow and feel of Things 3. Works w
 - **Direct Inbox editing** — narrows to Inbox in place, no capture buffer
 
 **Organization**
-- **Clear project states** — `PROJECT` state marks active projects; indicators show active (`  `), blocked/deferred (`~`), stale (`●`), or empty (`?`)
+- **Clear project states** — `PROJECT` state marks active projects; indicators show active (no prefix), blocked/deferred (`~`), stale (`●`), or empty (`?`)
 - **Intuitive keybindings** — `⌘ k` complete, `⌘ n` add, `⌘ M` move, and more
 - **Interactive help** — `SPC ?` / `⌘ ?` opens a cheatsheet; press any key to execute the action
 
@@ -223,7 +223,7 @@ All actions are available across all binding systems simultaneously. Press `SPC 
 | `⌘ n` | `… n` | `SPC n` | New sibling heading (NEXT) |
 | `⌘ N` | `… N` | `SPC N` | New child task (NEXT) |
 | `⌘ C` | `… c` | `SPC c` | New checklist item |
-| `⌥ ⌘ n` | — | — | New top-level project |
+| `⌥ ⌘ a` | `… a` | `SPC a` | New top-level project |
 
 ### Edit
 
@@ -265,6 +265,7 @@ All actions are available across all binding systems simultaneously. Press `SPC 
 | — | `… -` | `SPC -` | Toggle narrow/widen |
 | `⌘ [` | — | — | Go back (winner-undo) |
 | `⌘ f` | `… f` | — | Search headings |
+| `⌃ ⌘ o` | — | — | Switch GTD file |
 
 ### Tags
 
