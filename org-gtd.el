@@ -333,19 +333,9 @@ Works on top of the current S-TAB visibility mode."
 
 ;; ─── Complete / Cancel guards ────────────────────────────────────────────────
 
-(defun my/gtd--active-child-count ()
-  "Count active (NEXT/WAIT/SOMEDAY) tasks in current subtree including self."
-  (let ((count 0)
-        (end (save-excursion (org-end-of-subtree t) (point))))
-    (save-excursion
-      (org-back-to-heading t)
-      (while (re-search-forward org-heading-regexp end t)
-        (when (member (org-get-todo-state) '("NEXT" "WAIT" "SOMEDAY"))
-          (cl-incf count))))
-    count))
-
-(defun my/gtd--mark-children-as (state)
-  "Mark all active tasks in current subtree as STATE, bottom-up (including self)."
+(defun my/gtd--collect-active-children ()
+  "Collect markers of active (NEXT/WAIT/SOMEDAY) tasks in current subtree.
+Returns list in bottom-up order (push reverses scan order)."
   (let ((markers '())
         (end (save-excursion (org-end-of-subtree t) (point))))
     (save-excursion
@@ -353,36 +343,42 @@ Works on top of the current S-TAB visibility mode."
       (while (re-search-forward org-heading-regexp end t)
         (when (member (org-get-todo-state) '("NEXT" "WAIT" "SOMEDAY"))
           (push (point-marker) markers))))
-    (dolist (marker markers)  ;; push reverses order → bottom-up
-      (goto-char marker)
-      (org-todo state))))
+    markers))
+
+(defun my/gtd--mark-children-as (state markers)
+  "Mark all MARKERS as STATE, bottom-up."
+  (dolist (marker markers)
+    (goto-char marker)
+    (org-todo state)))
 
 (defun my/gtd-complete ()
-  "Mark task DONE. No-op if already closed.
+  "Mark task DONE. No-op if already DONE.
 If active tasks exist in subtree, asks to mark them all DONE (including self)."
   (interactive)
-  (unless (member (org-get-todo-state) my/gtd-closed-states)
-    (let ((count (my/gtd--active-child-count)))
+  (unless (equal (org-get-todo-state) "DONE")
+    (let* ((markers (my/gtd--collect-active-children))
+           (count   (length markers)))
       (if (> count 1)
           (when (y-or-n-p (format "Complete \"%s\" and %d child task%s? "
                                   (org-get-heading t t t t)
                                   (1- count)
                                   (if (= count 2) "" "s")))
-            (my/gtd--mark-children-as "DONE"))
+            (my/gtd--mark-children-as "DONE" markers))
         (org-todo "DONE")))))
 
 (defun my/gtd-cancel ()
-  "Mark task CANCELLED. No-op if already closed.
+  "Mark task CANCELLED. No-op if already CANCELLED.
 If active tasks exist in subtree, asks to mark them all CANCELLED (including self)."
   (interactive)
-  (unless (member (org-get-todo-state) my/gtd-closed-states)
-    (let ((count (my/gtd--active-child-count)))
+  (unless (equal (org-get-todo-state) "CANCELLED")
+    (let* ((markers (my/gtd--collect-active-children))
+           (count   (length markers)))
       (if (> count 1)
           (when (y-or-n-p (format "Cancel \"%s\" and %d child task%s? "
                                   (org-get-heading t t t t)
                                   (1- count)
                                   (if (= count 2) "" "s")))
-            (my/gtd--mark-children-as "CANCELLED"))
+            (my/gtd--mark-children-as "CANCELLED" markers))
         (org-todo "CANCELLED")))))
 
 
@@ -500,17 +496,24 @@ If no closed siblings exist, moves to the bottom."
   "Idle timer used to debounce dashboard/agenda refreshes.")
 
 (defun my/gtd--do-refresh ()
-  "Actually refresh dashboard and agenda views."
+  "Actually refresh dashboard and agenda views.
+Skips entirely if no dashboard or agenda buffer is visible."
   (setq my/gtd--refresh-timer nil)
-  (when (get-buffer-window "*GTD*")
-    (my/org-dashboard--open))
-  (dolist (win (window-list))
-    (with-current-buffer (window-buffer win)
-      (when (derived-mode-p 'org-agenda-mode)
-        (let ((match org-agenda-query-string))
-          (cl-letf (((symbol-function 'completing-read)
-                     (lambda (&rest _) match)))
-            (org-agenda-redo t)))))))
+  (let ((dash-visible (get-buffer-window "*GTD*"))
+        (agenda-wins '()))
+    (dolist (win (window-list))
+      (with-current-buffer (window-buffer win)
+        (when (derived-mode-p 'org-agenda-mode)
+          (push win agenda-wins))))
+    (when (or dash-visible agenda-wins)
+      (when dash-visible
+        (my/org-dashboard--open))
+      (dolist (win agenda-wins)
+        (with-current-buffer (window-buffer win)
+          (let ((match org-agenda-query-string))
+            (cl-letf (((symbol-function 'completing-read)
+                       (lambda (&rest _) match)))
+              (org-agenda-redo t))))))))
 
 (defun my/gtd-auto-refresh ()
   "Schedule a debounced refresh of dashboard and agenda views.
