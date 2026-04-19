@@ -30,7 +30,7 @@ Action-only — no calendar, no recurring tasks, no reference storage. Weekly re
 
 - **Project** = level-1 heading with `PROJECT` state or no state
 - **Task** = child heading with `NEXT`, `WAIT`, `SOMEDAY`, `DONE`, or `CANCELLED`
-- **Inbox** = top-level `* Inbox` heading; items have no state
+- **Inbox** = top-level `* Inbox` heading; items have no state (opening Inbox creates this heading after `#+` preamble if missing)
 - Single org file via `my/gtd-file`
 - A level-1 heading with `NEXT`/`WAIT`/`SOMEDAY` is a **task**, not a project
 
@@ -67,7 +67,7 @@ On DONE/CANCELLED, task moves down to **top of done group** (before first closed
 - Refile (Shift+m everywhere: `C-c g M`, `SPC M`, `⇧⌘M`; plain `⌘m` stays minimize): excludes DONE/CANCELLED and Inbox from targets
 - Upcoming view (`*GTD Upcoming*`) is a custom buffer, not an org-agenda buffer
 - Logbook dashboard row intentionally shows no count
-- Context tags derived from `#+TAGS:` in gtd.org — no code changes needed for new tags
+- Context tags derived from `#+TAGS:` in `my/gtd-file` (preferred over `org-agenda-files` alone) — no code changes needed for new tags
 
 ## Keybinding exceptions
 
@@ -76,6 +76,7 @@ On DONE/CANCELLED, task moves down to **top of done group** (before first closed
 | ----------- | --- | ------ | ----- | ----------------------------------------- |
 | Checklist   | `c` | `c`    | `⌘C`  | `⌘c` = copy                               |
 | Refile      | `M` | `M`    | `⇧⌘M` | same chord (Shift+m); `⌘m` = minimize; Doom `SPC m` free |
+| Archive     | `Y` | `Y`    | `⇧⌘Y` | Shift+y on every layer; less accidental than plain `y` |
 | New project | `a` | `a`    | `⌥⌘a` | `⌘a` = select all                         |
 | Search      | —   | `f`    | `⌘f`  | `SPC f` = Doom files                      |
 

@@ -33,7 +33,7 @@
       "K"   #'my/gtd-cancel                                   ;; Cancel
       "d"   #'my/gtd-duplicate                                 ;; Duplicate
       "M"   #'my/gtd-refile                                    ;; SPC M — refile (SPC m left for Doom)
-      "y"   #'my/gtd-archive                                   ;; Archive
+      "Y"   #'my/gtd-archive                                   ;; SPC Y — archive (Shift+y; SPC y free)
 
       ;; ─── Move ──────────────────────────────────────────────────────────
       "<up>"   #'org-move-subtree-up                            ;; Move up

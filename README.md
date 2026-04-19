@@ -234,7 +234,7 @@ All actions are available across all binding systems simultaneously. Press `SPC 
 | `⌥ ⌘ k` | `… K` | `SPC K` | Cancel → auto-sinks |
 | `⌘ '` | `… '` | `SPC '` | Toggle hide DONE/CANCELLED |
 | `⌘ d` | `… d` | `SPC d` | Duplicate subtree |
-| `⌘ Y` | `… y` | `SPC y` | Archive subtree |
+| `⇧⌘Y` | `… Y` | `SPC Y` | Archive subtree (Shift+y everywhere; harder to hit by mistake) |
 
 ### Move
 
@@ -243,8 +243,8 @@ All actions are available across all binding systems simultaneously. Press `SPC 
 | `⇧⌘M` | `… M` | `SPC M` | Refile to project (Shift+m on every layer; Doom `SPC m` free) |
 | `⌘ ↑` | `… <up>` | `SPC <up>` | Move subtree up |
 | `⌘ ↓` | `… <down>` | `SPC <down>` | Move subtree down |
-| `⌥ ⌘ ↑` | — | — | Move to top |
-| `⌥ ⌘ ↓` | — | — | Move to bottom |
+| `⌘{` | `… {` | `SPC {` | Move subtree to top among siblings |
+| `⌘}` | `… }` | `SPC }` | Move subtree to bottom among siblings |
 
 ### Dates
 

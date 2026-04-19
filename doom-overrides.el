@@ -25,7 +25,7 @@
 ;; Help: bind all action keys in evil normal state so they aren't swallowed
 (dolist (key '("/" "0" "1" "2" "3" "4" "5" "6" "7" "8" "i"
               "n" "N" "a" "c"
-              "e" "k" "K" "d" "y" "'"
+              "e" "k" "K" "d" "Y" "'"
               "<up>" "<down>" "{" "}" "M"
               "s" "t" "r" "o" "D"
               "-" "[" "f" "T"

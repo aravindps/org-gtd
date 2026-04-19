@@ -208,17 +208,42 @@ If the current heading is closed, inserts before it instead of after."
 
 ;; ─── Inbox ───────────────────────────────────────────────────────────────────
 
-(defun my/org-open-inbox ()
-  "Narrow to Inbox subtree in current file, cursor on a new child heading."
-  (interactive)
-  (widen)
+(defun my/gtd--ensure-level1-inbox ()
+  "Leave point at the start of a level-1 `* Inbox' heading.
+Create that heading after #+ lines and blank lines if missing.
+Return t when a new heading was inserted."
   (goto-char (point-min))
-  (search-forward "* Inbox")
-  (org-narrow-to-subtree)
-  (goto-char (point-max))
-  (unless (bolp) (newline))
-  (insert "** ")
-  (message "Type task, then zoom out when done"))
+  (cond ((re-search-forward "^\\* Inbox\\>" nil t)
+         (goto-char (match-beginning 0))
+         nil)
+        (t
+         (goto-char (point-min))
+         (while (and (not (eobp))
+                     (or (looking-at "^[ \t]*$")
+                         (looking-at "^#\\+")))
+           (forward-line 1))
+         (let ((ins (point)))
+           (insert "* Inbox\n\n")
+           (goto-char ins))
+         (unless (looking-at "^\\* Inbox\\>")
+           (user-error "org-gtd: failed to insert level-1 `* Inbox'"))
+         t)))
+
+(defun my/org-open-inbox ()
+  "Narrow to Inbox subtree in current file, cursor on a new child heading.
+Creates `* Inbox' at level 1 after the file preamble if it is missing."
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (user-error "org-gtd: Not in org-mode"))
+  (widen)
+  (let ((created (my/gtd--ensure-level1-inbox)))
+    (org-narrow-to-subtree)
+    (goto-char (point-max))
+    (unless (bolp) (newline))
+    (insert "** ")
+    (message (if created
+                 "Created `* Inbox' — type task, then zoom out when done"
+               "Type task, then zoom out when done"))))
 
 ;; ─── Context views ───────────────────────────────────────────────────────────
 
@@ -236,23 +261,33 @@ If the current heading is closed, inserts before it instead of after."
               (my/gtd--context-tags-invalidate))))
 
 (defun my/org-context-tags ()
-  "Return all @context tags (with @ prefix) defined in gtd.org #+TAGS line.
+  "Return all @context tags (with @ prefix) from #+TAGS in the GTD file.
+Prefer `my/gtd-file' when set; otherwise the first element of `org-agenda-files'.
 Result is cached and invalidated on save."
   (or my/gtd--context-tags-cache
-      (setq my/gtd--context-tags-cache
-            (with-current-buffer (find-file-noselect (car org-agenda-files))
-              (save-restriction
-                (widen)
-                (save-excursion
-                  (goto-char (point-min))
-                  (let (tags)
-                    (while (re-search-forward "#\\+TAGS:.*" nil t)
-                      (let ((line (match-string 0))
-                            (start 0))
-                        (while (string-match "\\(@[a-zA-Z_]+\\)" line start)
-                          (push (match-string 1 line) tags)
-                          (setq start (match-end 0)))))
-                    (delete-dups tags))))))))
+      (let ((file (cond ((and my/gtd-file (not (equal my/gtd-file "")))
+                         (expand-file-name my/gtd-file))
+                        ((and (boundp 'org-agenda-files)
+                              org-agenda-files
+                              (car org-agenda-files))
+                         (expand-file-name (car org-agenda-files)))
+                        (t nil))))
+        (unless file
+          (user-error "org-gtd: Set `my/gtd-file' (or `org-agenda-files') to scan #+TAGS for @context tags"))
+        (setq my/gtd--context-tags-cache
+              (with-current-buffer (find-file-noselect file)
+                (save-restriction
+                  (widen)
+                  (save-excursion
+                    (goto-char (point-min))
+                    (let (tags)
+                      (while (re-search-forward "#\\+TAGS:.*" nil t)
+                        (let ((line (match-string 0))
+                              (start 0))
+                          (while (string-match "\\(@[a-zA-Z_]+\\)" line start)
+                            (push (match-string 1 line) tags)
+                            (setq start (match-end 0)))))
+                      (delete-dups tags)))))))))
 
 (defun my/org-pick-context ()
   "Prompt for an @context tag and show NEXT tasks for it."
@@ -1018,7 +1053,7 @@ Multiple calls within 0.3s collapse into a single refresh."
 (my/gtd-help--bind "k" #'my/gtd-complete)
 (my/gtd-help--bind "K" #'my/gtd-cancel)
 (my/gtd-help--bind "d" #'my/gtd-duplicate)
-(my/gtd-help--bind "y" #'my/gtd-archive)
+(my/gtd-help--bind "Y" #'my/gtd-archive)
 (my/gtd-help--bind "'" #'my/gtd-toggle-hide-done)
 
 ;; Move
@@ -1091,7 +1126,7 @@ Multiple calls within 0.3s collapse into a single refresh."
             (my/org--dash-section-label "Edit")
             (my/gtd-help--row "e"  "State picker"        "k"  "Complete")
             (my/gtd-help--row "K"  "Cancel"              "d"  "Duplicate")
-            (my/gtd-help--row "y"  "Archive"             "'"  "Hide/show done")
+            (my/gtd-help--row "Y"  "Archive"             "'"  "Hide/show done")
 
             (insert "\n")
             (my/org--dash-section-label "Move")

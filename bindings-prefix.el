@@ -30,7 +30,7 @@
   (define-key map (kbd "k") #'my/gtd-complete)   ;; Complete
   (define-key map (kbd "K") #'my/gtd-cancel)    ;; Cancel
   (define-key map (kbd "d") #'my/gtd-duplicate)                     ;; Duplicate
-  (define-key map (kbd "y") #'my/gtd-archive)                       ;; Archive
+  (define-key map (kbd "Y") #'my/gtd-archive)                       ;; Shift+y — archive (same as ⇧⌘Y / SPC Y)
 
   ;; ─── Move ─────────────────────────────────────────────────────────────────
   (define-key map (kbd "<up>") #'org-move-subtree-up)                ;; Move up

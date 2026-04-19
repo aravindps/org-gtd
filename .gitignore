@@ -1,3 +1,4 @@
+*.elc
 .claude/
 .DS_Store
 left-off.md
