@@ -41,7 +41,7 @@
     (define-key map (kbd "s-<down>") #'org-move-subtree-down)           ;; ⌘↓ Move down
     (define-key map (kbd "s-{") #'my/org-move-subtree-to-top)          ;; ⌘{ Move to top
     (define-key map (kbd "s-}") #'my/org-move-subtree-to-bottom)       ;; ⌘} Move to bottom
-    (define-key map (kbd "s-M") #'my/gtd-refile)                        ;; ⇧⌘M Refile / Move to project
+    (define-key map (kbd "s-M") #'my/gtd-refile)                        ;; ⇧⌘M Refile (not plain ⌘m — minimize)
 
     ;; ─── Dates ────────────────────────────────────────────────────────────
     (define-key map (kbd "s-s") #'org-schedule)                                           ;; ⌘S Schedule

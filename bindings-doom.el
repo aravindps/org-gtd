@@ -1,6 +1,8 @@
 ;;; bindings-doom.el --- Doom Emacs SPC leader GTD bindings -*- lexical-binding: t; -*-
 ;; Requires: org-gtd.el (loaded first in config.el)
 ;; Load this ONLY in Doom Emacs. Adds SPC shortcuts on top of ⌘/C-c g/F5 bindings.
+;;
+;; Note: "m" → my/gtd-refile replaces Doom’s default SPC m (see CLAUDE.md).
 
 (map! :leader
       ;; ─── Inbox ──────────────────────────────────────────────────────────

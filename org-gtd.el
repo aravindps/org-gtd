@@ -62,51 +62,59 @@
   (setq org-refile-allow-creating-parent-nodes 'confirm)
 
   ;; ─── Agenda Views ──────────────────────────────────────────────────────────
+  ;; Prepend so keys 0,1,3–6 stay ours (dashboard / bindings); other custom
+  ;; agendas from earlier config remain after and keep other letter keys.
+  ;; `org-agenda-custom-commands' may not exist until org-agenda loads — guard
+  ;; with `boundp' (void-variable if we read it too early).
   (setq org-agenda-custom-commands
-        '(;; 0 — Inbox
-          ("0" "Inbox" tags "LEVEL=2"
-           ((org-agenda-overriding-header "Inbox")
-            (org-agenda-files (list my/gtd-file))
-            (org-agenda-skip-function
-             '(lambda ()
-                (unless (and (string= (save-excursion
-                                        (org-up-heading-safe)
-                                        (org-get-heading t t t t))
-                                      "Inbox")
-                             (not (org-get-todo-state)))
-                  (org-end-of-subtree t))))))
+        (append
+         '(;; 0 — Inbox
+           ("0" "Inbox" tags "LEVEL=2"
+            ((org-agenda-overriding-header "Inbox")
+             (org-agenda-files (list my/gtd-file))
+             (org-agenda-skip-function
+              '(lambda ()
+                 (unless (and (string= (save-excursion
+                                         (org-up-heading-safe)
+                                         (org-get-heading t t t t))
+                                       "Inbox")
+                              (not (org-get-todo-state)))
+                   (org-end-of-subtree t))))))
 
-          ;; 1 — Today
-          ("1" "Today" agenda ""
-           ((org-agenda-span 1)
-            (org-agenda-start-day nil)
-            (org-agenda-overriding-header "Today")
-            (org-agenda-prefix-format '((agenda . "  %(my/org-agenda-state-prefix) ")))
-            (org-agenda-skip-function
-             '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
+           ;; 1 — Today
+           ("1" "Today" agenda ""
+            ((org-agenda-span 1)
+             (org-agenda-start-day nil)
+             (org-agenda-overriding-header "Today")
+             (org-agenda-prefix-format '((agenda . "  %(my/org-agenda-state-prefix) ")))
+             (org-agenda-skip-function
+              '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))))
 
-          ;; 3 — Anytime
-          ("3" "Anytime" tags-todo "TODO=\"NEXT\""
-           ((org-agenda-overriding-header "Anytime")
-            (org-agenda-todo-keyword-format "")
-            (org-agenda-skip-function
-             '(org-agenda-skip-entry-if 'scheduled 'deadline))))
+           ;; 3 — Anytime
+           ("3" "Anytime" tags-todo "TODO=\"NEXT\""
+            ((org-agenda-overriding-header "Anytime")
+             (org-agenda-todo-keyword-format "")
+             (org-agenda-skip-function
+              '(org-agenda-skip-entry-if 'scheduled 'deadline))))
 
-          ;; 4 — Waiting
-          ("4" "Waiting" todo "WAIT"
-           ((org-agenda-overriding-header "Waiting — Blocked")
-            (org-agenda-todo-keyword-format "")))
+           ;; 4 — Waiting
+           ("4" "Waiting" todo "WAIT"
+            ((org-agenda-overriding-header "Waiting — Blocked")
+             (org-agenda-todo-keyword-format "")))
 
-          ;; 5 — Someday
-          ("5" "Someday" todo "SOMEDAY"
-           ((org-agenda-overriding-header "Someday")
-            (org-agenda-todo-keyword-format "")))
+           ;; 5 — Someday
+           ("5" "Someday" todo "SOMEDAY"
+            ((org-agenda-overriding-header "Someday")
+             (org-agenda-todo-keyword-format "")))
 
-          ;; 6 — Logbook
-          ("6" "Logbook" todo "DONE|CANCELLED"
-           ((org-agenda-overriding-header "Logbook — Completed")
-            (org-agenda-todo-keyword-format "")
-            (org-agenda-sorting-strategy '(timestamp-down)))))))
+           ;; 6 — Logbook
+           ("6" "Logbook" todo "DONE|CANCELLED"
+            ((org-agenda-overriding-header "Logbook — Completed")
+             (org-agenda-todo-keyword-format "")
+             (org-agenda-sorting-strategy '(timestamp-down)))))
+         (if (boundp 'org-agenda-custom-commands)
+             org-agenda-custom-commands
+           nil))))
 
 ;; ─── Dashboard helpers ───────────────────────────────────────────────────────
 
