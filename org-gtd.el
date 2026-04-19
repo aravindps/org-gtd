@@ -209,16 +209,19 @@ If the current heading is closed, inserts before it instead of after."
 ;; ─── Inbox ───────────────────────────────────────────────────────────────────
 
 (defun my/org-open-inbox ()
-  "Narrow to Inbox subtree in current file, cursor on a new child heading."
+  "Ensure GTD file is open, then narrow to Inbox subtree and prepare for new task."
   (interactive)
+  (find-file my/gtd-file)
   (widen)
   (goto-char (point-min))
-  (search-forward "* Inbox")
-  (org-narrow-to-subtree)
-  (goto-char (point-max))
-  (unless (bolp) (newline))
-  (insert "** ")
-  (message "Type task, then zoom out when done"))
+  (if (re-search-forward "^\\* Inbox" nil t)
+      (progn
+        (org-narrow-to-subtree)
+        (goto-char (point-max))
+        (unless (bolp) (newline))
+        (insert "** ")
+        (message "Type task, then zoom out when done"))
+    (error "Could not find top-level heading '* Inbox' in %s" my/gtd-file)))
 
 ;; ─── Context views ───────────────────────────────────────────────────────────
 
@@ -240,16 +243,16 @@ If the current heading is closed, inserts before it instead of after."
 Result is cached and invalidated on save."
   (or my/gtd--context-tags-cache
       (setq my/gtd--context-tags-cache
-            (with-current-buffer (find-file-noselect (car org-agenda-files))
+            (with-current-buffer (find-file-noselect (or my/gtd-file (car org-agenda-files)))
               (save-restriction
                 (widen)
                 (save-excursion
                   (goto-char (point-min))
                   (let (tags)
-                    (while (re-search-forward "#\\+TAGS:.*" nil t)
+                    (while (re-search-forward "^#\\+TAGS:.*" nil t)
                       (let ((line (match-string 0))
                             (start 0))
-                        (while (string-match "\\(@[a-zA-Z_]+\\)" line start)
+                        (while (string-match "\\(@[a-zA-Z0-9_]+\\)" line start)
                           (push (match-string 1 line) tags)
                           (setq start (match-end 0)))))
                     (delete-dups tags))))))))
@@ -322,12 +325,9 @@ Works on top of the current S-TAB visibility mode."
               (goto-char (point-min))
               (if (re-search-forward "^\\* Inbox" nil t)
                   (org-end-of-subtree t t)
-                (let (last-top)
-                  (while (re-search-forward "^\\* " nil t)
-                    (setq last-top (match-beginning 0)))
-                  (when last-top
-                    (goto-char last-top)
-                    (org-end-of-subtree t t))))
+                (goto-char (point-max))
+                (re-search-backward "^\\* " nil t)
+                (org-end-of-subtree t t))
               (unless (bolp) (newline))
               (org-paste-subtree 1)
               (org-back-to-heading t)
