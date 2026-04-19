@@ -44,7 +44,7 @@ A GTD setup for org-mode, inspired by the workflow and feel of Things 3. Works w
 
 **Organization**
 - **Clear project states** — `PROJECT` state marks active projects; indicators show active (no prefix), blocked/deferred (`~`), stale (`●`), or empty (`?`)
-- **Intuitive keybindings** — `⌘ k` complete, `⌘ n` add, `⌘ M` move, and more
+- **Intuitive keybindings** — `⌘ k` complete, `⌘ n` add, `⇧⌘M` refile, and more
 - **Interactive help** — `SPC ?` / `⌘ ?` opens a cheatsheet; press any key to execute the action
 
 **Automation**
@@ -61,7 +61,7 @@ A GTD setup for org-mode, inspired by the workflow and feel of Things 3. Works w
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<you>/org-gtd ~/dotfiles/org-gtd
+git clone https://github.com/aravindps/org-gtd ~/dotfiles/org-gtd
 ```
 
 ### 2. Create your `gtd.org`
@@ -145,7 +145,7 @@ Doom users: run `doom sync` before restarting.
 ### Triaging Inbox
 
 Open Inbox view (`SPC 0` / `C-c g 0`), navigate to an item, then:
-- `⌘ M` / `C-c g m` — refile to an existing project
+- `⇧⌘M` / `C-c g M` / `SPC M` — refile to an existing project (Shift+m everywhere; plain `⌘m` is macOS minimize)
 - `⌘ e` / `C-c g e` — use the state picker to set state or promote to project
 
 ### Finishing a task
@@ -240,9 +240,9 @@ All actions are available across all binding systems simultaneously. Press `SPC 
 
 | ⌘ (GUI) | C-c g / F5 | SPC (Doom) | Action |
 |---------|------------|------------|--------|
-| `⌘ M` | `… m` | `SPC m` | Refile to project |
-| `⌘ ↑` | `… p` | — | Move item up |
-| `⌘ ↓` | `… P` | — | Move item down |
+| `⇧⌘M` | `… M` | `SPC M` | Refile to project (Shift+m on every layer; Doom `SPC m` free) |
+| `⌘ ↑` | `… <up>` | `SPC <up>` | Move subtree up |
+| `⌘ ↓` | `… <down>` | `SPC <down>` | Move subtree down |
 | `⌥ ⌘ ↑` | — | — | Move to top |
 | `⌥ ⌘ ↓` | — | — | Move to bottom |
 

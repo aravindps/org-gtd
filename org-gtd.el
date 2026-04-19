@@ -1026,7 +1026,7 @@ Multiple calls within 0.3s collapse into a single refresh."
 (my/gtd-help--bind "<down>" #'org-move-subtree-down)
 (my/gtd-help--bind "{" #'my/org-move-subtree-to-top)
 (my/gtd-help--bind "}" #'my/org-move-subtree-to-bottom)
-(my/gtd-help--bind "m" #'my/gtd-refile)
+(my/gtd-help--bind "M" #'my/gtd-refile)
 
 ;; Dates
 (my/gtd-help--bind "s" #'org-schedule)
@@ -1097,7 +1097,7 @@ Multiple calls within 0.3s collapse into a single refresh."
             (my/org--dash-section-label "Move")
             (my/gtd-help--row "↑"  "Move up"             "↓"  "Move down")
             (my/gtd-help--row "{"  "Move to top"         "}"  "Move to bottom")
-            (my/gtd-help--row "m"  "Refile")
+            (my/gtd-help--row "M"  "Refile")
 
             (insert "\n")
             (my/org--dash-section-label "Dates")

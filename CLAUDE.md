@@ -64,8 +64,8 @@ On DONE/CANCELLED, task moves down to **top of done group** (before first closed
 - Complete/cancel with children: prompts confirmation, marks descendants bottom-up
 - State picker (`SPC e`): single keypress, includes promote-to-project
 - Hide done (`SPC '`): toggles DONE/CANCELLED visibility, persists across S-TAB
-- Refile (`SPC m`): excludes DONE/CANCELLED and Inbox from targets
-- Upcoming view (`*GTD Upcoming`*) is a custom buffer, not an org-agenda buffer
+- Refile (Shift+m everywhere: `C-c g M`, `SPC M`, `⇧⌘M`; plain `⌘m` stays minimize): excludes DONE/CANCELLED and Inbox from targets
+- Upcoming view (`*GTD Upcoming*`) is a custom buffer, not an org-agenda buffer
 - Logbook dashboard row intentionally shows no count
 - Context tags derived from `#+TAGS:` in gtd.org — no code changes needed for new tags
 
@@ -75,9 +75,9 @@ On DONE/CANCELLED, task moves down to **top of done group** (before first closed
 | Action      | SPC | Prefix | ⌘     | Reason                                    |
 | ----------- | --- | ------ | ----- | ----------------------------------------- |
 | Checklist   | `c` | `c`    | `⌘C`  | `⌘c` = copy                               |
-| Refile      | `m` | `m`    | `⇧⌘M` | `⌘m` = minimize; Doom `SPC m` — see below |
+| Refile      | `M` | `M`    | `⇧⌘M` | same chord (Shift+m); `⌘m` = minimize; Doom `SPC m` free |
 | New project | `a` | `a`    | `⌥⌘a` | `⌘a` = select all                         |
 | Search      | —   | `f`    | `⌘f`  | `SPC f` = Doom files                      |
 
 
-**Doom only:** `bindings-doom.el` binds refile to `SPC m`, which overrides Doom’s default `SPC m` (exact command varies by Doom version—often merge/SCM). Prefix (`C-c g m` / `F5 m`) and GUI (`⇧⌘M` in `bindings-cmd.el`) do not use the leader `m` slot. To keep stock Doom on `m`, use an `after!` that rebinds `SPC m` after `bindings-doom.el`, or change `"m"` in `bindings-doom.el` to another key and update this table to match.
+**Doom:** refile is **`SPC M`** (Shift+m), same as **`C-c g M`** / **`F5 M`** and **`⇧⌘M`** on macOS GUI, so stock **`SPC m`** stays free. Vanilla Emacs never loads `bindings-doom.el`; it still gets prefix + GUI bindings above.

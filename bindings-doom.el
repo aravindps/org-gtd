@@ -2,7 +2,7 @@
 ;; Requires: org-gtd.el (loaded first in config.el)
 ;; Load this ONLY in Doom Emacs. Adds SPC shortcuts on top of ⌘/C-c g/F5 bindings.
 ;;
-;; Note: "m" → my/gtd-refile replaces Doom’s default SPC m (see CLAUDE.md).
+;; Refile on "M" (Shift+m) — same as prefix `C-c g M` / `⇧⌘M` GUI (see CLAUDE.md).
 
 (map! :leader
       ;; ─── Inbox ──────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@
       "k"   #'my/gtd-complete                                  ;; Complete
       "K"   #'my/gtd-cancel                                   ;; Cancel
       "d"   #'my/gtd-duplicate                                 ;; Duplicate
-      "m"   #'my/gtd-refile                                    ;; Move to project
+      "M"   #'my/gtd-refile                                    ;; SPC M — refile (SPC m left for Doom)
       "y"   #'my/gtd-archive                                   ;; Archive
 
       ;; ─── Move ──────────────────────────────────────────────────────────
