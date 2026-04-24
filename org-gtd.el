@@ -230,9 +230,10 @@ Return t when a new heading was inserted."
          t)))
 
 (defun my/org-open-inbox ()
-  "Narrow to Inbox subtree in current file, cursor on a new child heading.
+  "Open the GTD file, then narrow to Inbox subtree and prepare for a new task.
 Creates `* Inbox' at level 1 after the file preamble if it is missing."
   (interactive)
+  (find-file my/gtd-file)
   (unless (derived-mode-p 'org-mode)
     (user-error "org-gtd: Not in org-mode"))
   (widen)
@@ -265,29 +266,20 @@ Creates `* Inbox' at level 1 after the file preamble if it is missing."
 Prefer `my/gtd-file' when set; otherwise the first element of `org-agenda-files'.
 Result is cached and invalidated on save."
   (or my/gtd--context-tags-cache
-      (let ((file (cond ((and my/gtd-file (not (equal my/gtd-file "")))
-                         (expand-file-name my/gtd-file))
-                        ((and (boundp 'org-agenda-files)
-                              org-agenda-files
-                              (car org-agenda-files))
-                         (expand-file-name (car org-agenda-files)))
-                        (t nil))))
-        (unless file
-          (user-error "org-gtd: Set `my/gtd-file' (or `org-agenda-files') to scan #+TAGS for @context tags"))
-        (setq my/gtd--context-tags-cache
-              (with-current-buffer (find-file-noselect file)
-                (save-restriction
-                  (widen)
-                  (save-excursion
-                    (goto-char (point-min))
-                    (let (tags)
-                      (while (re-search-forward "#\\+TAGS:.*" nil t)
-                        (let ((line (match-string 0))
-                              (start 0))
-                          (while (string-match "\\(@[a-zA-Z_]+\\)" line start)
-                            (push (match-string 1 line) tags)
-                            (setq start (match-end 0)))))
-                      (delete-dups tags)))))))))
+      (setq my/gtd--context-tags-cache
+            (with-current-buffer (find-file-noselect (or my/gtd-file (car org-agenda-files)))
+              (save-restriction
+                (widen)
+                (save-excursion
+                  (goto-char (point-min))
+                  (let (tags)
+                    (while (re-search-forward "^#\\+TAGS:.*" nil t)
+                      (let ((line (match-string 0))
+                            (start 0))
+                        (while (string-match "\\(@[a-zA-Z0-9_]+\\)" line start)
+                          (push (match-string 1 line) tags)
+                          (setq start (match-end 0)))))
+                    (delete-dups tags))))))))
 
 (defun my/org-pick-context ()
   "Prompt for an @context tag and show NEXT tasks for it."
@@ -355,14 +347,11 @@ Works on top of the current S-TAB visibility mode."
             (when (y-or-n-p (format "Promote \"%s\" to top-level project? " heading))
               (org-cut-subtree)
               (goto-char (point-min))
-              (if (re-search-forward "^\\* Inbox" nil t)
+              (if (re-search-forward "^\\* Inbox\\>" nil t)
                   (org-end-of-subtree t t)
-                (let (last-top)
-                  (while (re-search-forward "^\\* " nil t)
-                    (setq last-top (match-beginning 0)))
-                  (when last-top
-                    (goto-char last-top)
-                    (org-end-of-subtree t t))))
+                (goto-char (point-max))
+                (re-search-backward "^\\* " nil t)
+                (org-end-of-subtree t t))
               (unless (bolp) (newline))
               (org-paste-subtree 1)
               (org-back-to-heading t)
