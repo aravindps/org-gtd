@@ -267,19 +267,20 @@ Prefer `my/gtd-file' when set; otherwise the first element of `org-agenda-files'
 Result is cached and invalidated on save."
   (or my/gtd--context-tags-cache
       (setq my/gtd--context-tags-cache
-            (with-current-buffer (find-file-noselect (or my/gtd-file (car org-agenda-files)))
-              (save-restriction
-                (widen)
-                (save-excursion
-                  (goto-char (point-min))
-                  (let (tags)
-                    (while (re-search-forward "^#\\+TAGS:.*" nil t)
-                      (let ((line (match-string 0))
-                            (start 0))
-                        (while (string-match "\\(@[a-zA-Z0-9_]+\\)" line start)
-                          (push (match-string 1 line) tags)
-                          (setq start (match-end 0)))))
-                    (delete-dups tags))))))))
+            (let ((find-file-hook nil))
+              (with-current-buffer (find-file-noselect (or my/gtd-file (car org-agenda-files)))
+                (save-restriction
+                  (widen)
+                  (save-excursion
+                    (goto-char (point-min))
+                    (let (tags)
+                      (while (re-search-forward "^#\\+TAGS:.*" nil t)
+                        (let ((line (match-string 0))
+                              (start 0))
+                          (while (string-match "\\(@[a-zA-Z0-9_]+\\)" line start)
+                            (push (match-string 1 line) tags)
+                            (setq start (match-end 0)))))
+                      (delete-dups tags)))))))))
 
 (defun my/org-pick-context ()
   "Prompt for an @context tag and show NEXT tasks for it."
